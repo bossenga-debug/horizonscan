@@ -156,15 +156,35 @@ workflow van de gedeelde secrets winnen. Vergeet dan niet `ADDON_DASHBOARD` in
    `public_html/preferentiebeleid/horizonscan` aan. Het deployscript maakt die
    niet zelf — met opzet, want dan zou een typefout een nieuwe map opleveren in
    plaats van een foutmelding.
-2. Zet één secret klaar (Settings → Secrets and variables → Actions):
+2. Zet vijf secrets klaar (Settings → Secrets and variables → Actions):
 
    | Secret | Waarde |
    |---|---|
+   | `FTP_HOST` | `ftp.medicatieadvies.nl` |
+   | `FTP_USER` | het Cloud86-account dat op de map `preferentiebeleid` is vastgezet |
+   | `FTP_PASS` | het wachtwoord daarvan |
+   | `FTP_CERT_HOST` | `shared21.cloud86-host.nl` |
    | `FTP_DIR_HORIZONSCAN` | `horizonscan` |
 
-`FTP_HOST`, `FTP_USER`, `FTP_PASS` en `FTP_CERT_HOST` worden hergebruikt uit de
-bestaande secrets; er zijn geen nieuwe inloggegevens nodig. Staat er wel een
-`*_HORIZONSCAN`-variant, dan wint die.
+**Secrets gelden per repository.** Dit is een eigen repo, dus de secrets van
+`preferentiebeleid` gelden hier níét — ook al is het hetzelfde FTP-account. Bij
+het add-on dashboard hoefde alleen `FTP_DIR_ADDON` gezet te worden, maar dat zit
+ín die andere repo en deelt daardoor de rest. Hier moeten alle vijf.
+
+`FTP_CERT_HOST` is niet optioneel op deze hosting: het certificaat van de
+FTP-server staat op `shared21.cloud86-host.nl` en niet op de naam waarmee je
+verbindt. Zonder dat secret loopt de verbinding op een certificaatfout vast.
+Uit te lezen met:
+
+```python
+import deploy_ftp; print(deploy_ftp.certificaatnamen("ftp.medicatieadvies.nl"))
+```
+
+Reset je het FTP-wachtwoord, werk het dan **in beide repo's** bij — anders valt
+de maandelijkse run van het preferentiebeleid stil.
+
+Let op: een secret toevoegen of wijzigen start geen workflow. Na het instellen
+moet je hem zelf aftrappen met *Run workflow*.
 
 Instellingen komen uit omgevingsvariabelen of uit een `.env` naast het script
 (die staat in `.gitignore`). Uitproberen zonder iets te versturen:
