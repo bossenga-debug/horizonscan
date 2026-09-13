@@ -1,0 +1,71 @@
+name: Horizonscan bijwerken
+
+on:
+  schedule:
+    # 5e van de maand 05:00 UTC. De Horizonscan kent geen vaste publicatiedag —
+    # de site wordt doorlopend bijgewerkt — dus de datum is vrij gekozen. Wel
+    # bewust niet de 8e: dan draait het add-on dashboard.
+    - cron: '0 5 5 * *'
+  workflow_dispatch:        # met de knop "Run workflow" ook handmatig te starten
+  push:
+    branches: [main]
+    # Bij een wijziging aan de tool zelf meteen opnieuw bouwen en publiceren.
+    # De workflow commit ook zelf, maar dat lokt geen nieuwe run uit: pushes met
+    # de standaard GITHUB_TOKEN starten geen workflows.
+    paths:
+      - 'template.html'
+      - '*.py'
+      - '.github/workflows/horizonscan.yml'
+
+permissions:
+  contents: write
+
+# Twee runs tegelijk zouden allebei van dezelfde momentopname uitgaan en
+# elkaars mutaties overschrijven.
+concurrency:
+  group: horizonscan
+  cancel-in-progress: false
+
+jobs:
+  bijwerken:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Afhankelijkheden installeren
+        run: pip install -r requirements.txt
+
+      # De CSV's zelf staan bewust niet in de repo — die worden elke run vers
+      # opgehaald. historie/ wél: zonder de vorige momentopname is er niets om
+      # de mutaties tegen af te zetten. --ci laat het script hard stoppen als
+      # een bron van indeling verandert, zodat er nooit een halve pagina
+      # online komt.
+      - name: Bronnen ophalen en pagina bouwen
+        run: python3 bijwerken.py --ci
+
+      - name: Wijzigingen vastleggen in de repo
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add horizonscan.html historie/
+          git diff --cached --quiet && echo "geen wijzigingen" || \
+            git commit -m "Horizonscan bijgewerkt $(date +%F)"
+          git push
+
+      - name: Uploaden naar medicatieadvies.nl
+        env:
+          # Standaard dezelfde FTP-gegevens als de andere pagina's. Staat er een
+          # *_HORIZONSCAN-variant, dan wint die — nodig als dat account op zijn
+          # eigen map is vastgezet en de horizonscan-map dus niet kan bereiken.
+          FTP_HOST: ${{ secrets.FTP_HOST_HORIZONSCAN || secrets.FTP_HOST }}
+          FTP_USER: ${{ secrets.FTP_USER_HORIZONSCAN || secrets.FTP_USER }}
+          FTP_PASS: ${{ secrets.FTP_PASS_HORIZONSCAN || secrets.FTP_PASS }}
+          FTP_DIR:  ${{ secrets.FTP_DIR_HORIZONSCAN }}
+          FTP_CERT_HOST: ${{ secrets.FTP_CERT_HOST }}
+          FTP_INSECURE_TLS: ${{ secrets.FTP_INSECURE_TLS }}
+        run: python3 deploy_ftp.py

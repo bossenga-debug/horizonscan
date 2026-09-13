@@ -1,0 +1,12 @@
+# Brondata wordt elke run vers opgehaald en hoort niet in de repo.
+bron/
+
+# historie/ staat er juist WEL in: zonder de vorige momentopname valt er niets
+# te vergelijken en blijft het mutatie-overzicht leeg.
+
+# FTP-gegevens
+.env
+
+__pycache__/
+*.pyc
+.DS_Store

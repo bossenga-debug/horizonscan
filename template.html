@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Horizonscan geneesmiddelen — alle domeinen</title>
+<style>
+:root{
+  color-scheme:light;
+  --plane:#f9f9f7; --surface:#fcfcfb; --ink:#0b0b0b; --ink2:#52514e; --muted:#898781;
+  --grid:#e1e0d9; --as:#c3c2b7; --rand:rgba(11,11,11,.10); --wash:rgba(11,11,11,.04);
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100;
+  --s5:#e87ba4; --s6:#008300; --s7:#4a3aa7; --s8:#e34948;
+  --goed:#0ca30c; --let:#fab219; --ernstig:#ec835a; --kritiek:#d03b3b;
+}
+@media (prefers-color-scheme:dark){:root:where(:not([data-theme="light"])){
+  color-scheme:dark;
+  --plane:#0d0d0d; --surface:#1a1a19; --ink:#fff; --ink2:#c3c2b7; --muted:#898781;
+  --grid:#2c2c2a; --as:#383835; --rand:rgba(255,255,255,.10); --wash:rgba(255,255,255,.05);
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500;
+  --s5:#d55181; --s6:#008300; --s7:#9085e9; --s8:#e66767;
+}}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --plane:#0d0d0d; --surface:#1a1a19; --ink:#fff; --ink2:#c3c2b7; --muted:#898781;
+  --grid:#2c2c2a; --as:#383835; --rand:rgba(255,255,255,.10); --wash:rgba(255,255,255,.05);
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500;
+  --s5:#d55181; --s6:#008300; --s7:#9085e9; --s8:#e66767;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--plane);color:var(--ink);
+  font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+h1{font-size:22px;margin:0;letter-spacing:-.01em}
+h2{font-size:15px;margin:0 0 10px;letter-spacing:.02em;text-transform:uppercase;color:var(--muted);font-weight:600}
+a{color:var(--s1)}
+.wrap{max-width:1500px;margin:0 auto;padding:20px 22px 80px}
+
+/* ---------- kop ---------- */
+header{display:flex;flex-wrap:wrap;gap:14px;align-items:baseline;justify-content:space-between;margin-bottom:16px}
+.sub{color:var(--ink2);font-size:13.5px;margin-top:5px;max-width:70ch}
+.bijgewerkt{color:var(--muted);font-size:12.5px;white-space:nowrap}
+
+/* ---------- kerncijfers ---------- */
+.cijfers{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:16px}
+.tegel{background:var(--surface);border:1px solid var(--rand);border-radius:10px;padding:12px 14px}
+.tegel .n{font-size:25px;font-weight:600;letter-spacing:-.02em;line-height:1.15}
+.tegel .l{font-size:12.5px;color:var(--ink2);margin-top:3px}
+.tegel .h{font-size:11.5px;color:var(--muted);margin-top:2px}
+
+/* ---------- filters ---------- */
+.filters{background:var(--surface);border:1px solid var(--rand);border-radius:10px;
+  padding:12px 14px;margin-bottom:14px;display:flex;flex-wrap:wrap;gap:9px;align-items:center}
+input[type=search],select{font:inherit;font-size:13.5px;color:var(--ink);background:var(--surface);
+  border:1px solid var(--as);border-radius:7px;padding:7px 9px}
+input[type=search]{flex:1 1 260px;min-width:200px}
+select{max-width:230px}
+input:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid var(--s1);outline-offset:1px}
+.vink{display:inline-flex;align-items:center;gap:5px;font-size:13px;color:var(--ink2);
+  border:1px solid var(--as);border-radius:7px;padding:6px 9px;cursor:pointer;user-select:none}
+.vink input{margin:0;accent-color:var(--s1)}
+.vink:has(input:checked){border-color:var(--s1);color:var(--ink);background:var(--wash)}
+button{font:inherit;font-size:13.5px;color:var(--ink);background:var(--surface);
+  border:1px solid var(--as);border-radius:7px;padding:7px 11px;cursor:pointer}
+button:hover{background:var(--wash)}
+.telling{margin-left:auto;font-size:13px;color:var(--ink2);font-variant-numeric:tabular-nums}
+
+/* ---------- weergaveknoppen ---------- */
+.tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
+.tab{border:1px solid var(--as);border-radius:7px;padding:7px 13px;font-size:13.5px;
+  background:var(--surface);cursor:pointer}
+.tab[aria-selected=true]{background:var(--s1);border-color:var(--s1);color:#fff}
+
+/* ---------- tabel ---------- */
+.kaart{background:var(--surface);border:1px solid var(--rand);border-radius:10px;overflow:hidden}
+.schuif{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--grid);vertical-align:top}
+th{position:sticky;top:0;background:var(--surface);z-index:2;font-weight:600;font-size:12.5px;
+  color:var(--ink2);white-space:nowrap;cursor:pointer;border-bottom:1px solid var(--as)}
+th:hover{color:var(--ink)}
+th .pijl{color:var(--s1);font-size:10px}
+tbody tr{cursor:pointer}
+tbody tr:hover{background:var(--wash)}
+td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.stof{font-weight:600}
+.merk{color:var(--muted);font-weight:400}
+.knip{display:block;max-width:34ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.stip{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;
+  vertical-align:baseline;flex:none}
+.leeg{padding:36px 20px;text-align:center;color:var(--muted)}
+.meer{padding:12px;text-align:center}
+
+/* ---------- labels ---------- */
+.label{display:inline-block;font-size:11.5px;padding:2px 7px;border-radius:20px;
+  border:1px solid var(--as);color:var(--ink2);white-space:nowrap}
+.label.sluis{border-color:var(--kritiek);color:var(--kritiek)}
+.label.uit{border-color:var(--goed);color:var(--goed)}
+
+/* ---------- tijdlijn ---------- */
+.grafiek{padding:16px 18px 10px}
+.legenda{display:flex;flex-wrap:wrap;gap:6px 16px;padding:0 18px 16px;font-size:12.5px;color:var(--ink2)}
+.legenda span{display:inline-flex;align-items:center}
+.voetnoot{padding:0 18px 16px;font-size:12.5px;color:var(--muted);max-width:80ch}
+svg{display:block;width:100%;height:auto;max-width:1200px;margin:0 auto}
+.tip{position:fixed;z-index:50;pointer-events:none;background:var(--surface);color:var(--ink);
+  border:1px solid var(--rand);border-radius:8px;padding:9px 11px;font-size:12.5px;
+  box-shadow:0 6px 22px rgba(0,0,0,.16);max-width:280px;display:none}
+.tip b{display:block;margin-bottom:5px;font-size:13px}
+.tip div{display:flex;justify-content:space-between;gap:14px;font-variant-numeric:tabular-nums}
+
+/* ---------- mutaties ---------- */
+.peil{padding:14px 18px 4px;border-top:1px solid var(--grid);display:flex;flex-wrap:wrap;
+  gap:10px;align-items:baseline}
+.peil:first-child{border-top:0}
+.peil h3{margin:0;font-size:15px}
+.peil .tel{font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.mut{display:grid;grid-template-columns:104px 1fr;gap:12px;padding:7px 18px;
+  border-bottom:1px solid var(--grid);font-size:13.5px;align-items:baseline;cursor:pointer}
+.mut:hover{background:var(--wash)}
+.mut .soort{font-size:11.5px;padding:2px 8px;border-radius:20px;border:1px solid var(--as);
+  color:var(--ink2);text-align:center;white-space:nowrap}
+.mut .soort.nieuw{border-color:var(--goed);color:var(--goed)}
+.mut .soort.afgevoerd{border-color:var(--kritiek);color:var(--kritiek)}
+.mut .soort.herzien{border-color:var(--as);color:var(--muted)}
+.mut .wat{color:var(--ink2)}
+.mut .van{color:var(--muted)}
+.mut .naar{color:var(--ink);font-weight:600}
+.mut .pijl{color:var(--muted);padding:0 4px}
+@media (max-width:760px){.mut{grid-template-columns:1fr;gap:3px}}
+
+/* ---------- sluis ---------- */
+.sluiskop{padding:14px 18px 4px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.sluiskop .wat{font-size:12.5px;color:var(--muted);margin-right:2px}
+.sluistegels{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  gap:10px;padding:10px 18px 4px}
+.sluistegels .tegel{background:transparent;border:0;padding:0}
+.blokken{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.blokken>div{padding:6px 18px 14px;min-width:0}
+.blokken>div+div{border-left:1px solid var(--grid)}
+.blokkop{font-size:13px;font-weight:600;margin:14px 0 2px}
+.blokkop .bij{font-weight:400;color:var(--muted);font-size:12.5px}
+@media (max-width:900px){.blokken{grid-template-columns:1fr}
+  .blokken>div+div{border-left:0;border-top:1px solid var(--grid)}}
+
+/* ---------- detailpaneel ---------- */
+.dim{position:fixed;inset:0;background:rgba(0,0,0,.34);z-index:60;display:none}
+.dim.aan{display:block}
+.paneel{position:fixed;top:0;right:0;bottom:0;width:min(660px,100%);background:var(--surface);
+  z-index:61;transform:translateX(100%);transition:transform .18s ease;
+  display:flex;flex-direction:column;border-left:1px solid var(--rand)}
+.paneel.aan{transform:none}
+.paneel .kop{padding:16px 20px;border-bottom:1px solid var(--grid);display:flex;gap:12px;
+  align-items:flex-start;justify-content:space-between}
+.paneel .kop h3{margin:0;font-size:19px;letter-spacing:-.01em}
+.paneel .kop .meta{color:var(--ink2);font-size:13px;margin-top:4px}
+.paneel .body{overflow-y:auto;padding:6px 20px 30px}
+.groep{margin-top:18px}
+.rij{display:grid;grid-template-columns:170px 1fr;gap:10px;padding:6px 0;border-bottom:1px solid var(--grid);font-size:13.5px}
+.rij dt{color:var(--ink2)}
+.rij dd{margin:0;overflow-wrap:anywhere}
+dl{margin:0}
+.sluit{font-size:20px;line-height:1;padding:4px 10px}
+@media (max-width:760px){
+  .rij{grid-template-columns:1fr;gap:2px}
+  .rij dt{font-size:12px;color:var(--muted)}
+  .knip{max-width:22ch}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div>
+    <h1>Horizonscan geneesmiddelen</h1>
+    <p class="sub">Alle acht domeinen van de Horizonscan in één doorzoekbaar overzicht, met de
+      verwachte registraties op een tijdlijn. Bron: Zorginstituut Nederland.</p>
+  </div>
+  <div class="bijgewerkt" id="bijgewerkt"></div>
+</header>
+
+<div class="cijfers" id="cijfers"></div>
+
+<div class="filters">
+  <input type="search" id="zoek" placeholder="Zoek op stof, merk, indicatie, fabrikant of mechanisme…"
+         aria-label="Zoeken">
+  <select id="f-domein" aria-label="Domein"><option value="">Alle domeinen</option></select>
+  <select id="f-fase" aria-label="Registratiefase"><option value="">Alle fasen</option></select>
+  <select id="f-sluis" aria-label="Sluisstatus"><option value="">Sluis: alle</option></select>
+  <select id="f-vergoeding" aria-label="Vergoeding"><option value="">Vergoeding: alle</option></select>
+  <select id="f-kader" aria-label="Kader"><option value="">Kader: alle</option></select>
+  <select id="f-waarde" aria-label="Therapeutische waarde"><option value="">Waarde: alle</option></select>
+  <label class="vink"><input type="checkbox" id="f-wees">Weesgeneesmiddel</label>
+  <label class="vink"><input type="checkbox" id="f-atmp">ATMP</label>
+  <label class="vink"><input type="checkbox" id="f-prime">PRIME</label>
+  <label class="vink"><input type="checkbox" id="f-addon">Al add-on</label>
+  <button id="wis" type="button">Wis filters</button>
+  <span class="telling" id="telling"></span>
+</div>
+
+<div class="tabs" role="tablist">
+  <button class="tab" role="tab" id="tab-tabel" aria-selected="true">Tabel</button>
+  <button class="tab" role="tab" id="tab-tijdlijn" aria-selected="false">Tijdlijn</button>
+  <button class="tab" role="tab" id="tab-sluis" aria-selected="false">Sluis</button>
+  <button class="tab" role="tab" id="tab-mutaties" aria-selected="false">Mutaties</button>
+  <span id="tijdopties" style="display:none;margin-left:6px">
+    <label class="vink"><input type="checkbox" id="f-kwartaal" checked>Per kwartaal</label>
+    <label class="vink"><input type="checkbox" id="f-verstreken">Ook verstreken data</label>
+  </span>
+</div>
+
+<section class="kaart" id="v-tabel">
+  <div class="schuif">
+    <table>
+      <thead><tr id="koppen"></tr></thead>
+      <tbody id="lichaam"></tbody>
+    </table>
+  </div>
+  <div class="meer" id="meer" style="display:none"><button type="button" id="meerknop"></button></div>
+</section>
+
+<section class="kaart" id="v-tijdlijn" style="display:none">
+  <div class="schuif" id="grafiekvak"><div class="grafiek" id="grafiek"></div></div>
+  <div class="legenda" id="legenda"></div>
+  <p class="voetnoot" id="tijdvoet"></p>
+</section>
+
+<section class="kaart" id="v-sluis" style="display:none">
+  <div class="sluiskop" id="sluiskeuze"></div>
+  <div class="sluistegels" id="sluistegels"></div>
+  <div id="sluisranglijst"></div>
+  <div class="blokken">
+    <div id="sluisdomein"></div>
+    <div id="sluisindicatie"></div>
+  </div>
+  <p class="voetnoot" id="sluisvoet"></p>
+</section>
+
+<section class="kaart" id="v-mutaties" style="display:none">
+  <div id="mutatielijst"></div>
+</section>
+
+<p class="voetnoot" style="padding-left:0;margin-top:18px" id="colofon"></p>
+</div>
+
+<div class="tip" id="tip" role="status"></div>
+<div class="dim" id="dim"></div>
+<aside class="paneel" id="paneel" aria-label="Details" tabindex="-1">
+  <div class="kop">
+    <div><h3 id="p-titel"></h3><div class="meta" id="p-meta"></div></div>
+    <button class="sluit" id="p-sluit" type="button" aria-label="Sluiten">×</button>
+  </div>
+  <div class="body" id="p-body"></div>
+</aside>
+
+<script>
+const DATA = /*DATA*/null/*DATA*/;
+const M = DATA.middelen;
+
+/* De acht domeinen krijgen een vaste kleurplek. Vast, niet naar volgorde of
+   grootte: als een filter domeinen wegneemt, houden de overblijvers hun kleur. */
+const DOMEINEN = ["Oncologie","Neurologische aandoeningen","Chronische immuunziekten",
+  "Stofwisseling en endocrinologie","Hematologie","Cardiovasculaire aandoeningen",
+  "Infectieziekten","Longziekten"];
+const KLEUR = {};
+DOMEINEN.forEach((d,i)=>KLEUR[d]="var(--s"+(i+1)+")");
+
+const $ = s=>document.querySelector(s);
+const esc = s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const nl = new Intl.NumberFormat("nl-NL");
+const eur = n=>n==null?"":"€ "+nl.format(Math.round(n));
+/* Bedragen in de kerncijfers lopen tot tientallen miljarden; voluit is dat een
+   getal dat niemand in een oogopslag leest. */
+const eurKort = n=>{
+  if(n==null||!n) return "—";
+  const [deler,eenheid] = n>=1e9?[1e9,"mld"] : n>=1e6?[1e6,"mln"] : [1e3,"dzd"];
+  return "€ "+(n/deler).toLocaleString("nl-NL",{maximumFractionDigits:1})+" "+eenheid;
+};
+const MAAND = ["","januari","februari","maart","april","mei","juni","juli","augustus",
+  "september","oktober","november","december"];
+const meervoud = (n,een,veel)=>`${nl.format(n)} ${n===1?een:veel}`;
+
+/* Zoeksleutel eenmalig opbouwen: bij elke toetsaanslag opnieuw samenstellen is
+   merkbaar traag bij ~1900 middelen. */
+M.forEach(r=>{
+  r._z = [r.stof,r.merk,r.fabrikant,r.indicatie,r.uitgebreide_indicatie,r.mechanisme,
+          r.domein,r.fase,(r.atc||[]).join(" ")].join(" ").toLowerCase();
+});
+
+/* ---------- filters ---------- */
+const S = {zoek:"",domein:"",fase:"",sluis:"",vergoeding:"",kader:"",waarde:"",
+           wees:false,atmp:false,prime:false,addon:false,
+           sorteer:"stof",richting:1,limiet:250,weergave:"tabel",
+           sluisstatus:["In de sluis","Sluiskandidaat"],sluisAlles:false,
+           kwartaal:true,verstreken:false,periode:null};
+
+function vulKeuze(id,veld,voorvoegsel){
+  const waarden=[...new Set(M.map(r=>r[veld]).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"nl"));
+  const sel=$(id);
+  waarden.forEach(w=>{
+    const o=document.createElement("option");
+    o.value=w; o.textContent=(voorvoegsel||"")+w; sel.appendChild(o);
+  });
+}
+vulKeuze("#f-domein","domein");
+vulKeuze("#f-fase","fase");
+vulKeuze("#f-sluis","sluis","Sluis: ");
+vulKeuze("#f-vergoeding","vergoeding","Vergoeding: ");
+vulKeuze("#f-kader","kader","Kader: ");
+vulKeuze("#f-waarde","waarde","Waarde: ");
+
+function pas(r){
+  if(S.zoek && !r._z.includes(S.zoek)) return false;
+  for(const v of ["domein","fase","sluis","vergoeding","kader","waarde"])
+    if(S[v] && r[v]!==S[v]) return false;
+  if(S.wees && r.wees!=="Ja") return false;
+  if(S.atmp && r.atmp!=="Ja") return false;
+  if(S.prime && r.bijzonderheid!=="PRIME-geneesmiddel") return false;
+  if(S.addon && !r.addon) return false;
+  if(S.periode && periodeVan(r)!==S.periode) return false;
+  return true;
+}
+const gefilterd = ()=>M.filter(pas);
+/* De periodekeuze uit de tijdlijn slaat op een verwachte registratiedatum en
+   zegt niets over een mutatie, dus die laten we hier buiten beschouwing. */
+function pasZonderPeriode(r){
+  const p=S.periode; S.periode=null;
+  try { return pas(r); } finally { S.periode=p; }
+}
+
+/* ---------- kerncijfers ---------- */
+function nuYM(){const d=new Date();return d.getFullYear()*12+d.getMonth();}
+function ymVan(m){ // "2027-10" -> vergelijkbaar getal; jaar zonder maand telt als jaarstart
+  if(!m) return null;
+  const [j,mm]=m.split("-").map(Number);
+  return j*12+(mm?mm-1:0);
+}
+function tegels(rijen){
+  const sluis=rijen.filter(r=>r.sluis==="In de sluis"||r.sluis==="Sluiskandidaat").length;
+  const nu=nuYM();
+  const komend=rijen.filter(r=>{const y=ymVan(r.maand);return y!==null&&y>=nu&&y<nu+12;}).length;
+  const kosten=rijen.reduce((s,r)=>s+(r.totale_kosten_n||0),0);
+  const metKosten=rijen.filter(r=>r.totale_kosten_n!=null).length;
+  const t=[
+    [nl.format(rijen.length),"middelen in selectie", M.length===rijen.length?"volledige scan":"van "+nl.format(M.length)+" totaal"],
+    [nl.format(komend),"registratie < 12 maanden","volgens verwachte datum"],
+    [nl.format(sluis),"in de sluis of kandidaat",""],
+    [eurKort(kosten),"geraamde kosten samen", metKosten+" van "+rijen.length+" middelen · bovengrens"],
+  ];
+  $("#cijfers").innerHTML = t.map(([n,l,h])=>
+    `<div class="tegel"><div class="n">${esc(n)}</div><div class="l">${esc(l)}</div>
+     <div class="h">${esc(h)}</div></div>`).join("");
+}
+
+/* ---------- tabel ---------- */
+const KOLOMMEN = [
+  {k:"stof",  t:"Stof",              f:r=>`<span class="stof">${esc(r.stof)}</span>`+
+                                          (r.merk?`<br><span class="merk">${esc(r.merk)}</span>`:"")},
+  {k:"indicatie", t:"Indicatie",     f:r=>`<span class="knip" title="${esc(r.uitgebreide_indicatie||r.indicatie)}">${esc(r.indicatie||"—")}</span>`},
+  {k:"domein",t:"Domein",            f:r=>`<span class="stip" style="background:${KLEUR[r.domein]||"var(--muted)"}"></span>${esc(r.domein)}`},
+  {k:"fase",  t:"Fase",              f:r=>esc(r.fase||"—")},
+  {k:"maand", t:"Verwachte registratie", f:r=>esc(r.verwacht||"—")},
+  {k:"sluis", t:"Sluis",             f:r=>r.sluis?`<span class="label ${r.sluis==="In de sluis"||r.sluis==="Sluiskandidaat"?"sluis":(r.sluis==="Uit de sluis"?"uit":"")}">${esc(r.sluis)}</span>`:""},
+  {k:"kosten_n", t:"Kosten p.p.",    n:1, f:r=>esc(r.kosten||"")},
+  {k:"totale_kosten_n", t:"Totale kosten", n:1, f:r=>esc(r.totale_kosten||"")},
+];
+
+function tekenKoppen(){
+  $("#koppen").innerHTML = KOLOMMEN.map(c=>{
+    const aan = S.sorteer===c.k;
+    return `<th data-k="${c.k}" class="${c.n?"num":""}" ${aan?`aria-sort="${S.richting>0?"ascending":"descending"}"`:""}>`+
+           `${esc(c.t)}${aan?` <span class="pijl">${S.richting>0?"▲":"▼"}</span>`:""}</th>`;
+  }).join("");
+  $("#koppen").querySelectorAll("th").forEach(th=>th.onclick=()=>{
+    const k=th.dataset.k;
+    if(S.sorteer===k) S.richting*=-1; else {S.sorteer=k;S.richting=1;}
+    S.limiet=250; teken();
+  });
+}
+
+function sorteer(rijen){
+  const k=S.sorteer, num=KOLOMMEN.find(c=>c.k===k)?.n;
+  return rijen.slice().sort((a,b)=>{
+    let x=a[k], y=b[k];
+    // Lege waarden altijd onderaan, ongeacht de richting -- anders vullen de
+    // middelen zonder datum of prijs de hele eerste pagina.
+    const xl=(x==null||x===""), yl=(y==null||y===""); 
+    if(xl&&yl) return a.stof.localeCompare(b.stof,"nl");
+    if(xl) return 1;
+    if(yl) return -1;
+    if(num) return (x-y)*S.richting;
+    return String(x).localeCompare(String(y),"nl")*S.richting;
+  });
+}
+
+function tekenTabel(rijen){
+  const toon=rijen.slice(0,S.limiet);
+  $("#lichaam").innerHTML = toon.length ? toon.map((r,i)=>
+    `<tr data-i="${M.indexOf(r)}">`+KOLOMMEN.map(c=>`<td class="${c.n?"num":""}">${c.f(r)}</td>`).join("")+`</tr>`
+  ).join("") : `<tr><td class="leeg" colspan="${KOLOMMEN.length}">Geen middelen die aan deze filters voldoen.</td></tr>`;
+  $("#lichaam").querySelectorAll("tr[data-i]").forEach(tr=>
+    tr.onclick=()=>toonDetail(M[+tr.dataset.i]));
+  const rest=rijen.length-toon.length;
+  $("#meer").style.display = rest>0?"block":"none";
+  $("#meerknop").textContent = `Toon ${nl.format(Math.min(rest,500))} meer (${nl.format(rest)} resterend)`;
+}
+$("#meerknop").onclick=()=>{S.limiet+=500;teken();};
+
+/* ---------- tijdlijn ---------- */
+function periodeVan(r){
+  if(!r.maand) return null;
+  const [j,mm]=r.maand.split("-");
+  if(!S.kwartaal) return j;
+  if(mm==="00") return null;            // alleen een jaartal: past niet in een kwartaal
+  return j+"-K"+Math.ceil(+mm/3);
+}
+function periodeLabel(p){
+  return S.kwartaal ? p.replace("-K"," Q") : p;
+}
+
+function tekenTijdlijn(rijen){
+  const nu=nuYM();
+  const bakken=new Map(); let zonderMaand=0, verstreken=0;
+  rijen.forEach(r=>{
+    const p=periodeVan(r);
+    if(!p){ if(r.maand||!r.verwacht) zonderMaand++; else zonderMaand++; return; }
+    const y=ymVan(r.maand);
+    if(!S.verstreken && y<nu){ verstreken++; return; }
+    if(!bakken.has(p)) bakken.set(p,{});
+    const b=bakken.get(p); b[r.domein]=(b[r.domein]||0)+1;
+  });
+  const perioden=[...bakken.keys()].sort();
+  const aanwezig=DOMEINEN.filter(d=>perioden.some(p=>bakken.get(p)[d]));
+
+  if(!perioden.length){
+    $("#grafiek").innerHTML=`<p class="leeg">Geen middelen met een verwachte registratiedatum in deze selectie.</p>`;
+    $("#legenda").innerHTML=""; $("#tijdvoet").textContent="";
+    return;
+  }
+
+  const B=perioden.length, max=Math.max(...perioden.map(p=>
+    Object.values(bakken.get(p)).reduce((a,b)=>a+b,0)));
+
+  // De breedte wordt gemeten in plaats van vastgezet: een vaste viewBox wordt in
+  // een smalle kolom omlaag geschaald en dan schaalt de tekst mee, tot 4px op een
+  // telefoon. Ondergrens per periode, zodat de balken bij veel kwartalen niet tot
+  // haarlijnen worden geknepen; wat dan niet past, schuift horizontaal.
+  const L=52,R=16,T=26,H=300;
+  // Meten op de scroll-container: #grafiek zelf groeit met zijn inhoud mee en
+  // zou zichzelf bij elke hertekening breder maken.
+  const beschikbaar=tekenbreedte("#grafiekvak",320)-36;
+  const W=Math.max(beschikbaar, L+R+B*34);
+  const vak=(W-L-R)/B, bh=Math.min(64,vak*0.66), O=vak<44?58:34;
+  const VH=T+H+O, y=v=>T+H-(v/max)*H;
+  const schuin=vak<52;
+
+  // Aslijnen op ronde stappen, hoogstens een stuk of vijf zodat het rustig blijft.
+  const ruw=max/5, orde=Math.pow(10,Math.floor(Math.log10(Math.max(ruw,1))));
+  const stap=Math.max(1,[1,2,2.5,5,10].find(f=>f*orde>=ruw)*orde);
+  const ticks=[]; for(let v=0;v<=max;v+=stap) ticks.push(v);
+
+  // min-width houdt de grafiek op zijn getekende maat; wat niet past schuift
+  // horizontaal in #grafiekvak, in plaats van de tekst mee omlaag te schalen.
+  let svg=`<svg viewBox="0 0 ${W} ${VH}" role="img" preserveAspectRatio="xMinYMin meet"
+    style="min-width:${W}px" aria-label="Aantal middelen per ${S.kwartaal?"kwartaal":"jaar"} van verwachte registratie, per domein">`;
+  ticks.forEach(v=>{
+    svg+=`<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--grid)" stroke-width="1"/>`;
+    svg+=`<text x="${L-9}" y="${y(v)+4}" text-anchor="end" font-size="12" fill="var(--muted)">${v}</text>`;
+  });
+  svg+=`<line x1="${L}" x2="${W-R}" y1="${T+H}" y2="${T+H}" stroke="var(--as)" stroke-width="1"/>`;
+
+  perioden.forEach((p,i)=>{
+    const x=L+i*vak+(vak-bh)/2, b=bakken.get(p), mid=x+bh/2;
+    const delen=aanwezig.filter(d=>b[d]);         // in vaste kleurvolgorde, van onder af
+    const totaal=delen.reduce((a,d)=>a+b[d],0);
+    let onder=T+H;
+    delen.forEach((d,j)=>{
+      const h=(b[d]/max)*H, top=onder-h, bovenste=j===delen.length-1;
+      // 2px oppervlak tussen de segmenten; alleen het vrije uiteinde bovenaan
+      // krijgt ronde hoeken, de kant op de nullijn blijft recht.
+      svg+=`<rect x="${x}" y="${top}" width="${bh}" height="${Math.max(1,h-2)}"
+             fill="${KLEUR[d]}"${bovenste?' rx="4" ry="4"':''}><title>${esc(d)}: ${b[d]}</title></rect>`;
+      onder=top;
+    });
+    svg+=`<text x="${mid}" y="${y(totaal)-8}" text-anchor="middle" font-size="13"
+           fill="var(--ink2)" font-weight="600">${totaal}</text>`;
+    svg+=`<text x="${mid}" y="${T+H+18}" text-anchor="${schuin?"end":"middle"}" font-size="12"
+           fill="var(--muted)"${schuin?` transform="rotate(-45 ${mid} ${T+H+18})"`:""}>${esc(periodeLabel(p))}</text>`;
+    svg+=`<rect x="${L+i*vak}" y="${T}" width="${vak}" height="${H}" fill="transparent"
+           data-p="${esc(p)}" style="cursor:pointer"/>`;
+  });
+  svg+=`</svg>`;
+  $("#grafiek").innerHTML=svg;
+
+  $("#legenda").innerHTML = aanwezig.map(d=>
+    `<span><span class="stip" style="background:${KLEUR[d]}"></span>${esc(d)}</span>`).join("");
+
+  const stukjes=[];
+  if(zonderMaand) stukjes.push(`${nl.format(zonderMaand)} middelen staan hier niet in: die hebben `+
+    (S.kwartaal?"geen maand bij de verwachte registratie (alleen een jaartal, of niets)":"geen verwachte registratiedatum")+".");
+  if(verstreken) stukjes.push(`${nl.format(verstreken)} middelen hebben een datum die al verstreken is; `+
+    `zet "Ook verstreken data" aan om die te tonen.`);
+  stukjes.push("Klik op een balk om de tabel op die periode te filteren.");
+  $("#tijdvoet").innerHTML = esc(stukjes.join(" "));
+
+  const tip=$("#tip");
+  $("#grafiek").querySelectorAll("rect[data-p]").forEach(el=>{
+    const p=el.dataset.p, b=bakken.get(p);
+    el.onmousemove=e=>{
+      const regels=aanwezig.filter(d=>b[d]).map(d=>
+        `<div><span><span class="stip" style="background:${KLEUR[d]}"></span>${esc(d)}</span><span>${b[d]}</span></div>`);
+      tip.innerHTML=`<b>${esc(periodeLabel(p))}</b>`+regels.join("")+
+        `<div style="border-top:1px solid var(--grid);margin-top:5px;padding-top:5px"><span>Totaal</span><span>${Object.values(b).reduce((a,c)=>a+c,0)}</span></div>`;
+      tip.style.display="block";
+      const bx=Math.min(e.clientX+14,innerWidth-tip.offsetWidth-10);
+      tip.style.left=bx+"px";
+      tip.style.top=Math.min(e.clientY+14,innerHeight-tip.offsetHeight-10)+"px";
+    };
+    el.onmouseleave=()=>tip.style.display="none";
+    el.onclick=()=>{S.periode=(S.periode===p?null:p);S.limiet=250;S.weergave="tabel";teken();};
+  });
+}
+
+/* ---------- mutaties ---------- */
+const PER_ID = {}; M.forEach(r=>{ if(r.id) PER_ID[r.id]=r; });
+const SOORT = {nieuw:"nieuw", afgevoerd:"afgevoerd", gewijzigd:"gewijzigd", herzien:"herzien"};
+
+function datumNL(iso){
+  const d=new Date(iso);
+  return d.getDate()+" "+MAAND[d.getMonth()+1]+" "+d.getFullYear();
+}
+
+function tekenMutaties(){
+  const bak=$("#mutatielijst");
+  if(!DATA.mutaties.length){
+    bak.innerHTML=`<p class="leeg">Nog geen mutaties vastgelegd.<br>
+      <span style="font-size:13px">De Horizonscan publiceert geen archief, dus de historie wordt
+      vanaf ${esc(datumNL(DATA.historie_start))} zelf opgebouwd. Bij de volgende maandelijkse run
+      verschijnt hier wat er sindsdien is veranderd.</span></p>`;
+    return;
+  }
+  /* De filters werken door op het middel achter de mutatie. Een afgevoerd middel
+     staat niet meer in de dataset; die tonen we alleen als er niet gefilterd is,
+     want we kunnen niet vaststellen of het aan de filters voldoet. */
+  const gefilterd_actief = S.zoek||S.domein||S.fase||S.sluis||S.vergoeding||S.kader||
+                           S.waarde||S.wees||S.atmp||S.prime||S.addon;
+  const zichtbaar = DATA.mutaties.filter(g=>{
+    const m=PER_ID[g.id];
+    return m ? pasZonderPeriode(m) : !gefilterd_actief;
+  });
+
+  if(!zichtbaar.length){
+    bak.innerHTML=`<p class="leeg">Geen mutaties die aan deze filters voldoen.</p>`;
+    return;
+  }
+
+  const perDatum=new Map();
+  zichtbaar.forEach(g=>{
+    if(!perDatum.has(g.datum)) perDatum.set(g.datum,[]);
+    perDatum.get(g.datum).push(g);
+  });
+
+  const woorden={nieuw:"nieuw opgenomen",afgevoerd:"afgevoerd",herzien:"herzien"};
+  bak.innerHTML=[...perDatum.keys()].sort().reverse().map(datum=>{
+    const groep=perDatum.get(datum);
+    const t={nieuw:0,afgevoerd:0,herzien:0}, gewijzigd=new Set();
+    groep.forEach(g=>g.soort==="gewijzigd"?gewijzigd.add(g.id):t[g.soort]++);
+    const tel=[t.nieuw&&`${t.nieuw} nieuw`, gewijzigd.size&&`${gewijzigd.size} gewijzigd`,
+               t.afgevoerd&&`${t.afgevoerd} afgevoerd`, t.herzien&&`${t.herzien} herzien`]
+              .filter(Boolean).join(" · ");
+    // Binnen een peildatum eerst de nieuwe en afgevoerde middelen: dat is het
+    // grove nieuws, de veldwijzigingen zijn het detail.
+    const orde={nieuw:0,afgevoerd:1,gewijzigd:2,herzien:3};
+    const regels=groep.slice().sort((a,b)=>
+      (orde[a.soort]-orde[b.soort]) || a.stof.localeCompare(b.stof,"nl")).map(g=>{
+      const kleur=KLEUR[g.domein]||"var(--muted)";
+      const wat = g.soort==="gewijzigd"
+        ? `<span class="wat">${esc(g.veld)}:</span> <span class="van">${esc(g.van||"leeg")}</span>`+
+          `<span class="pijl">→</span><span class="naar">${esc(g.naar||"leeg")}</span>`
+        : g.soort==="herzien"
+          ? `<span class="wat">tekst aangepast door het Zorginstituut (${esc(g.van)} → ${esc(g.naar)})</span>`
+          : `<span class="wat">${esc(g.van||g.naar||"")}</span>`;
+      return `<div class="mut" data-id="${esc(g.id)}">
+        <span class="soort ${g.soort}">${esc(woorden[g.soort]||g.soort)}</span>
+        <span><span class="stip" style="background:${kleur}"></span><b>${esc(g.stof)}</b> — ${wat}</span>
+      </div>`;
+    }).join("");
+    return `<div class="peil"><h3>${esc(datumNL(datum))}</h3><span class="tel">${esc(tel)}</span></div>${regels}`;
+  }).join("");
+
+  bak.querySelectorAll(".mut[data-id]").forEach(el=>el.onclick=()=>{
+    const m=PER_ID[el.dataset.id];
+    if(m) toonDetail(m);
+  });
+}
+
+/* ---------- sluis ---------- */
+/* De sluisstatussen in de volgorde waarin een middel ze doorloopt, niet
+   alfabetisch: kandidaat -> in de sluis -> eruit, afgewezen of breed uitgezonderd. */
+const SLUISSTATUS = ["Sluiskandidaat","In de sluis","Uit de sluis","Afgewezen","Breed uitgezonderd"];
+
+/* Een SVG met een vaste viewBox wordt door de browser passend geschaald, en de
+   tekst schaalt mee. In een smalle kolom liep dat terug tot 6,5px. Daarom wordt
+   overal met de werkelijke breedte van de plek getekend, zodat de schaal rond 1
+   blijft en de tekst leesbaar is op elk scherm. */
+function tekenbreedte(sel, minimum=280){
+  const el=$(sel);
+  if(!el) return 900;
+  const st=getComputedStyle(el);
+  const binnen=el.clientWidth - parseFloat(st.paddingLeft||0) - parseFloat(st.paddingRight||0);
+  // Bovengrens gelijk aan de max-width uit de opmaak: tekenen we breder, dan
+  // schaalt de browser terug en krimpt de tekst alsnog. Bovendien wordt een
+  // staafdiagram op een breed scherm niet leesbaarder van eindeloos rekken.
+  return Math.min(1200, Math.max(minimum, Math.round(binnen||900)));
+}
+
+/* Liggende staven: lange namen passen horizontaal wel, verticaal niet. Het vrije
+   uiteinde rechts krijgt ronde hoeken, de kant op de nullijn blijft recht. */
+function staaf(x0,y,breedte,hoogte,kleur){
+  const r=Math.min(4,Math.max(0,breedte));
+  const x1=x0+Math.max(breedte,0.5);
+  return `<path d="M${x0},${y} H${x1-r} A${r},${r} 0 0 1 ${x1},${y+r} V${y+hoogte-r} `+
+         `A${r},${r} 0 0 1 ${x1-r},${y+hoogte} H${x0} Z" fill="${kleur}"/>`;
+}
+
+/* rijen: [{label, waarde, kleur, sub, data}] — al gesorteerd aangeleverd. */
+function liggendeStaven(rijen,{labelbreedte=210,waardebreedte=118,hoogte=19,tussen=9,
+                               breedte=980}={}){
+  if(!rijen.length) return `<p class="leeg">Niets te tonen voor deze selectie.</p>`;
+  // De tekenbreedte moet ongeveer overeenkomen met de ruimte waarin de grafiek
+  // terechtkomt. Een viewBox die veel breder is dan zijn kolom wordt omlaag
+  // geschaald, en dan schaalt de tekst mee -- in de halve kolommen liep dat
+  // terug tot een onleesbare 8px.
+  const W=breedte, L=labelbreedte, R=waardebreedte;
+  const max=Math.max(...rijen.map(r=>r.waarde))||1;
+  const vlak=W-L-R, H=rijen.length*(hoogte+tussen);
+  const schaal=v=>Math.max(1,(v/max)*vlak);
+  const staven=rijen.map((r,i)=>{
+    const y=i*(hoogte+tussen);
+    return `<g data-i="${i}" style="cursor:pointer">`+
+      `<rect x="0" y="${y-tussen/2}" width="${W}" height="${hoogte+tussen}" fill="transparent"/>`+
+      `<text x="${L-10}" y="${y+hoogte*0.75}" text-anchor="end" font-size="12.5" fill="var(--ink)">`+
+        `${esc(r.label)}</text>`+
+      (r.sub?`<text x="${L-10}" y="${y+hoogte*0.75+13}" text-anchor="end" font-size="11" `+
+        `fill="var(--muted)">${esc(r.sub)}</text>`:"")+
+      staaf(L,y,schaal(r.waarde),hoogte,r.kleur||"var(--s1)")+
+      `<text x="${L+schaal(r.waarde)+8}" y="${y+hoogte*0.75}" font-size="12" `+
+        `fill="var(--ink2)" font-weight="600">${esc(eurKort(r.waarde))}</text></g>`;
+  }).join("");
+  const extra=rijen.some(r=>r.sub)?13:0;
+  return `<svg viewBox="0 0 ${W} ${H+extra}" preserveAspectRatio="xMinYMin meet" role="img">${staven}</svg>`;
+}
+
+/* De sluisstatus wordt hier door het tabblad zelf gezet, dus het filter in de
+   balk erboven laten we voor dit tabblad buiten beschouwing -- anders zouden
+   twee bedieningen om dezelfde keuze vechten. */
+function pasVoorSluis(r){
+  const p=S.periode, sl=S.sluis;
+  S.periode=null; S.sluis="";
+  try { return pas(r); } finally { S.periode=p; S.sluis=sl; }
+}
+
+function tekenSluis(){
+  $("#sluiskeuze").innerHTML = `<span class="wat">Sluisstatus:</span>` + SLUISSTATUS.map(st=>{
+    const aan=S.sluisstatus.includes(st);
+    const n=M.filter(r=>r.sluis===st).length;
+    return `<label class="vink"><input type="checkbox" data-st="${esc(st)}"${aan?" checked":""}>`+
+           `${esc(st)} <span style="color:var(--muted)">${n}</span></label>`;
+  }).join("");
+  $("#sluiskeuze").querySelectorAll("input[data-st]").forEach(el=>el.onchange=()=>{
+    const st=el.dataset.st;
+    S.sluisstatus = el.checked ? [...S.sluisstatus,st] : S.sluisstatus.filter(x=>x!==st);
+    teken();
+  });
+
+  const rijen=M.filter(r=>S.sluisstatus.includes(r.sluis) && pasVoorSluis(r));
+  const metRaming=rijen.filter(r=>r.totale_kosten_n>0);
+  const totaal=metRaming.reduce((s,r)=>s+r.totale_kosten_n,0);
+  const duurste=metRaming.slice().sort((a,b)=>b.totale_kosten_n-a.totale_kosten_n)[0];
+
+  $("#sluistegels").innerHTML=[
+    [nl.format(rijen.length),"middelen in deze selectie",
+     `${new Set(rijen.map(r=>r.stof)).size} verschillende stoffen`],
+    [eurKort(totaal),"geraamde kosten samen",
+     `${metRaming.length} van de ${rijen.length} met een raming`],
+    [duurste?eurKort(duurste.totale_kosten_n):"—","hoogste enkele raming",
+     duurste?duurste.stof:""],
+    [nl.format(rijen.length-metRaming.length),"zonder kostenraming",
+     "tellen nergens in mee"],
+  ].map(([n,l,h])=>`<div class="tegel"><div class="n">${esc(n)}</div><div class="l">${esc(l)}</div>
+     <div class="h">${esc(h)}</div></div>`).join("");
+
+  if(!metRaming.length){
+    $("#sluisranglijst").innerHTML=`<p class="leeg">Geen middelen met een kostenraming in deze selectie.</p>`;
+    $("#sluisdomein").innerHTML=$("#sluisindicatie").innerHTML="";
+    $("#sluisvoet").textContent="";
+    return;
+  }
+
+  /* --- ranglijst per middel --- */
+  const gesorteerd=metRaming.slice().sort((a,b)=>b.totale_kosten_n-a.totale_kosten_n);
+  const toon=S.sluisAlles?gesorteerd:gesorteerd.slice(0,15);
+  const domeinen=[...new Set(gesorteerd.map(r=>r.domein))].sort(
+    (a,b)=>DOMEINEN.indexOf(a)-DOMEINEN.indexOf(b));
+  const bRang=tekenbreedte("#sluisranglijst",320)-36;      // 18px marge links en rechts
+  $("#sluisranglijst").innerHTML=
+    `<div class="blokkop" style="padding:0 18px">Hoogste geraamde kosten
+      <span class="bij">— ${toon.length} van ${meervoud(gesorteerd.length,"middel","middelen")}, per indicatie</span></div>
+     <div class="legenda" style="padding:6px 18px 4px">`+
+      domeinen.map(d=>`<span><span class="stip" style="background:${KLEUR[d]}"></span>${esc(d)}</span>`).join("")+
+     `</div><div style="padding:0 18px 6px" id="ranglijstsvg">`+
+     liggendeStaven(toon.map(r=>({label:r.stof, sub:r.indicatie, waarde:r.totale_kosten_n,
+                                 kleur:KLEUR[r.domein]||"var(--muted)", data:r})),
+                    {labelbreedte:Math.min(260,bRang*0.34), waardebreedte:Math.min(120,bRang*0.14),
+                     hoogte:20, tussen:16, breedte:bRang})+
+     `</div>`+
+     (gesorteerd.length>15?`<div class="meer"><button type="button" id="sluismeer">`+
+       (S.sluisAlles?`Toon alleen de hoogste 15`:`Toon alle ${gesorteerd.length}`)+`</button></div>`:"");
+  const knop=$("#sluismeer");
+  if(knop) knop.onclick=()=>{S.sluisAlles=!S.sluisAlles;teken();};
+  $("#ranglijstsvg").querySelectorAll("g[data-i]").forEach(g=>
+    g.onclick=()=>toonDetail(toon[+g.dataset.i]));
+
+  /* --- per domein en per indicatie --- */
+  function maten(sel){
+    const b=tekenbreedte(sel,300)-36;
+    // Op een smal scherm mag het labelvak niet de hele breedte opeten; dan blijft
+    // er geen staaf over om te vergelijken.
+    return {breedte:b, labelbreedte:Math.max(96,Math.min(230,b*0.44)),
+            waardebreedte:Math.max(64,Math.min(95,b*0.2))};
+  }
+  function optellen(veld){
+    const m=new Map();
+    metRaming.forEach(r=>m.set(r[veld]||"Onbekend",(m.get(r[veld]||"Onbekend")||0)+r.totale_kosten_n));
+    return [...m].sort((a,b)=>b[1]-a[1]);
+  }
+  const perDomein=optellen("domein");
+  $("#sluisdomein").innerHTML=`<div class="blokkop">Per domein
+    <span class="bij">— ${meervoud(perDomein.length,"domein","domeinen")}</span></div>`+
+    liggendeStaven(perDomein.map(([d,v])=>({label:d, waarde:v, kleur:KLEUR[d]||"var(--muted)"})),
+                   maten("#sluisdomein"));
+
+  /* Indicaties zijn hier geen identiteit maar een rangorde, dus één tint. De
+     staart wordt samengevouwen: twintig staafjes van niks leest niemand. */
+  const perInd=optellen("indicatie");
+  const top=perInd.slice(0,10), staart=perInd.slice(10);
+  const indRijen=top.map(([d,v])=>({label:d, waarde:v, kleur:"var(--s1)"}));
+  if(staart.length) indRijen.push({label:`overige ${meervoud(staart.length,"indicatie","indicaties")}`,
+    waarde:staart.reduce((s,x)=>s+x[1],0), kleur:"var(--as)"});
+  $("#sluisindicatie").innerHTML=`<div class="blokkop">Per indicatie
+    <span class="bij">— ${meervoud(perInd.length,"indicatie","indicaties")}</span></div>`+
+    liggendeStaven(indRijen, maten("#sluisindicatie"));
+
+  /* --- voetnoot --- */
+  const stoffen=new Map();
+  metRaming.forEach(r=>stoffen.set(r.stof,(stoffen.get(r.stof)||0)+1));
+  const dubbel=[...stoffen.values()].filter(n=>n>1).length;
+  const stukjes=[];
+  if(rijen.length-metRaming.length) stukjes.push(
+    `${nl.format(rijen.length-metRaming.length)} van de ${nl.format(rijen.length)} middelen in deze `+
+    `selectie hebben geen kostenraming en tellen dus in geen van deze grafieken mee.`);
+  if(dubbel) stukjes.push(`${dubbel} stoffen komen meer dan één keer voor, met een eigen raming per `+
+    `indicatie; die staan hier ook als aparte regels.`);
+  stukjes.push(`De bedragen zijn de voorlopige rekenwaarden van de Horizonscan: kosten per patiënt `+
+    `maal een geschat maximaal patiëntaantal. Lees ze als bovengrens, niet als begroting. `+
+    `De sluis-specifieke velden in de bron ("Total cost for sluice") zijn vrijwel overal leeg, `+
+    `dus hier staat de algemene kostenraming.`);
+  $("#sluisvoet").textContent=stukjes.join(" ");
+}
+
+/* ---------- detailpaneel ---------- */
+const VELDEN = [
+  ["Indicatie",[["Hoofdindicatie","indicatie"],["Volledige indicatie","uitgebreide_indicatie"],
+    ["Reden van opname","reden"],["Huidige behandelopties","huidige_behandeling"]]],
+  ["Registratie",[["Registratiefase","fase"],["Verwachte registratie","verwacht"],
+    ["Registratieroute","registratieroute"],["Type traject","traject"],
+    ["Bijzonderheid","bijzonderheid"],["Weesgeneesmiddel","wees"],["ATMP","atmp"]]],
+  ["Vergoeding",[["Kader","kader"],["Vergoedingsstatus","vergoeding"],["Sluis","sluis"]]],
+  ["Behandeling",[["Therapeutische waarde","waarde"],["Onderbouwing","onderbouwing"],
+    ["Werkingsmechanisme","mechanisme"],["Toedieningsweg","toediening"],["Toedieningsvorm","vorm"],
+    ["Behandelduur","behandelduur"],["Toedieningsfrequentie","frequentie"],["Dosering","dosering"]]],
+  ["Omvang en kosten",[["Patiëntvolume","volume"],["Verwacht marktaandeel","marktaandeel"],
+    ["Kosten per patiënt","kosten"],["Totale kosten","totale_kosten"]]],
+];
+
+/* De ATC-koppeling staat apart, met de naam waarop gekoppeld is erbij: de
+   Horizonscan schrijft Engels ("Brentuximab vedotin"), de add-on GS-lijst
+   Nederlands ("BRENTUXIMAB VEDOTINE"). Door die naam te tonen valt een
+   verkeerde koppeling op in plaats van als feit te blijven staan. */
+function atcBlok(r){
+  if(!(r.atc||[]).length) return `<div class="groep"><h2>Add-on koppeling</h2>
+    <p class="voetnoot" style="padding:0">Geen ATC-code gevonden in de add-on GS-lijst.
+    Dit middel is nog geen add-on geneesmiddel, of staat er onder een andere naam in.</p></div>`;
+  const codes=r.atc.map(c=>`<a href="${DATA.addon_dashboard}#atc=${encodeURIComponent(c)}"
+    target="_blank" rel="noopener">${esc(c)}</a>`).join(", ");
+  return `<div class="groep"><h2>Add-on koppeling</h2><dl>
+    <div class="rij"><dt>ATC-code</dt><dd>${codes}</dd></div>
+    <div class="rij"><dt>Gekoppeld via</dt><dd>${esc(r.atc_via)}</dd></div>
+    <div class="rij"><dt>Nu add-on</dt><dd>${r.addon?"Ja, staat op de add-on GS-lijst":"Alleen in GIP-historie"}</dd></div>
+    </dl></div>`;
+}
+
+function toonDetail(r){
+  $("#p-titel").textContent = r.stof + (r.merk?` (${r.merk})`:"");
+  const link = r.slug ? `<a href="${DATA.site}/geneesmiddelen/${encodeURIComponent(r.slug)}" target="_blank" rel="noopener">bekijk op horizonscangeneesmiddelen.nl</a>`
+                      : `<span style="color:var(--muted)">geen directe link gevonden</span>`;
+  $("#p-meta").innerHTML =
+    `<span class="stip" style="background:${KLEUR[r.domein]||"var(--muted)"}"></span>${esc(r.domein)}`+
+    (r.fabrikant?` · ${esc(r.fabrikant)}`:"") + ` · ${link}`;
+  let h="";
+  VELDEN.forEach(([kop,velden])=>{
+    const rijen=velden.filter(([,k])=>r[k]).map(([l,k])=>
+      `<div class="rij"><dt>${esc(l)}</dt><dd>${esc(r[k])}</dd></div>`);
+    if(rijen.length) h+=`<div class="groep"><h2>${esc(kop)}</h2><dl>${rijen.join("")}</dl></div>`;
+  });
+  h+=atcBlok(r);
+  if(r.prijsafspraak) h+=`<p class="voetnoot" style="padding:14px 0 0">Voor dit middel is een
+    prijsafspraak gemaakt.</p>`;
+  if(r.totale_kosten_n) h+=`<p class="voetnoot" style="padding:6px 0 0">De kostenramingen zijn
+    voorlopige rekenwaarden van de Horizonscan, gebaseerd op een geschat maximaal patiëntaantal.
+    Lees ze als bovengrens, niet als verwachte uitgaven.</p>`;
+  $("#p-body").innerHTML=h;
+  $("#paneel").classList.add("aan"); $("#dim").classList.add("aan");
+  $("#paneel").focus();
+}
+function sluitDetail(){$("#paneel").classList.remove("aan");$("#dim").classList.remove("aan");}
+$("#p-sluit").onclick=sluitDetail; $("#dim").onclick=sluitDetail;
+addEventListener("keydown",e=>{if(e.key==="Escape")sluitDetail();});
+
+/* ---------- tekenen ---------- */
+function teken(){
+  const rijen=gefilterd();
+  tegels(rijen);
+  let t=`${nl.format(rijen.length)} van ${nl.format(M.length)} middelen`;
+  if(S.periode) t+=` · periode ${periodeLabel(S.periode)}`;
+  $("#telling").textContent=t;
+
+  const w=S.weergave;
+  $("#v-tabel").style.display    = w==="tabel"?"":"none";
+  $("#v-tijdlijn").style.display = w==="tijdlijn"?"":"none";
+  $("#v-sluis").style.display    = w==="sluis"?"":"none";
+  $("#v-mutaties").style.display = w==="mutaties"?"":"none";
+  $("#tijdopties").style.display = w==="tijdlijn"?"inline":"none";
+  $("#tab-tabel").setAttribute("aria-selected",w==="tabel");
+  $("#tab-tijdlijn").setAttribute("aria-selected",w==="tijdlijn");
+  $("#tab-sluis").setAttribute("aria-selected",w==="sluis");
+  $("#tab-mutaties").setAttribute("aria-selected",w==="mutaties");
+
+  if(w==="tabel"){ tekenKoppen(); tekenTabel(sorteer(rijen)); }
+  else if(w==="tijdlijn"){ tekenTijdlijn(S.periode?M.filter(pasZonderPeriode):rijen); }
+  else if(w==="sluis"){ tekenSluis(); }
+  else { tekenMutaties(); }
+}
+
+/* ---------- bediening ---------- */
+let wacht;
+$("#zoek").oninput=e=>{clearTimeout(wacht);wacht=setTimeout(()=>{
+  S.zoek=e.target.value.trim().toLowerCase();S.limiet=250;teken();},140);};
+[["#f-domein","domein"],["#f-fase","fase"],["#f-sluis","sluis"],["#f-vergoeding","vergoeding"],
+ ["#f-kader","kader"],["#f-waarde","waarde"]].forEach(([id,v])=>
+  $(id).onchange=e=>{S[v]=e.target.value;S.limiet=250;teken();});
+[["#f-wees","wees"],["#f-atmp","atmp"],["#f-prime","prime"],["#f-addon","addon"]].forEach(([id,v])=>
+  $(id).onchange=e=>{S[v]=e.target.checked;S.limiet=250;teken();});
+$("#f-kwartaal").onchange=e=>{S.kwartaal=e.target.checked;S.periode=null;teken();};
+$("#f-verstreken").onchange=e=>{S.verstreken=e.target.checked;teken();};
+$("#tab-tabel").onclick=()=>{S.weergave="tabel";teken();};
+$("#tab-tijdlijn").onclick=()=>{S.weergave="tijdlijn";teken();};
+$("#tab-sluis").onclick=()=>{S.weergave="sluis";teken();};
+$("#tab-mutaties").onclick=()=>{S.weergave="mutaties";teken();};
+$("#wis").onclick=()=>{
+  Object.assign(S,{zoek:"",domein:"",fase:"",sluis:"",vergoeding:"",kader:"",waarde:"",
+    wees:false,atmp:false,prime:false,addon:false,periode:null,limiet:250});
+  $("#zoek").value="";
+  document.querySelectorAll(".filters select").forEach(s=>s.value="");
+  document.querySelectorAll(".filters input[type=checkbox]").forEach(c=>c.checked=false);
+  teken();
+};
+
+/* De grafieken worden op de gemeten breedte getekend, dus na het verslepen van
+   het venster moeten ze opnieuw. Met vertraging: tijdens het slepen komen er
+   tientallen gebeurtenissen achter elkaar. */
+let venster;
+addEventListener("resize",()=>{
+  clearTimeout(venster);
+  venster=setTimeout(()=>{ if(S.weergave!=="tabel") teken(); },180);
+});
+
+const d=new Date(DATA.bijgewerkt);
+$("#bijgewerkt").textContent="Data opgehaald op "+d.getDate()+" "+MAAND[d.getMonth()+1]+" "+d.getFullYear();
+$("#colofon").innerHTML=`Alle gegevens komen uit de CSV-export van de
+  <a href="${DATA.site}" target="_blank" rel="noopener">Horizonscan Geneesmiddelen</a>
+  van het Zorginstituut. Deze pagina voegt de acht domeinen samen en vertaalt de vaste
+  keuzelijsten naar het Nederlands; indicaties, onderbouwingen en mechanismen staan er
+  onvertaald bij zoals de bron ze schrijft. Kostenbedragen zijn voorlopige rekenwaarden
+  op basis van een geschat maximaal patiëntaantal — bovengrenzen, geen begroting.`;
+
+teken();
+</script>
+</body>
+</html>
