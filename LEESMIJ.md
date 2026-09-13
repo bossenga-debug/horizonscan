@@ -123,6 +123,150 @@ meebeweegt: filter je domeinen weg, dan houden de overblijvers hun kleur. Het
 kleurenpalet is gecontroleerd op onderscheidbaarheid bij kleurenblindheid, in
 lichte en donkere modus.
 
+## Deelbare links
+
+De filterstatus staat in de hash van de URL, dus elke weergave is te delen:
+
+```
+.../horizonscan/#tab=sluis&domein=Oncologie&sluis=In%20de%20sluis&wees=1
+```
+
+De adresbalk loopt mee met wat je instelt, en de knop **Kopieer link** in de
+filterbalk zet hem op het klembord. Bewust de hash en geen zoekparameters: dit
+is een statische pagina op gewone webhosting, en de hash bereikt de server niet.
+Het schrijven gaat via `history.replaceState`, zodat de geschiedenis niet
+volloopt bij elke toetsaanslag en het terugschrijven geen `hashchange` uitlokt.
+
+Wat erin kan: `tab` (tabel, tijdlijn, sluis, mutaties), `zoek`, `domein`,
+`fase`, `sluis`, `vergoeding`, `kader`, `waarde`, de vinkjes `wees`, `atmp`,
+`prime` en `addon`, de sortering (`sorteer` en `richting`), en voor de
+afzonderlijke tabbladen `periode`, `kwartaal`, `verstreken` en `sluisstatus`
+(meerdere gescheiden door een `|`). Alleen wat van de standaard afwijkt komt in
+de link, zodat hij kort blijft.
+
+Twee dingen die in het ontwerp zitten omdat ze anders misgaan:
+
+- **Lezen begint bij de standaard.** Wat niet in de link staat, wordt actief
+  uitgezet. Zonder dat bleven bij het plakken van een tweede link de filters van
+  de eerste hangen, en zag je een combinatie die in geen van beide links stond.
+- **Onbekende waarden worden genegeerd.** `#domein=Onkologie` levert de
+  volledige lijst op, niet nul resultaten. Een typefout in een gedeelde link
+  laat de pagina anders kapot lijken.
+
+De kopieerknop probeert eerst de klembord-API, dan `execCommand`, en laat als
+laatste redmiddel de link geselecteerd in beeld staan. Die terugval is niet
+theoretisch: lokaal via `file://` geopend weigert de klembord-API dienst.
+
+## Het sluis-tabblad
+
+Beantwoordt drie vragen tegelijk: welke sluismiddelen kosten het meest, in welke
+domeinen zitten die, en om welke indicaties gaat het.
+
+De statussen zijn los aan te vinken en staan in de volgorde waarin een middel ze
+doorloopt — kandidaat, in de sluis, eruit, afgewezen, breed uitgezonderd — niet
+alfabetisch. Standaard staan **In de sluis** en **Sluiskandidaat** aan; dat zijn
+er nu 57.
+
+Drie grafieken:
+
+- **Hoogste geraamde kosten** — liggende staven per regel, gekleurd naar domein,
+  zodat één grafiek zowel "welke" als "welk domein" beantwoordt. Standaard de
+  hoogste vijftien, met een knop voor de rest. Klikken opent het detailpaneel.
+- **Per domein** — dezelfde domeinkleuren, zodat de twee grafieken op elkaar
+  aansluiten.
+- **Per indicatie** — hier is de rangorde het punt en niet de identiteit, dus
+  één tint. De staart wordt samengevouwen tot "overige N indicaties".
+
+De filterbalk werkt door, met één uitzondering: het sluisfilter daar wordt op
+dit tabblad genegeerd, anders zouden twee bedieningen om dezelfde keuze vechten.
+
+### Wat de bedragen wel en niet zijn
+
+De bron heeft twee sluis-specifieke velden, `Total cost for sluice` en
+`Maximum patient volume for sluice`. Die zijn **vrijwel overal leeg** — bij 1 van
+de 244 sluisregels, en die ene staat op € 0. Daarom staat hier de algemene
+kostenraming.
+
+Twee dingen die de pagina zelf ook in de voetnoot zet:
+
+- **17 van de 57** middelen hebben geen raming en tellen in geen van de
+  grafieken mee. Zonder die vermelding zou de ranglijst een volledigheid
+  suggereren die er niet is.
+- **Stoffen kunnen meerdere keren voorkomen**, met een eigen raming per
+  indicatie. Belzutifan staat er twee keer in: € 343 mln voor nierkanker en
+  € 4,5 mln voor een andere oncologische indicatie. Optellen per stof zou die
+  patiëntgroepen door elkaar halen, dus de eenheid is de regel — middel plus
+  indicatie.
+
+## Het mutatie-overzicht
+
+De Horizonscan publiceert geen archief — op de site staan alleen
+PDF-uittreksels uit 2015 en 2016 — dus de historie wordt hier zelf opgebouwd.
+Daarom staat `historie/` wél in de repo, anders dan `bron/`:
+
+| Bestand | Wat |
+|---|---|
+| `historie/momentopname.json` | de stand van vorige keer; hier draait het vergelijken op |
+| `historie/mutaties.json` | het groeiende logboek dat het tabblad voedt |
+
+**Sleutel** is het `id`-veld uit de export (1.924 van 1.924 gevuld en uniek). De
+slug is dat niet: die kan verspringen als het Zorginstituut kaarten hernummert.
+
+**Twee signalen, die elkaars gat dekken:**
+
+1. Het **versienummer** van het Zorginstituut zelf, dat in de overzichtspagina
+   bij elke link staat (`?versie=versie-7`). Loopt die op, dan is die kaart
+   aangepast.
+2. **Vergelijking per veld** op de momentopname. Die zegt wát er veranderd is.
+
+Signaal 2 mist wijzigingen in velden die we niet volgen; signaal 1 vangt die op
+en levert een regel "herzien" op — zonder te doen alsof we weten wát er is
+veranderd.
+
+**Wat als mutatie telt** staat in `VELDEN` in `mutaties.py`: registratiefase,
+sluisstatus, vergoeding, verwachte registratie, therapeutische waarde, kosten,
+totale kosten, patiëntvolume, kader, hoofdindicatie en merknaam — plus nieuw
+opgenomen en afgevoerd. Bewust **niet** de onderbouwing en de volledige
+indicatie: die teksten worden voortdurend bijgeschaafd en zouden het logboek
+vullen met ruis.
+
+Het tabblad toont de laatste 24 maanden (`MAANDEN_HISTORIE` in `bouw_site.py`);
+het logboek zelf bewaart alles. Een peildatum die al in het logboek staat, wordt
+bij een herhaalde run vervangen in plaats van verdubbeld.
+
+## De ATC-koppeling met het add-on dashboard
+
+De Horizonscan geeft zelf geen ATC-code. Die komt uit twee bestanden die
+`ophalen.py` meehaalt: de **Farmatec add-on GS-lijst** (het gezaghebbende
+antwoord op de vraag of iets nú een add-on geneesmiddel is) en het
+**GIP-bestand** (de indeling waarop het add-on dashboard draait).
+
+Beide schrijven Nederlands waar de Horizonscan Engels schrijft
+(`BRENTUXIMAB VEDOTINE` tegenover `Brentuximab vedotin`), dus exact vergelijken
+is niet genoeg. De koppeling gaat in drie stappen: exact op genormaliseerde
+stofnaam, dan een spellingsvariant, dan `atc_correcties.json`.
+
+Een spellingsvariant moet in de **staart** verschillen, niet in de kop — vandaar
+de eis in `spellingsvariant()` dat de eerste vijf letters gelijk zijn. Zonder die
+eis koppelt `difflib` **deuruxolitinib aan ruxolitinib**, twee verschillende
+middelen. Zo'n afgewezen bijna-treffer wordt bij het bouwen gemeld, zodat je hem
+desgewenst handmatig kunt vastleggen:
+
+```json
+{ "Deuruxolitinib": "D11AH09", "Een middel dat juist níét gekoppeld moet worden": null }
+```
+
+**Dekking: 636 van de 1.924 regels (200 stoffen), waarvan 634 nu al add-on.**
+Dat is geen tekortkoming van het matchen maar de werkelijke overlap: de
+GS-lijst bevat ruim 350 stoffen, en een Horizonscan-middel zonder ATC heeft
+simpelweg nog geen add-on tegenhanger. Juist dat maakt het filter **"Al add-on"**
+bruikbaar — wat eronder valt is de pijplijn die er de komende jaren bij kan komen.
+
+In het detailpaneel staat de naam waaróp gekoppeld is erbij, zodat een verkeerde
+koppeling opvalt in plaats van als feit te blijven staan. De link gaat naar
+`…/preferentiebeleid/addon/#atc=<code>`; dat dashboard zet die code bij het
+laden in zijn zoekveld.
+
 ## Publiceren
 
 `deploy_ftp.py` zet `horizonscan.html` als `index.html` op de server. Het is

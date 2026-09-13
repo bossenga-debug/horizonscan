@@ -194,6 +194,7 @@ dl{margin:0}
   <label class="vink"><input type="checkbox" id="f-prime">PRIME</label>
   <label class="vink"><input type="checkbox" id="f-addon">Al add-on</label>
   <button id="wis" type="button">Wis filters</button>
+  <button id="kopieer" type="button" title="Kopieer een link naar precies deze weergave">Kopieer link</button>
   <span class="telling" id="telling"></span>
 </div>
 
@@ -293,8 +294,14 @@ const S = {zoek:"",domein:"",fase:"",sluis:"",vergoeding:"",kader:"",waarde:"",
            sluisstatus:["In de sluis","Sluiskandidaat"],sluisAlles:false,
            kwartaal:true,verstreken:false,periode:null};
 
+/* De beginstand, om straks te bepalen wat er in de deelbare link hoort: alleen
+   wat van de standaard afwijkt. Zo blijft een link kort en leesbaar. */
+const STANDAARD = JSON.parse(JSON.stringify(S));
+
+const KEUZES = {};                       // veld -> toegestane waarden
 function vulKeuze(id,veld,voorvoegsel){
   const waarden=[...new Set(M.map(r=>r[veld]).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"nl"));
+  KEUZES[veld]=new Set(waarden);
   const sel=$(id);
   waarden.forEach(w=>{
     const o=document.createElement("option");
@@ -849,7 +856,128 @@ function teken(){
   else if(w==="tijdlijn"){ tekenTijdlijn(S.periode?M.filter(pasZonderPeriode):rijen); }
   else if(w==="sluis"){ tekenSluis(); }
   else { tekenMutaties(); }
+
+  naarHash();
 }
+
+/* ---------- deelbare link ---------- */
+/* De filterstatus staat in de hash, zodat een gefilterde weergave te delen is:
+   .../horizonscan/#domein=Oncologie&sluis=In%20de%20sluis&tab=sluis
+   Bewust de hash en geen zoekparameters: dit is een statische pagina op een
+   gewone webhosting, en de hash bereikt de server niet. */
+const DEELBAAR = ["zoek","domein","fase","sluis","vergoeding","kader","waarde",
+                  "wees","atmp","prime","addon","sorteer","richting",
+                  "kwartaal","verstreken","periode","sluisstatus"];
+
+function naarHash(){
+  const p=[];
+  if(S.weergave!==STANDAARD.weergave) p.push("tab="+S.weergave);
+  DEELBAAR.forEach(k=>{
+    const nu=S[k], std=STANDAARD[k];
+    if(Array.isArray(nu)){
+      if(nu.join("|")!==std.join("|")) p.push(k+"="+encodeURIComponent(nu.join("|")));
+    } else if(typeof std==="boolean"){
+      if(nu!==std) p.push(k+"="+(nu?"1":"0"));
+    } else if((nu??"")!==(std??"")){
+      p.push(k+"="+encodeURIComponent(nu));
+    }
+  });
+  // replaceState en niet location.hash: anders groeit de geschiedenis bij elke
+  // toetsaanslag vol, en zou hashchange ons eigen schrijven terugkaatsen.
+  const nieuw = p.length ? "#"+p.join("&") : location.pathname+location.search;
+  history.replaceState(null,"",nieuw);
+}
+
+function uitHash(){
+  const p=new URLSearchParams(location.hash.replace(/^#/,""));
+  // Beginnen bij de standaard: wat niet in de link staat, hoort ook niet actief
+  // te zijn. Zonder dit blijven de filters van de vorige weergave hangen zodra
+  // iemand een andere link in hetzelfde tabblad plakt, en toont de pagina een
+  // combinatie die in geen van beide links stond.
+  DEELBAAR.concat("weergave").forEach(k=>{
+    S[k]=Array.isArray(STANDAARD[k]) ? STANDAARD[k].slice() : STANDAARD[k];
+  });
+  const zet=(k,v)=>{ S[k]=v; };
+
+  if(p.has("tab") && ["tabel","tijdlijn","sluis","mutaties"].includes(p.get("tab")))
+    zet("weergave",p.get("tab"));
+
+  ["domein","fase","sluis","vergoeding","kader","waarde"].forEach(k=>{
+    if(!p.has(k)) return;
+    const v=p.get(k);
+    // Alleen waarden die echt in de data voorkomen. Een typefout zou anders
+    // stilletjes alles wegfilteren, en dan lijkt de pagina stuk.
+    if(KEUZES[k] && KEUZES[k].has(v)) zet(k,v);
+  });
+  if(p.has("zoek")) zet("zoek",p.get("zoek").trim().toLowerCase());
+  ["wees","atmp","prime","addon","kwartaal","verstreken"].forEach(k=>{
+    if(p.has(k)) zet(k,p.get(k)==="1");
+  });
+  if(p.has("sorteer") && KOLOMMEN.some(c=>c.k===p.get("sorteer"))) zet("sorteer",p.get("sorteer"));
+  if(p.has("richting")) zet("richting",p.get("richting")==="-1"?-1:1);
+  if(p.has("periode")) zet("periode",p.get("periode"));
+  if(p.has("sluisstatus")){
+    const lijst=p.get("sluisstatus").split("|").filter(v=>SLUISSTATUS.includes(v));
+    if(lijst.length) zet("sluisstatus",lijst);
+  }
+  S.limiet=250;
+  S.sluisAlles=false;
+}
+
+/* De bediening moet meebewegen met wat er uit de link kwam, anders staat er
+   "Alle domeinen" in het keuzemenu terwijl er op oncologie gefilterd is. */
+function synchroniseerBediening(){
+  $("#zoek").value=S.zoek;
+  [["#f-domein","domein"],["#f-fase","fase"],["#f-sluis","sluis"],["#f-vergoeding","vergoeding"],
+   ["#f-kader","kader"],["#f-waarde","waarde"]].forEach(([id,v])=>{ $(id).value=S[v]; });
+  [["#f-wees","wees"],["#f-atmp","atmp"],["#f-prime","prime"],["#f-addon","addon"],
+   ["#f-kwartaal","kwartaal"],["#f-verstreken","verstreken"]].forEach(([id,v])=>{
+    const el=$(id); if(el) el.checked=S[v];
+  });
+}
+
+/* De klipbord-API werkt niet overal: niet op een onbeveiligde verbinding en
+   niet als de pagina lokaal via file:// geopend is -- en dat laatste is hier
+   een gewone manier van gebruiken. Vandaar de oude execCommand als terugval,
+   en als ook die niet mag, de link geselecteerd laten staan zodat Cmd+C werkt. */
+async function kopieerLink(){
+  const url=location.href;
+  try{
+    await navigator.clipboard.writeText(url);
+    return "Gekopieerd";
+  }catch(e){ /* terugval hieronder */ }
+
+  const veld=document.createElement("textarea");
+  veld.value=url;
+  veld.setAttribute("readonly","");
+  veld.style.cssText="position:fixed;top:50%;left:50%;width:1px;height:1px;opacity:0";
+  document.body.appendChild(veld);
+  veld.select();
+  veld.setSelectionRange(0,url.length);
+  let gelukt=false;
+  try{ gelukt=document.execCommand("copy"); }catch(e){ gelukt=false; }
+  if(gelukt){ veld.remove(); return "Gekopieerd"; }
+
+  // Niets mocht: laat het veld zichtbaar en geselecteerd staan.
+  veld.style.cssText="position:fixed;left:50%;top:20%;transform:translateX(-50%);"+
+    "z-index:99;width:min(560px,86vw);height:64px;padding:10px;font:13px/1.4 inherit;"+
+    "border:1px solid var(--s1);border-radius:8px;background:var(--surface);color:var(--ink)";
+  veld.select();
+  veld.onblur=()=>veld.remove();
+  return "Kopieer met Cmd+C";
+}
+
+$("#kopieer").onclick=async()=>{
+  const knop=$("#kopieer"), tekst=knop.textContent;
+  knop.textContent=await kopieerLink();
+  setTimeout(()=>{knop.textContent=tekst;},2200);
+};
+
+// Iemand die de link plakt in een tabblad dat al open staat, of op de
+// terugknop drukt, hoort hetzelfde te zien.
+addEventListener("hashchange",()=>{
+  uitHash(); synchroniseerBediening(); teken();
+});
 
 /* ---------- bediening ---------- */
 let wacht;
@@ -869,9 +997,7 @@ $("#tab-mutaties").onclick=()=>{S.weergave="mutaties";teken();};
 $("#wis").onclick=()=>{
   Object.assign(S,{zoek:"",domein:"",fase:"",sluis:"",vergoeding:"",kader:"",waarde:"",
     wees:false,atmp:false,prime:false,addon:false,periode:null,limiet:250});
-  $("#zoek").value="";
-  document.querySelectorAll(".filters select").forEach(s=>s.value="");
-  document.querySelectorAll(".filters input[type=checkbox]").forEach(c=>c.checked=false);
+  synchroniseerBediening();
   teken();
 };
 
@@ -893,6 +1019,8 @@ $("#colofon").innerHTML=`Alle gegevens komen uit de CSV-export van de
   onvertaald bij zoals de bron ze schrijft. Kostenbedragen zijn voorlopige rekenwaarden
   op basis van een geschat maximaal patiëntaantal — bovengrenzen, geen begroting.`;
 
+uitHash();
+synchroniseerBediening();
 teken();
 </script>
 </body>
