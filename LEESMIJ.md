@@ -276,30 +276,29 @@ naam) — met één toevoeging: `controleer_doelmap()` stopt als het FTP-account
 niet in de bedoelde map uitkomt. Zonder die controle zou `index.html` in de map
 van een andere pagina belanden en die overschrijven.
 
-### Waarom de pagina in een submap staat
+### Welk FTP-account
 
-Het FTP-account is bij Cloud86 vastgezet op de map `preferentiebeleid`. Voor die
-verbinding *is* dat de hoofdmap; een map ernaast bestaat simpelweg niet. Daarom
-komt de pagina op:
+De pagina staat op <https://medicatieadvies.nl/horizonscan/>.
 
-<https://medicatieadvies.nl/preferentiebeleid/horizonscan/>
+Dat vraagt een FTP-account met `public_html` als hoofdmap. Het oorspronkelijke
+account van het preferentiebeleid is bij Cloud86 vastgezet op zijn eigen map —
+voor die verbinding *is* dat de hoofdmap en bestaat er niets ernaast. Daarom
+draait deze pagina op een tweede account dat een niveau hoger begint, ingesteld
+via `FTP_USER_HORIZONSCAN` en `FTP_PASS_HORIZONSCAN`. Het preferentiebeleid
+blijft zijn eigen account gebruiken en is hier niet door geraakt.
 
-Dezelfde beperking geldt voor het add-on dashboard, dat om die reden op
-`/preferentiebeleid/addon/` staat en niet op `/addon/`. De ATC-links in het
-detailpaneel wijzen daarheen; `/addon/` geeft een 404.
-
-Wil je hem later op `/horizonscan/` hebben, dan is een FTP-account nodig dat
-hoger begint — met `public_html/horizonscan` als hoofdmap. Zet dan `FTP_DIR` op
-`/` en gebruik `FTP_USER_HORIZONSCAN` en `FTP_PASS_HORIZONSCAN`, die in de
-workflow van de gedeelde secrets winnen. Vergeet dan niet `ADDON_DASHBOARD` in
-`bouw_site.py` mee te verhuizen als ook het add-on dashboard opschuift.
+Tot 14 september 2026 stond de pagina op `/preferentiebeleid/horizonscan/`.
 
 ### Eenmalig instellen
 
-1. Maak in het bestandsbeheer van de hoster de map
-   `public_html/preferentiebeleid/horizonscan` aan. Het deployscript maakt die
-   niet zelf — met opzet, want dan zou een typefout een nieuwe map opleveren in
-   plaats van een foutmelding.
+1. Maak in het bestandsbeheer van de hoster de map `public_html/horizonscan`
+   aan. Het deployscript maakt die niet zelf — met opzet, want dan zou een
+   typefout een nieuwe map opleveren in plaats van een foutmelding.
+
+   Vergeet je dit, dan gaat er niets stuk: `controleer_doelmap()` stopt vóór het
+   uploaden zodra de verbinding niet in de bedoelde map uitkomt. Zonder die
+   controle zou `index.html` in `public_html` belanden en de homepage van de
+   site overschrijven.
 2. Zet vijf secrets klaar (Settings → Secrets and variables → Actions):
 
    | Secret | Waarde |
@@ -308,6 +307,8 @@ workflow van de gedeelde secrets winnen. Vergeet dan niet `ADDON_DASHBOARD` in
    | `FTP_USER` | het Cloud86-account dat op de map `preferentiebeleid` is vastgezet |
    | `FTP_PASS` | het wachtwoord daarvan |
    | `FTP_CERT_HOST` | `shared21.cloud86-host.nl` |
+   | `FTP_USER_HORIZONSCAN` | het account met `public_html` als hoofdmap |
+   | `FTP_PASS_HORIZONSCAN` | het wachtwoord daarvan |
    | `FTP_DIR_HORIZONSCAN` | `horizonscan` |
 
 **Secrets gelden per repository.** Dit is een eigen repo, dus de secrets van
@@ -336,6 +337,33 @@ Instellingen komen uit omgevingsvariabelen of uit een `.env` naast het script
 ```
 python3 deploy_ftp.py --dry-run
 ```
+
+### Als het add-on dashboard ook verhuist
+
+Datzelfde tweede FTP-account kan `public_html/addon` bedienen. Stappen, in deze
+volgorde:
+
+1. Map `public_html/addon` aanmaken.
+2. In de `preferentiebeleid`-repo `FTP_USER_ADDON` en `FTP_PASS_ADDON` op het
+   nieuwe account zetten. `FTP_DIR_ADDON` blijft `addon`.
+3. Die workflow draaien en `medicatieadvies.nl/addon/` controleren.
+4. **`ADDON_DASHBOARD` in `bouw_site.py` hier aanpassen** naar de nieuwe URL en
+   horizonscan opnieuw laten draaien. Vergeet je dit, dan wijzen alle ATC-links
+   in het detailpaneel naar een map die niet meer wordt bijgewerkt.
+5. In de achtergebleven map een doorverwijzing zetten (zie hieronder).
+
+### Achtergebleven mappen
+
+Een verhuisde map blijft gewoon staan met de laatste versie erin. Die pagina
+ziet er goed uit maar bevriest, en dat is lastiger te herkennen dan een 404.
+Zet er daarom een `.htaccess` neer die doorverwijst:
+
+```apache
+RedirectMatch 301 ^/preferentiebeleid/horizonscan/?$ /horizonscan/
+```
+
+Browsers houden de hash bij een doorverwijzing vast, dus eerder gedeelde links
+met filters blijven werken.
 
 ## Grafieken en schermbreedte
 

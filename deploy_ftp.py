@@ -27,11 +27,11 @@ import argparse, ftplib, os, socket, ssl, sys, tempfile
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 
-# horizonscan.html wordt index.html. De pagina komt op
-# https://medicatieadvies.nl/preferentiebeleid/horizonscan/ te staan: het
-# FTP-account is bij de hoster vastgezet op de map preferentiebeleid, dus een
-# map naast die van het preferentiebeleid is via deze verbinding niet te
-# bereiken. Alle data zit in dat ene bestand.
+# horizonscan.html wordt index.html op
+# https://medicatieadvies.nl/horizonscan/. Dat vraagt een FTP-account met
+# public_html als hoofdmap; het oorspronkelijke account van het preferentiebeleid
+# is vastgezet op zijn eigen map en kan daar niet uit. Alle data zit in dat ene
+# bestand.
 BESTANDEN = [
     (os.path.join(BASE, 'horizonscan.html'), 'index.html'),
 ]
