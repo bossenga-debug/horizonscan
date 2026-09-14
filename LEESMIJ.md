@@ -361,19 +361,16 @@ Instellingen komen uit omgevingsvariabelen of uit een `.env` naast het script
 python3 deploy_ftp.py --dry-run
 ```
 
-### Als het add-on dashboard ook verhuist
+### Het add-on dashboard
 
-Datzelfde tweede FTP-account kan `public_html/addon` bedienen. Stappen, in deze
-volgorde:
+Staat sinds 14 september 2026 op <https://medicatieadvies.nl/addon/> en draait
+op hetzelfde tweede FTP-account, via `FTP_USER_ADDON` en `FTP_PASS_ADDON` in de
+`preferentiebeleid`-repo. Daarvoor stond het op `/preferentiebeleid/addon/`.
 
-1. Map `public_html/addon` aanmaken.
-2. In de `preferentiebeleid`-repo `FTP_USER_ADDON` en `FTP_PASS_ADDON` op het
-   nieuwe account zetten. `FTP_DIR_ADDON` blijft `addon`.
-3. Die workflow draaien en `medicatieadvies.nl/addon/` controleren.
-4. **`ADDON_DASHBOARD` in `bouw_site.py` hier aanpassen** naar de nieuwe URL en
-   horizonscan opnieuw laten draaien. Vergeet je dit, dan wijzen alle ATC-links
-   in het detailpaneel naar een map die niet meer wordt bijgewerkt.
-5. In de achtergebleven map een doorverwijzing zetten (zie hieronder).
+`ADDON_DASHBOARD` in `bouw_site.py` wijst daarheen; dat is waar de ATC-links in
+het detailpaneel op uitkomen. **Verhuist dat dashboard nog eens, dan moet deze
+constante mee en moet horizonscan opnieuw draaien** — anders wijzen 636 links
+naar een map die stil is komen te staan.
 
 ### Achtergebleven mappen
 

@@ -27,10 +27,11 @@ from ophalen import DOMEINEN, slugify
 HIER = os.path.dirname(os.path.abspath(__file__))
 BRON = os.path.join(HIER, 'bron')
 SITE = 'https://www.horizonscangeneesmiddelen.nl'
-# Het add-on dashboard staat in een submap van preferentiebeleid, niet op
-# /addon/: het FTP-account van deze hosting is vastgezet op die map. /addon/
-# geeft een 404.
-ADDON_DASHBOARD = 'https://medicatieadvies.nl/preferentiebeleid/addon/'
+# Het add-on dashboard, waar de ATC-links in het detailpaneel heen wijzen. Stond
+# tot 14 september 2026 op /preferentiebeleid/addon/; beide draaien nu op een
+# FTP-account met public_html als hoofdmap. Verhuist het dashboard opnieuw, dan
+# moet dit mee -- anders wijzen de links naar een map die stil is komen te staan.
+ADDON_DASHBOARD = 'https://medicatieadvies.nl/addon/'
 MAANDEN_HISTORIE = 24
 
 # De kolomkoppen komen drie keer als "Additional remarks" en vier keer als
