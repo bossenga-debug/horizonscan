@@ -379,6 +379,24 @@ pagina zelf scrollt nooit horizontaal. Bij het verslepen van het venster worden
 de grafieken opnieuw getekend, met vertraging zodat dat niet bij elke pixel
 gebeurt.
 
+## Bezoekersteller
+
+Onderaan `template.html` staat GoatCounter, hetzelfde account als bij het add-on
+dashboard: <https://bossenga.goatcounter.com>. Geen cookies, geen
+persoonsgegevens.
+
+Het pad is **vast** op `horizonscan` in plaats van de URL. Dat is hier geen
+detail: de filters staan in de hash, dus met de standaardinstelling zou elke
+gedeelde link als een aparte pagina in de statistieken belanden en was het
+totaal nergens meer af te lezen.
+
+Lokaal testen vervuilt de cijfers niet — `count.js` telt niet op `localhost` of
+via `file://`. Te controleren in de console van de pagina:
+
+```js
+window.goatcounter.filter()   // geeft "localhost", dus er wordt niets verstuurd
+```
+
 ## Controle bij het bouwen
 
 `bouw_site.py` weigert te schrijven als het paginascript een syntaxfout bevat
