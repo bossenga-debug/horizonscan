@@ -123,6 +123,29 @@ meebeweegt: filter je domeinen weg, dan houden de overblijvers hun kleur. Het
 kleurenpalet is gecontroleerd op onderscheidbaarheid bij kleurenblindheid, in
 lichte en donkere modus.
 
+## Het indicatiefilter
+
+De 85 hoofdindicaties zitten niet in een gewone keuzelijst maar in een eigen
+paneel met vinkjes, want je wilt er meer dan één tegelijk kunnen kiezen — en
+85 regels in een `<select>` is onwerkbaar.
+
+Drie keuzes daarin:
+
+- **Geen groepering per domein.** Voor de hand liggend, maar vijf indicaties
+  komen in meer dan één domein voor (waaronder "Onbekend" en de lege), en dan is
+  elke indeling deels willekeurig. Eén alfabetische lijst met een zoekveld is
+  eerlijker.
+- **De aantallen tellen mét de andere filters maar zónder de indicatiekeuze
+  zelf.** Zo gedragen facetten zich: je wilt zien wat een extra vinkje oplevert,
+  niet wat er van je huidige keuze overblijft. Zet je een fase aan, dan zakt
+  "Longkanker" van 106 naar 10.
+- **Indicaties zonder treffers verdwijnen uit de lijst, behalve wat al
+  aangevinkt staat.** Anders verdwijnt je eigen keuze uit beeld zodra je een
+  ander filter aanzet.
+
+Gekozen indicaties staan bovenaan onder een kopje, zodat je ze bij 84 regels
+niet kwijtraakt. In de deelbare link staan ze als `indicaties=Longkanker|Dementie`.
+
 ## Deelbare links
 
 De filterstatus staat in de hash van de URL, dus elke weergave is te delen:

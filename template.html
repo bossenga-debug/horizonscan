@@ -64,6 +64,26 @@ button{font:inherit;font-size:13.5px;color:var(--ink);background:var(--surface);
 button:hover{background:var(--wash)}
 .telling{margin-left:auto;font-size:13px;color:var(--ink2);font-variant-numeric:tabular-nums}
 
+/* ---------- meerkeuze indicaties ---------- */
+.kiezer{position:relative;display:inline-block}
+.kiezer>button[aria-expanded=true]{border-color:var(--s1);background:var(--wash)}
+.kieslijst{position:absolute;z-index:40;top:calc(100% + 5px);left:0;width:min(340px,88vw);
+  background:var(--surface);border:1px solid var(--as);border-radius:9px;
+  box-shadow:0 10px 30px rgba(0,0,0,.17);overflow:hidden}
+.kieskop{display:flex;gap:6px;padding:9px;border-bottom:1px solid var(--grid)}
+.kieskop input{flex:1;min-width:0}
+.kiesopties{max-height:min(340px,52vh);overflow-y:auto;padding:5px 0}
+.kiesopties label{display:flex;gap:8px;align-items:baseline;padding:5px 11px;
+  font-size:13.5px;cursor:pointer}
+.kiesopties label:hover{background:var(--wash)}
+.kiesopties input{margin:0;accent-color:var(--s1);flex:none}
+.kiesopties .naam{flex:1;min-width:0}
+.kiesopties .n{color:var(--muted);font-size:12px;font-variant-numeric:tabular-nums}
+.kiesopties .geen{padding:14px 12px;color:var(--muted);font-size:13px;text-align:center}
+.kiesopties .kopje{padding:8px 11px 3px;font-size:11.5px;text-transform:uppercase;
+  letter-spacing:.03em;color:var(--muted);border-top:1px solid var(--grid);margin-top:4px}
+.kiesopties .kopje:first-child{border-top:0;margin-top:0}
+
 /* ---------- weergaveknoppen ---------- */
 .tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
 .tab{border:1px solid var(--as);border-radius:7px;padding:7px 13px;font-size:13.5px;
@@ -189,6 +209,16 @@ dl{margin:0}
   <select id="f-vergoeding" aria-label="Vergoeding"><option value="">Vergoeding: alle</option></select>
   <select id="f-kader" aria-label="Kader"><option value="">Kader: alle</option></select>
   <select id="f-waarde" aria-label="Therapeutische waarde"><option value="">Waarde: alle</option></select>
+  <span class="kiezer">
+    <button id="f-indicatie" type="button" aria-expanded="false" aria-haspopup="true">Indicatie: alle</button>
+    <div class="kieslijst" id="indicatiepaneel" hidden>
+      <div class="kieskop">
+        <input type="search" id="indicatiezoek" placeholder="Zoek een indicatie…" aria-label="Zoek een indicatie">
+        <button type="button" id="indicatiewis">Wis</button>
+      </div>
+      <div class="kiesopties" id="indicatieopties"></div>
+    </div>
+  </span>
   <label class="vink"><input type="checkbox" id="f-wees">Weesgeneesmiddel</label>
   <label class="vink"><input type="checkbox" id="f-atmp">ATMP</label>
   <label class="vink"><input type="checkbox" id="f-prime">PRIME</label>
@@ -289,6 +319,7 @@ M.forEach(r=>{
 
 /* ---------- filters ---------- */
 const S = {zoek:"",domein:"",fase:"",sluis:"",vergoeding:"",kader:"",waarde:"",
+           indicaties:[],
            wees:false,atmp:false,prime:false,addon:false,
            sorteer:"stof",richting:1,limiet:250,weergave:"tabel",
            sluisstatus:["In de sluis","Sluiskandidaat"],sluisAlles:false,
@@ -319,6 +350,7 @@ function pas(r){
   if(S.zoek && !r._z.includes(S.zoek)) return false;
   for(const v of ["domein","fase","sluis","vergoeding","kader","waarde"])
     if(S[v] && r[v]!==S[v]) return false;
+  if(S.indicaties.length && !S.indicaties.includes(r.indicatie)) return false;
   if(S.wees && r.wees!=="Ja") return false;
   if(S.atmp && r.atmp!=="Ja") return false;
   if(S.prime && r.bijzonderheid!=="PRIME-geneesmiddel") return false;
@@ -857,15 +889,89 @@ function teken(){
   else if(w==="sluis"){ tekenSluis(); }
   else { tekenMutaties(); }
 
+  tekenIndicatieknop();
+  if(!$("#indicatiepaneel").hidden) tekenIndicatielijst();
   naarHash();
 }
+
+/* ---------- meerkeuze indicaties ---------- */
+/* Met 85 indicaties is een gewone keuzelijst onwerkbaar, en meer dan één
+   tegelijk kiezen kan er niet in. Vandaar een eigen paneel: zoekveld, aantallen,
+   en een lijst die meebeweegt met de overige filters. Bewust geen groepering
+   per domein -- vijf indicaties komen in meer dan één domein voor, en dan is
+   elke indeling deels willekeurig. */
+const ALLE_INDICATIES=[...new Set(M.map(r=>r.indicatie).filter(Boolean))]
+  .sort((a,b)=>a.localeCompare(b,"nl"));
+
+/* Aantallen tellen mét de andere filters maar zónder de indicatiekeuze zelf,
+   zoals bij facetten gebruikelijk: je wilt zien wat een extra vinkje oplevert,
+   niet wat er overblijft van je huidige keuze. */
+function pasZonderIndicatie(r){
+  const bewaard=S.indicaties, p=S.periode;
+  S.indicaties=[]; S.periode=null;
+  try { return pas(r); } finally { S.indicaties=bewaard; S.periode=p; }
+}
+
+function tekenIndicatieknop(){
+  const n=S.indicaties.length;
+  $("#f-indicatie").textContent = n===0 ? "Indicatie: alle"
+    : n===1 ? "Indicatie: "+S.indicaties[0]
+    : `Indicatie: ${n} gekozen`;
+  $("#f-indicatie").classList.toggle("actief", n>0);
+}
+
+function tekenIndicatielijst(){
+  const zoek=$("#indicatiezoek").value.trim().toLowerCase();
+  const telling=new Map();
+  M.forEach(r=>{ if(r.indicatie && pasZonderIndicatie(r))
+    telling.set(r.indicatie,(telling.get(r.indicatie)||0)+1); });
+
+  // Wat onder de huidige filters niets oplevert laten we weg, behalve wat al
+  // aangevinkt staat -- anders verdwijnt je eigen keuze uit beeld.
+  const zichtbaar=ALLE_INDICATIES.filter(i=>
+    (telling.get(i)||S.indicaties.includes(i)) &&
+    (!zoek || i.toLowerCase().includes(zoek)));
+
+  const regel=i=>`<label><input type="checkbox" value="${esc(i)}"${S.indicaties.includes(i)?" checked":""}>`+
+    `<span class="naam">${esc(i)}</span><span class="n">${telling.get(i)||0}</span></label>`;
+
+  const gekozen=zichtbaar.filter(i=>S.indicaties.includes(i));
+  const rest=zichtbaar.filter(i=>!S.indicaties.includes(i));
+  let h="";
+  if(gekozen.length) h+=`<div class="kopje">Gekozen</div>`+gekozen.map(regel).join("")+
+                        `<div class="kopje">Overige</div>`;
+  h+=rest.map(regel).join("");
+  if(!zichtbaar.length) h=`<p class="geen">Geen indicatie gevonden.</p>`;
+  $("#indicatieopties").innerHTML=h;
+
+  $("#indicatieopties").querySelectorAll("input").forEach(el=>el.onchange=()=>{
+    S.indicaties = el.checked ? [...S.indicaties, el.value]
+                              : S.indicaties.filter(x=>x!==el.value);
+    S.limiet=250;
+    teken();                      // teken() werkt knop en lijst allebei bij
+  });
+}
+
+function indicatiepaneel(open){
+  $("#indicatiepaneel").hidden = !open;
+  $("#f-indicatie").setAttribute("aria-expanded", open?"true":"false");
+  if(open){ tekenIndicatielijst(); $("#indicatiezoek").focus(); }
+}
+$("#f-indicatie").onclick=()=>indicatiepaneel($("#indicatiepaneel").hidden);
+$("#indicatiezoek").oninput=tekenIndicatielijst;
+$("#indicatiewis").onclick=()=>{ S.indicaties=[]; S.limiet=250; teken(); };
+// Buiten het paneel klikken sluit het; Escape ook, zoals bij het detailpaneel.
+addEventListener("click",e=>{
+  if(!$("#indicatiepaneel").hidden && !e.target.closest(".kiezer")) indicatiepaneel(false);
+});
+addEventListener("keydown",e=>{ if(e.key==="Escape") indicatiepaneel(false); });
 
 /* ---------- deelbare link ---------- */
 /* De filterstatus staat in de hash, zodat een gefilterde weergave te delen is:
    .../horizonscan/#domein=Oncologie&sluis=In%20de%20sluis&tab=sluis
    Bewust de hash en geen zoekparameters: dit is een statische pagina op een
    gewone webhosting, en de hash bereikt de server niet. */
-const DEELBAAR = ["zoek","domein","fase","sluis","vergoeding","kader","waarde",
+const DEELBAAR = ["zoek","domein","fase","sluis","vergoeding","kader","waarde","indicaties",
                   "wees","atmp","prime","addon","sorteer","richting",
                   "kwartaal","verstreken","periode","sluisstatus"];
 
@@ -916,6 +1022,12 @@ function uitHash(){
   if(p.has("sorteer") && KOLOMMEN.some(c=>c.k===p.get("sorteer"))) zet("sorteer",p.get("sorteer"));
   if(p.has("richting")) zet("richting",p.get("richting")==="-1"?-1:1);
   if(p.has("periode")) zet("periode",p.get("periode"));
+  if(p.has("indicaties")){
+    // Alleen indicaties die echt bestaan; een typefout in een gedeelde link mag
+    // niet stilzwijgend alles wegfilteren.
+    const lijst=p.get("indicaties").split("|").filter(v=>ALLE_INDICATIES.includes(v));
+    if(lijst.length) zet("indicaties",lijst);
+  }
   if(p.has("sluisstatus")){
     const lijst=p.get("sluisstatus").split("|").filter(v=>SLUISSTATUS.includes(v));
     if(lijst.length) zet("sluisstatus",lijst);
@@ -928,6 +1040,7 @@ function uitHash(){
    "Alle domeinen" in het keuzemenu terwijl er op oncologie gefilterd is. */
 function synchroniseerBediening(){
   $("#zoek").value=S.zoek;
+  tekenIndicatieknop();
   [["#f-domein","domein"],["#f-fase","fase"],["#f-sluis","sluis"],["#f-vergoeding","vergoeding"],
    ["#f-kader","kader"],["#f-waarde","waarde"]].forEach(([id,v])=>{ $(id).value=S[v]; });
   [["#f-wees","wees"],["#f-atmp","atmp"],["#f-prime","prime"],["#f-addon","addon"],
@@ -996,7 +1109,7 @@ $("#tab-sluis").onclick=()=>{S.weergave="sluis";teken();};
 $("#tab-mutaties").onclick=()=>{S.weergave="mutaties";teken();};
 $("#wis").onclick=()=>{
   Object.assign(S,{zoek:"",domein:"",fase:"",sluis:"",vergoeding:"",kader:"",waarde:"",
-    wees:false,atmp:false,prime:false,addon:false,periode:null,limiet:250});
+    indicaties:[],wees:false,atmp:false,prime:false,addon:false,periode:null,limiet:250});
   synchroniseerBediening();
   teken();
 };
