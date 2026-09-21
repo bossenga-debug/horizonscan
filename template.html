@@ -40,6 +40,14 @@ header{display:flex;flex-wrap:wrap;gap:14px;align-items:baseline;justify-content
 .sub{color:var(--ink2);font-size:13.5px;margin-top:5px;max-width:70ch}
 .bijgewerkt{color:var(--muted);font-size:12.5px;white-space:nowrap}
 
+.kopzijde{display:flex;gap:12px;align-items:center}
+.uitleg p,.uitleg li{font-size:13.5px;line-height:1.55;color:var(--ink)}
+.uitleg p{margin:4px 0 10px}
+.uitleg ul{padding-left:18px;margin:4px 0 10px}
+.uitleg li{margin:5px 0}
+.uitleg b{font-weight:600}
+.uitleg .klein{font-size:12.5px;color:var(--muted)}
+
 /* ---------- kerncijfers ---------- */
 .cijfers{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:16px}
 .tegel{background:var(--surface);border:1px solid var(--rand);border-radius:10px;padding:12px 14px}
@@ -195,7 +203,10 @@ dl{margin:0}
     <p class="sub">Alle acht domeinen van de Horizonscan in één doorzoekbaar overzicht, met de
       verwachte registraties op een tijdlijn. Bron: Zorginstituut Nederland.</p>
   </div>
-  <div class="bijgewerkt" id="bijgewerkt"></div>
+  <div class="kopzijde">
+    <span class="bijgewerkt" id="bijgewerkt"></span>
+    <button id="uitlegknop" type="button" aria-haspopup="dialog">Uitleg</button>
+  </div>
 </header>
 
 <div class="cijfers" id="cijfers"></div>
@@ -805,6 +816,86 @@ function tekenSluis(){
     `dus hier staat de algemene kostenraming.`);
   $("#sluisvoet").textContent=stukjes.join(" ");
 }
+
+/* ---------- uitleg ---------- */
+/* Opent in hetzelfde zijpaneel als een middel: dat kent iedereen al van de tabel,
+   het werkt op een telefoon en sluit met Escape of een klik ernaast.
+   De aantallen komen uit de data zelf, zodat de tekst na elke maandelijkse
+   update vanzelf blijft kloppen in plaats van langzaam te verouderen. */
+function toonUitleg(){
+  const n=M.length;
+  const nAtc=M.filter(r=>(r.atc||[]).length).length;
+  const nRaming=M.filter(r=>r.totale_kosten_n!=null).length;
+  const stoffen=new Set(M.map(r=>r.stof)).size;
+  const bron=`<a href="${DATA.site}" target="_blank" rel="noopener">Horizonscan Geneesmiddelen</a>`;
+  const addon=`<a href="${DATA.addon_dashboard}" target="_blank" rel="noopener">add-on dashboard</a>`;
+  const sectie=(kop,inhoud)=>`<div class="groep"><h2>${kop}</h2>${inhoud}</div>`;
+
+  $("#p-titel").textContent="Over deze pagina";
+  $("#p-meta").textContent=`Laatst bijgewerkt op ${datumNL(DATA.bijgewerkt)} · elke maand op de 5e opnieuw`;
+  $("#p-body").innerHTML=`<div class="uitleg">`+
+    sectie("Wat is dit",
+      `<p>Een eigen bewerking van de ${bron} van het Zorginstituut. De site van het
+       Zorginstituut laat je per domein kijken; hier staan alle acht domeinen bij elkaar —
+       nu <b>${nl.format(n)} regels</b> voor ${nl.format(stoffen)} werkzame stoffen — zodat je
+       over domeinen heen kunt zoeken, filteren en vergelijken.</p>
+       <p>Bij twijfel geldt altijd de bron. Deze pagina is geen officiële publicatie van het
+       Zorginstituut.</p>`)+
+    sectie("De tabbladen",
+      `<ul>
+        <li><b>Tabel</b> — alle middelen, te sorteren op elke kolom. Klik op een rij voor
+          alle gegevens van dat middel.</li>
+        <li><b>Tijdlijn</b> — hoeveel middelen per kwartaal of per jaar registratie
+          verwachten, per domein. Klik op een balk om de tabel op die periode te filteren.</li>
+        <li><b>Sluis</b> — welke sluismiddelen de hoogste geraamde kosten hebben, en hoe
+          die over domeinen en indicaties verdeeld zijn.</li>
+        <li><b>Mutaties</b> — wat er sinds de vorige maandelijkse update is veranderd:
+          nieuwe middelen, en wijzigingen in fase, sluisstatus, verwachte registratie of
+          kosten.</li>
+      </ul>`)+
+    sectie("Filteren en delen",
+      `<p>De filters werken op alle tabbladen. Bij <b>Indicatie</b> kun je er meerdere
+       tegelijk aanvinken; het getal erachter is het aantal middelen dat elke indicatie
+       oplevert binnen je andere filters.</p>
+       <p>Het adres in de adresbalk loopt mee met je filters. Met <b>Kopieer link</b> stuur
+       je precies deze weergave door — de ontvanger ziet hetzelfde tabblad met dezelfde
+       filters.</p>`)+
+    sectie("Koppeling met het add-on dashboard",
+      `<p>Bij ${nl.format(nAtc)} regels staat in het detailpaneel een ATC-code met een link
+       naar het ${addon}, waar je de gerealiseerde uitgaven en het aantal gebruikers ziet.
+       Het vinkje <b>Al add-on</b> toont alleen die middelen. Wat geen ATC-code heeft, staat
+       (nog) niet op de add-on lijst van Farmatec — en is daarmee precies de pijplijn.</p>`)+
+    sectie("Zo lees je de cijfers",
+      `<ul>
+        <li><b>Kosten zijn een bovengrens.</b> Het zijn voorlopige rekenwaarden van de
+          Horizonscan: kosten per patiënt maal een geschat <i>maximaal</i> aantal patiënten.
+          Lees ze als signaal, niet als verwachte uitgaven. ${nl.format(nRaming)} van de
+          ${nl.format(n)} regels hebben een raming; de rest telt in de totalen niet mee.</li>
+        <li><b>Eén regel per indicatie.</b> Een stof met drie indicaties staat er drie keer
+          in, elk met een eigen raming en patiëntgroep.</li>
+        <li><b>Verwachte registratie</b> staat soms alleen als jaartal. Die middelen vallen
+          buiten de kwartaalweergave van de tijdlijn; zet <i>Per kwartaal</i> uit om ze
+          mee te tellen.</li>
+        <li><b>Vertaling.</b> Vaste keuzelijsten — fase, sluisstatus, indicatiegroep en
+          dergelijke — zijn naar het Nederlands vertaald. Vrije tekst, zoals de volledige
+          indicatie en de onderbouwing, staat er in het Engels zoals de bron die schrijft.</li>
+        <li><b>De ATC-koppeling is automatisch</b> op stofnaam gemaakt. In het detailpaneel
+          staat de naam waarop gekoppeld is, zodat een verkeerde koppeling opvalt.</li>
+        <li><b>Mutaties worden hier zelf bijgehouden</b>, vanaf
+          ${datumNL(DATA.historie_start)}. Het Zorginstituut publiceert geen archief, dus
+          wat daarvóór veranderde is niet terug te halen.</li>
+      </ul>`)+
+    sectie("Bronnen",
+      `<p>${bron}, Zorginstituut Nederland · add-on GS-lijst, Farmatec · GIP-databank,
+       Zorginstituut Nederland.</p>
+       <p class="klein">Ophalen, samenvoegen en publiceren gaan volledig automatisch.
+       Een bron die van indeling verandert, stopt de update liever dan dat er een halve
+       pagina online komt; dan blijft de vorige versie staan.</p>`)+
+    `</div>`;
+  $("#paneel").classList.add("aan"); $("#dim").classList.add("aan");
+  $("#paneel").focus();
+}
+$("#uitlegknop").onclick=toonUitleg;
 
 /* ---------- detailpaneel ---------- */
 const VELDEN = [

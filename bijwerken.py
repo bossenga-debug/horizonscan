@@ -5,6 +5,7 @@
     python3 bijwerken.py            # ophalen, en bij wijziging herbouwen
     python3 bijwerken.py --altijd   # ook herbouwen als er niets veranderd is
     python3 bijwerken.py --ci       # voor GitHub Actions: altijd bouwen, hard stoppen
+    python3 bijwerken.py --geen-historie   # bouwen zonder mutaties vast te leggen
 
 In GitHub Actions staat `bron/` er nooit (die map zit niet in de repo), dus daar
 is elke run per definitie een wijziging. --ci is er voor het andere deel: bij de
@@ -42,7 +43,9 @@ def main():
         return 0
 
     print('\nBouwen:')
-    draai('bouw_site.py')
+    # --geen-historie gaat door naar bouw_site.py: de pagina wordt dan vers
+    # gebouwd, maar er komt geen meetpunt in het mutatielogboek bij.
+    draai('bouw_site.py', *(['--geen-historie'] if '--geen-historie' in sys.argv else []))
 
     if CI:
         grootte = os.path.getsize(PAGINA) if os.path.exists(PAGINA) else 0

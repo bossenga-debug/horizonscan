@@ -123,6 +123,17 @@ meebeweegt: filter je domeinen weg, dan houden de overblijvers hun kleur. Het
 kleurenpalet is gecontroleerd op onderscheidbaarheid bij kleurenblindheid, in
 lichte en donkere modus.
 
+## Uitleg voor bezoekers
+
+De knop **Uitleg** rechtsboven opent een toelichting in hetzelfde zijpaneel als
+het detailpaneel: wat de pagina is, wat elk tabblad doet, hoe filteren en delen
+werkt, de koppeling met het add-on dashboard, en hoe je de cijfers leest — met
+name dat kosten een bovengrens zijn en dat een stof per indicatie apart staat.
+
+De aantallen in die tekst (regels, stoffen, middelen met ATC of met raming) en
+de datums komen uit de data zelf, zodat de uitleg na elke update blijft kloppen.
+De tekst staat in `toonUitleg()` in `template.html`.
+
 ## Het indicatiefilter
 
 De 85 hoofdindicaties zitten niet in een gewone keuzelijst maar in een eigen
@@ -252,6 +263,14 @@ totale kosten, patiëntvolume, kader, hoofdindicatie en merknaam — plus nieuw
 opgenomen en afgevoerd. Bewust **niet** de onderbouwing en de volledige
 indicatie: die teksten worden voortdurend bijgeschaafd en zouden het logboek
 vullen met ruis.
+
+**Alleen de maandrun legt mutaties vast** (en een handmatige run via *Run
+workflow*). Een push — een wijziging aan de tool zelf — bouwt de pagina wel vers,
+maar met `--geen-historie`, dus zonder meetpunt. Anders kreeg het logboek bij
+elke codewijziging een extra datum en klopte "sinds de vorige maandelijkse
+update" niet meer. Wat er intussen verandert gaat niet verloren: het telt mee bij
+de volgende maandrun, die tegen de laatst vastgelegde momentopname vergelijkt.
+Lokaal testen doe je om dezelfde reden met `python3 bouw_site.py --geen-historie`.
 
 Het tabblad toont de laatste 24 maanden (`MAANDEN_HISTORIE` in `bouw_site.py`);
 het logboek zelf bewaart alles. Een peildatum die al in het logboek staat, wordt

@@ -45,8 +45,14 @@ jobs:
       # de mutaties tegen af te zetten. --ci laat het script hard stoppen als
       # een bron van indeling verandert, zodat er nooit een halve pagina
       # online komt.
+      # Mutaties alleen vastleggen bij de maandrun en bij een handmatige run. Een
+      # push (een wijziging aan de tool zelf) bouwt de pagina wel vers, maar
+      # voegt geen meetpunt toe: anders krijgt het logboek bij elke codewijziging
+      # een extra datum en klopt "sinds de vorige maandelijkse update" niet meer.
+      # Wat er intussen verandert gaat niet verloren; dat telt mee bij de
+      # volgende maandrun.
       - name: Bronnen ophalen en pagina bouwen
-        run: python3 bijwerken.py --ci
+        run: python3 bijwerken.py --ci ${{ github.event_name == 'push' && '--geen-historie' || '' }}
 
       - name: Wijzigingen vastleggen in de repo
         run: |
