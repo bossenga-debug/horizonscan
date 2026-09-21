@@ -32,6 +32,26 @@ SITE = 'https://www.horizonscangeneesmiddelen.nl'
 # FTP-account met public_html als hoofdmap. Verhuist het dashboard opnieuw, dan
 # moet dit mee -- anders wijzen de links naar een map die stil is komen te staan.
 ADDON_DASHBOARD = 'https://medicatieadvies.nl/addon/'
+PATENTCHECKER = 'https://medicatieadvies.nl/patentchecker/'
+
+
+def patentchecker_atc():
+    """ATC-codes die de patentchecker (submap patentchecker/ in deze repo) volgt.
+
+    Rekent met de selectieregel van de patentchecker zelf (middelen.selectie) op
+    ons eigen GIP-bestand, zodat een andere drempel daar vanzelf hier doorwerkt.
+    Lukt dat niet, dan geen links in plaats van een kapotte bouw."""
+    try:
+        import importlib.util
+        spec = importlib.util.spec_from_file_location(
+            'patentchecker_middelen', os.path.join(HIER, 'patentchecker', 'middelen.py'))
+        pm = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(pm)
+        gip, _ = pm.lees_gip(os.path.join(HIER, 'bron', 'gip_addon.csv'))
+        return sorted(pm.selectie(gip)[0])
+    except Exception as e:
+        print(f'Patentchecker-koppeling overgeslagen: {e}')
+        return []
 MAANDEN_HISTORIE = 24
 
 # De kolomkoppen komen drie keer als "Additional remarks" en vier keer als
@@ -429,6 +449,7 @@ def main():
         'bijgewerkt': peildatum,
         'site': SITE,
         'addon_dashboard': ADDON_DASHBOARD,
+        'patentchecker': {'url': PATENTCHECKER, 'atc': patentchecker_atc()},
         'middelen': alles,
         # Alleen de laatste twee jaar mee de pagina in: het logboek groeit door,
         # maar niemand scrolt drie jaar terug en het scheelt bestandsgrootte.

@@ -864,7 +864,10 @@ function toonUitleg(){
       `<p>Bij ${nl.format(nAtc)} regels staat in het detailpaneel een ATC-code met een link
        naar het ${addon}, waar je de gerealiseerde uitgaven en het aantal gebruikers ziet.
        Het vinkje <b>Al add-on</b> toont alleen die middelen. Wat geen ATC-code heeft, staat
-       (nog) niet op de add-on lijst van Farmatec — en is daarmee precies de pijplijn.</p>`)+
+       (nog) niet op de add-on lijst van Farmatec — en is daarmee precies de pijplijn.</p>
+       <p>Kost dat add-on middel meer dan € 10 mln per jaar, dan staat er ook een link naar de
+       <a href="${DATA.patentchecker.url}" target="_blank" rel="noopener">patentchecker</a>: wanneer
+       de octrooibescherming vervalt en welke biosimilars of generieken eraan komen.</p>`)+
     sectie("Zo lees je de cijfers",
       `<ul>
         <li><b>Kosten zijn een bovengrens.</b> Het zijn voorlopige rekenwaarden van de
@@ -916,6 +919,18 @@ const VELDEN = [
    Horizonscan schrijft Engels ("Brentuximab vedotin"), de add-on GS-lijst
    Nederlands ("BRENTUXIMAB VEDOTINE"). Door die naam te tonen valt een
    verkeerde koppeling op in plaats van als feit te blijven staan. */
+/* Link naar de patentchecker, alleen voor ATC-codes die daar gevolgd worden
+   (add-ons boven € 10 mln per jaar). Vooral nuttig bij biosimilars en nieuwe
+   indicaties van een middel dat al add-on is. */
+const PATENT = new Set((DATA.patentchecker&&DATA.patentchecker.atc)||[]);
+function patentRij(r){
+  const codes=(r.atc||[]).filter(c=>PATENT.has(c));
+  if(!codes.length) return "";
+  return `<div class="rij"><dt>Patentchecker</dt><dd>${codes.map(c=>
+    `<a href="${DATA.patentchecker.url}#atc=${encodeURIComponent(c)}" target="_blank" rel="noopener">`+
+    `bescherming en biosimilars${codes.length>1?" ("+esc(c)+")":""}</a>`).join(", ")}</dd></div>`;
+}
+
 function atcBlok(r){
   if(!(r.atc||[]).length) return `<div class="groep"><h2>Add-on koppeling</h2>
     <p class="voetnoot" style="padding:0">Geen ATC-code gevonden in de add-on GS-lijst.
@@ -926,7 +941,7 @@ function atcBlok(r){
     <div class="rij"><dt>ATC-code</dt><dd>${codes}</dd></div>
     <div class="rij"><dt>Gekoppeld via</dt><dd>${esc(r.atc_via)}</dd></div>
     <div class="rij"><dt>Nu add-on</dt><dd>${r.addon?"Ja, staat op de add-on GS-lijst":"Alleen in GIP-historie"}</dd></div>
-    </dl></div>`;
+    ${patentRij(r)}</dl></div>`;
 }
 
 function toonDetail(r){
