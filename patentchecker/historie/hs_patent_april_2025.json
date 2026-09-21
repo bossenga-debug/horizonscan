@@ -1,0 +1,789 @@
+{
+ "stand": "april 2025",
+ "rijen": [
+  {
+   "naam": "Abatacept",
+   "merk": "Orencia®",
+   "spc": "verlopen",
+   "concurrentie": "Geen producten geregistreerd of lopen aanvragen bij de EMA. Er is één biosimilar in ontwikkeling (BioXpress Therapeutics)",
+   "wees": "nee",
+   "datums": [],
+   "verlopen": true,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Adalimumab",
+   "merk": "Humira®",
+   "spc": "verlopen",
+   "concurrentie": "Er zijn op dit moment meerdere biosimilars geregistreerd in de Europese Unie",
+   "wees": "nee",
+   "datums": [],
+   "verlopen": true,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Aflibercept",
+   "merk": "Eylea®",
+   "spc": "22-05-2025",
+   "concurrentie": "Er zijn op dit moment meerdere biosimilars geregistreerd in de Europese Unie",
+   "wees": "nee",
+   "datums": [
+    "2025-05-22"
+   ],
+   "verlopen": false,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Agalsidase beta",
+   "merk": "Fabrazyme®",
+   "spc": "verlopen",
+   "concurrentie": "Er is een biosimilar beschikbaar in Japan sinds november 2018. Geen biosimilars beschikbaar in de Europese Unie",
+   "wees": "Weesstatus verlopen / ingetrokken voor één indicatie EU/3/00/003",
+   "datums": [],
+   "verlopen": true,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Alglucosidase alfa",
+   "merk": "Myozyme®",
+   "spc": "verlopen",
+   "concurrentie": "Geen producten geregistreerd of lopende aanvragen bij de EMA",
+   "wees": "Weesstatus verlopen / ingetrokken voor één indicatie EU/3/01/018",
+   "datums": [],
+   "verlopen": true,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Alirocumab",
+   "merk": "Praluent®",
+   "spc": "24-09-2030",
+   "concurrentie": "Geen producten geregistreerd of lopende aanvragen bij de EMA",
+   "wees": "nee",
+   "datums": [
+    "2030-09-24"
+   ],
+   "verlopen": false,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Apixaban",
+   "merk": "Eliquis®",
+   "spc": "19-05-2026",
+   "concurrentie": "Eerste generiek bij de EMA geregistreerd sinds 23-07-2020, Apixaban Accord",
+   "wees": "nee",
+   "datums": [
+    "2026-05-19"
+   ],
+   "verlopen": false,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Axicabtagen ciloleucel",
+   "merk": "Yescarta®",
+   "spc": "verlopen",
+   "concurrentie": "Geen producten geregistreerd of lopende aanvragen bij de EMA",
+   "wees": "EU/3/15/1579 (11/11/2015) EU/3/15/1553 (09/10/2015) EU/3/14/1393 (16/12/2014)",
+   "datums": [],
+   "verlopen": true,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Barnidipine",
+   "merk": "Vasexten®",
+   "spc": "verlopen",
+   "concurrentie": "Er zijn op dit moment meerdere generieken decentraal geregistreerd in Nederland",
+   "wees": "nee",
+   "datums": [],
+   "verlopen": true,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Burosumab",
+   "merk": "Crysvita®",
+   "spc": "13-02-2033",
+   "concurrentie": "Geen producten geregistreerd of lopende aanvragen bij de EMA",
+   "wees": "EU/3/14/1351 (15/10/2014)",
+   "datums": [
+    "2033-02-13"
+   ],
+   "verlopen": false,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Canakinumab",
+   "merk": "Ilaris®",
+   "spc": "26-04-2025",
+   "concurrentie": "Geen prodcuten geregistreerd of lopende aanvraag bij de EMA. Er is een melding van een bedrijf dat zij een biosimilar ontwikkelen (Mabpharm)",
+   "wees": "nee",
+   "datums": [
+    "2025-04-26"
+   ],
+   "verlopen": false,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Dabigatranetexilaat",
+   "merk": "Pradaxa®",
+   "spc": "verlopen",
+   "concurrentie": "Er zijn op dit moment meerdere generieken decentraal geregistreerd in Nederland",
+   "wees": "nee",
+   "datums": [],
+   "verlopen": true,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Dabrafenib",
+   "merk": "Tafinlar®",
+   "spc": "10-05-2029",
+   "concurrentie": "Geen producten geregistreerd of lopende aanvragen bij de EMA",
+   "wees": "nee",
+   "datums": [
+    "2029-05-10"
+   ],
+   "verlopen": false,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Dapagliflozine",
+   "merk": "Forxiga®",
+   "spc": "13-05-2028",
+   "concurrentie": "Er zijn op dit moment meerdere generieken geregistreerd in de Europese Unie",
+   "wees": "nee",
+   "datums": [
+    "2028-05-13"
+   ],
+   "verlopen": false,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Daratumumab",
+   "merk": "Darzalex®",
+   "spc": "22-03-2031*",
+   "concurrentie": "Er zijn geen biosimilars geregistreerd. In november 2024 is er een fase 3 studie aangekondigd (Celltrion) voor een biosimilar",
+   "wees": "EU/3/13/1153 (17/07/2013) EU 3/18/2020 (25/05/2018)",
+   "datums": [
+    "2031-03-22"
+   ],
+   "verlopen": false,
+   "voetnoot": 1
+  },
+  {
+   "naam": "Darbepoetine alfa",
+   "merk": "Aranesp®",
+   "spc": "verlopen",
+   "concurrentie": "Geen producten geregistreerd of lopende aanvragen bij de EMA",
+   "wees": "nee",
+   "datums": [],
+   "verlopen": true,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Dexamfetamine",
+   "merk": "Amfexa®",
+   "spc": "verlopen",
+   "concurrentie": "Er zijn op dit moment meerdere generieken geregistreerd in de Europese Unie",
+   "wees": "nee",
+   "datums": [],
+   "verlopen": true,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Dimethylfumaraat",
+   "merk": "Tecfidera®",
+   "spc": "verlopen",
+   "concurrentie": "Er zijn op dit moment meerdere generieken geregistreerd in de Europese Unie",
+   "wees": "nee",
+   "datums": [],
+   "verlopen": true,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Dupilumab",
+   "merk": "Dupixent®",
+   "spc": "28-09-2032",
+   "concurrentie": "Geen producten geregistreerd of lopende aanvragen bij de EMA. Er is een biosimilar in ontwikkeling (Bio-Thera Solutions)",
+   "wees": "nee",
+   "datums": [
+    "2032-09-28"
+   ],
+   "verlopen": false,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Durvalumab",
+   "merk": "Imfinzi®",
+   "spc": "24-09-2033",
+   "concurrentie": "Geen producten geregistreerd of lopende aanvragen bij de EMA",
+   "wees": "nee",
+   "datums": [
+    "2033-09-24"
+   ],
+   "verlopen": false,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Eculizumab",
+   "merk": "Soliris®",
+   "spc": "verlopen",
+   "concurrentie": "Er zijn op dit moment meerdere biosimilars geregistreerd in de Europese Unie",
+   "wees": "EU/3/13/1185 (05/08/2013) EU 3/14/1304 (29/07/2014) EU/3/22/2707 (11/10/2022)",
+   "datums": [],
+   "verlopen": true,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Edoxaban",
+   "merk": "Lixiana®",
+   "spc": "19-06-2027",
+   "concurrentie": "Er zijn op dit moment meerdere generieken geregistreerd in de Europese Unie",
+   "wees": "nee",
+   "datums": [
+    "2027-06-19"
+   ],
+   "verlopen": false,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Emicizumab",
+   "merk": "Hemlibra®",
+   "spc": "26-08-2033",
+   "concurrentie": "Geen producten geregistreerd of lopende aanvragen bij de EMA",
+   "wees": "nee",
+   "datums": [
+    "2033-08-26"
+   ],
+   "verlopen": false,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Empagliflozine",
+   "merk": "Jardiance®",
+   "spc": "26-11-2029",
+   "concurrentie": "Geen producten geregistreerd of lopende aanvragen bij de EMA",
+   "wees": "nee",
+   "datums": [
+    "2029-11-26"
+   ],
+   "verlopen": false,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Emtricitabine met tenofoviralafenamide en bictegravir",
+   "merk": "Biktarvy®",
+   "spc": "24-06-2033",
+   "concurrentie": "Geen producten geregistreerd of lopende aanvragen bij de EMA",
+   "wees": "nee",
+   "datums": [
+    "2033-06-24"
+   ],
+   "verlopen": false,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Enzalutamide",
+   "merk": "Xtandi®",
+   "spc": "24-06-2028",
+   "concurrentie": "Er is op dit moment één generiek van enzalutamide geregistreerd",
+   "wees": "nee",
+   "datums": [
+    "2028-06-24"
+   ],
+   "verlopen": false,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Etanercept",
+   "merk": "Enbrel®",
+   "spc": "verlopen",
+   "concurrentie": "Er zijn op dit moment meerdere biosimilars geregistreerd in de Europese Unie",
+   "wees": "nee",
+   "datums": [],
+   "verlopen": true,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Evolocumab",
+   "merk": "Repatha®",
+   "spc": "20-01-2031",
+   "concurrentie": "Geen producten geregistreerd of lopende aanvragen bij de EMA",
+   "wees": "nee",
+   "datums": [
+    "2031-01-20"
+   ],
+   "verlopen": false,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Fentanyl",
+   "merk": "Durogesic® / Actiq®",
+   "spc": "verlopen",
+   "concurrentie": "Er zijn op dit moment meerdere generieken geregistreerd in de Europese Unie",
+   "wees": "nee",
+   "datums": [],
+   "verlopen": true,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Formoterol met beclometason",
+   "merk": "Foster®",
+   "spc": "verlopen",
+   "concurrentie": "Er zijn op dit moment meerdere generieken geregistreerd in de Europese Unie",
+   "wees": "nee",
+   "datums": [],
+   "verlopen": true,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Formoterol met budesonide",
+   "merk": "Symbicort®",
+   "spc": "verlopen",
+   "concurrentie": "Er zijn op dit moment meerdere generieken geregistreerd in de Europese Unie",
+   "wees": "nee",
+   "datums": [],
+   "verlopen": true,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Formoterol met glycopyrroniumbromide en beclometason",
+   "merk": "Trimbow®",
+   "spc": "verlopen",
+   "concurrentie": "Geen producten geregistreerd of lopende aanvragen bij de EMA",
+   "wees": "nee",
+   "datums": [],
+   "verlopen": true,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Ibrutinib",
+   "merk": "Imbruvica®",
+   "spc": "22-10-2029",
+   "concurrentie": "Geen producten geregistreerd of lopende aanvragen bij de EMA",
+   "wees": "nee",
+   "datums": [
+    "2029-10-22"
+   ],
+   "verlopen": false,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Infliximab",
+   "merk": "Remicade®",
+   "spc": "verlopen",
+   "concurrentie": "Er zijn op dit moment meerdere biosimilars geregistreerd in de Europese Unie",
+   "wees": "nee",
+   "datums": [],
+   "verlopen": true,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Ipilimumab",
+   "merk": "Yervoy®",
+   "spc": "23-02-2026",
+   "concurrentie": "Geen producten geregistreerd of lopende aanvragen bij de EMA",
+   "wees": "nee",
+   "datums": [
+    "2026-02-23"
+   ],
+   "verlopen": false,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Ivacaftor",
+   "merk": "Kalydeco®",
+   "spc": "24-07-2027",
+   "concurrentie": "Geen producten geregistreerd of lopende aanvragen bij de EMA",
+   "wees": "nee",
+   "datums": [
+    "2027-07-24"
+   ],
+   "verlopen": false,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Ivacaftor met tezacaftor en elexacaftor",
+   "merk": "Trikafta®",
+   "spc": "ivacaftor 24-07-2027  tezacaftor 05-11-2033",
+   "concurrentie": "Geen producten geregistreerd of lopende aanvragen bij de EMA",
+   "wees": "EU/3/18/2116 (14/12/2018)",
+   "datums": [
+    "2027-07-24",
+    "2033-11-05"
+   ],
+   "verlopen": false,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Lamivudine met dolutegravir",
+   "merk": "Dovato®",
+   "spc": "23-01-2031",
+   "concurrentie": "Geen producten geregistreerd of lopende aanvragen bij de EMA",
+   "wees": "nee",
+   "datums": [
+    "2031-01-23"
+   ],
+   "verlopen": false,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Levodopa met decarboxylaseremmer",
+   "merk": "Sinemet® / Madopar®",
+   "spc": "verlopen",
+   "concurrentie": "Er zijn meerdere producten van verschillende producten in Nederland geintroduceerd",
+   "wees": "nee",
+   "datums": [],
+   "verlopen": true,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Liraglutide",
+   "merk": "Victoza® / Saxenda®",
+   "spc": "13-11-2028",
+   "concurrentie": "Er zijn op dit moment meerdere generieken decentraal geregistreerd",
+   "wees": "EU/3/22/2667 (18/07/2022)",
+   "datums": [
+    "2028-11-13"
+   ],
+   "verlopen": false,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Macitentan",
+   "merk": "Opsumit®",
+   "spc": "03-12-2026",
+   "concurrentie": "Geen producten geregistreerd of lopende aanvragen bij de EMA",
+   "wees": "nee",
+   "datums": [
+    "2026-12-03"
+   ],
+   "verlopen": false,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Macrogol combinatiepreparaten",
+   "merk": "Movicolon® / Forlax®",
+   "spc": "verlopen",
+   "concurrentie": "Er zijn op dit moment meerdere generieken geregistreerd in de Europese Unie",
+   "wees": "nee",
+   "datums": [],
+   "verlopen": true,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Mepolizumab",
+   "merk": "Nucala®",
+   "spc": "verlopen",
+   "concurrentie": "Geen producten geregistreerd of lopende aanvragen bij de EMA",
+   "wees": "nee",
+   "datums": [],
+   "verlopen": true,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Mesalazine",
+   "merk": "Pentasa® / Salofalk®",
+   "spc": "verlopen",
+   "concurrentie": "Er zijn op dit moment meerdere generieken geregistreerd in de Europese Unie",
+   "wees": "nee",
+   "datums": [],
+   "verlopen": true,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Methylfenidaat",
+   "merk": "Ritalin® / Concerta®",
+   "spc": "verlopen",
+   "concurrentie": "Er zijn op dit moment meerdere generieken geregistreerd in de Europese Unie",
+   "wees": "nee",
+   "datums": [],
+   "verlopen": true,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Nintedanib",
+   "merk": "Ofev®",
+   "spc": "08-04-2026",
+   "concurrentie": "Er zijn op dit moment meerdere generieken geregistreerd in de Europese Unie",
+   "wees": "nee",
+   "datums": [
+    "2026-04-08"
+   ],
+   "verlopen": false,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Nivolumab",
+   "merk": "Opdivo®",
+   "spc": "23-06-2030",
+   "concurrentie": "Geen producten geregistreerd of lopende aanvragen bij de EMA. Er zijn wel biosimilars in ontwikkeling (Mabpharm, Xbrnae Biopharma, Intas Pharmaceuticals)",
+   "wees": "nee",
+   "datums": [
+    "2030-06-23"
+   ],
+   "verlopen": false,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Nusinersen",
+   "merk": "Spinraza®",
+   "spc": "22-06-2031 (aanvraag SPC verlenging loopt)",
+   "concurrentie": "Geen producten geregistreerd of lopende aanvragen bij de EMA",
+   "wees": "EU/3/12/976 (02/04/2012)",
+   "datums": [
+    "2031-06-22"
+   ],
+   "verlopen": false,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Ocrilizumab",
+   "merk": "Ocrevus®",
+   "spc": "15-12-2028",
+   "concurrentie": "Er is één biosimilar in ontwikkeling (Celltrion)",
+   "wees": "nee",
+   "datums": [
+    "2028-12-15"
+   ],
+   "verlopen": false,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Omalizumab",
+   "merk": "Xolair®",
+   "spc": "verlopen**",
+   "concurrentie": "In mei 2024 is de eerste biosimilar goedgekeurd in de Europese Unie",
+   "wees": "nee",
+   "datums": [],
+   "verlopen": true,
+   "voetnoot": 2
+  },
+  {
+   "naam": "Onasemnogeen abeparvovec",
+   "merk": "Zolgensma®",
+   "spc": "02-10-2028",
+   "concurrentie": "Geen producten geregistreerd of lopende aanvragen bij de EMA",
+   "wees": "EU/3/15/1509 (19/06/2015)",
+   "datums": [
+    "2028-10-02"
+   ],
+   "verlopen": false,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Osimertinib",
+   "merk": "Tagrisso®",
+   "spc": "01-02-2026 (aanvraag SPC verlenging loopt)",
+   "concurrentie": "Geen producten geregistreerd of lopende aanvragen bij de EMA",
+   "wees": "nee",
+   "datums": [
+    "2026-02-01"
+   ],
+   "verlopen": false,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Palbociclib",
+   "merk": "Ibrance®",
+   "spc": "09-01-2028",
+   "concurrentie": "Geen producten geregistreerd of lopende aanvragen bij de EMA",
+   "wees": "nee",
+   "datums": [
+    "2028-01-09"
+   ],
+   "verlopen": false,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Patisiran",
+   "merk": "Onpattro®",
+   "spc": "28-08-2033",
+   "concurrentie": "Geen producten geregistreerd of lopende aanvragen bij de EMA",
+   "wees": "EU/3/11/857(15/04/2011)",
+   "datums": [
+    "2033-08-28"
+   ],
+   "verlopen": false,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Pembrolizumab",
+   "merk": "Keytruda®",
+   "spc": "20-01-2031",
+   "concurrentie": "Geen producten geregistreerd of lopende aanvragen bij de EMA. Er zijn verschillende biosimilars in ontwikkeling (Amgen, Formycon,Fresenius Kabi,Samsung Bioepis, Sandoz)",
+   "wees": "nee",
+   "datums": [
+    "2031-01-20"
+   ],
+   "verlopen": false,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Pertuzumab",
+   "merk": "Perjeta®",
+   "spc": "22-06-2025",
+   "concurrentie": "Geen producten geregistreerd of lopende aanvragen bij de EMA. Er is een biosimilar in ontwikkeling (Shanghai Henlius Biotech)",
+   "wees": "nee",
+   "datums": [
+    "2025-06-22"
+   ],
+   "verlopen": false,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Pomalidomide",
+   "merk": "Imnovid®",
+   "spc": "verlopen",
+   "concurrentie": "Er zijn op dit moment meerdere generieken geregistreerd in de Europese Unie",
+   "wees": "nee",
+   "datums": [],
+   "verlopen": true,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Rivaroxaban",
+   "merk": "Xarelto®",
+   "spc": "verlopen",
+   "concurrentie": "Er zijn op dit moment meerdere generieken geregistreerd in de Europese Unie",
+   "wees": "nee",
+   "datums": [],
+   "verlopen": true,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Ruxolitinib",
+   "merk": "Jakavi®",
+   "spc": "27-08-2027",
+   "concurrentie": "Geen producten geregistreerd of lopende aanvragen bij de EMA",
+   "wees": "nee",
+   "datums": [
+    "2027-08-27"
+   ],
+   "verlopen": false,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Secukinumab",
+   "merk": "Cosentyx®",
+   "spc": "18-07-2033 (pending)",
+   "concurrentie": "Geen producten geregistreerd of lopende aanvragen bij de EMA. Er zijn biosimilars in ontwikkeling (Bio-Thera Solutions en Celltrion)",
+   "wees": "nee",
+   "datums": [
+    "2033-07-18"
+   ],
+   "verlopen": false,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Semaglutide",
+   "merk": "Ozempic® / Rybelsus®",
+   "spc": "19-03-2031",
+   "concurrentie": "Er is één biosimilar in ontwikkeling (Pepgene)",
+   "wees": "nee",
+   "datums": [
+    "2031-03-19"
+   ],
+   "verlopen": false,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Tacrolimus",
+   "merk": "Prograf® / Advagraf®",
+   "spc": "verlopen",
+   "concurrentie": "Er zijn op dit moment meerdere generieken geregistreerd in de Europese Unie",
+   "wees": "EU/3/17/1912 (23/08/2017)",
+   "datums": [],
+   "verlopen": true,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Tafamidis",
+   "merk": "Vyndaqel®",
+   "spc": "verlopen",
+   "concurrentie": "Geen producten geregistreerd of lopende aanvragen bij de EMA",
+   "wees": "EU/3/12/1066 08/11/2012",
+   "datums": [],
+   "verlopen": true,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Tiotropium",
+   "merk": "Spiriva®",
+   "spc": "verlopen",
+   "concurrentie": "Er zijn op dit moment meerdere generieken geregistreerd in de Europese Unie",
+   "wees": "nee",
+   "datums": [],
+   "verlopen": true,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Tocilizumab",
+   "merk": "RoActemra®",
+   "spc": "verlopen",
+   "concurrentie": "Er zijn op dit moment meerdere biosimilars geregistreerd in de Europese Unie",
+   "wees": "EU/3/16/1764 (14/10/2016)",
+   "datums": [],
+   "verlopen": true,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Trametinib",
+   "merk": "Mekinist®",
+   "spc": "01-07-2029 ( pending)",
+   "concurrentie": "Geen producten geregistreerd of lopende aanvragen bij de EMA",
+   "wees": "nee",
+   "datums": [
+    "2029-07-01"
+   ],
+   "verlopen": false,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Trastuzumab emtansine",
+   "merk": "Kadcyla®",
+   "spc": "18-11-2028",
+   "concurrentie": "Er is op dit moment een biosimilar in ontwikkeling (Formosa Pharmaceuticals)",
+   "wees": "nee",
+   "datums": [
+    "2028-11-18"
+   ],
+   "verlopen": false,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Ustekinumab",
+   "merk": "Stelara®",
+   "spc": "verlopen**",
+   "concurrentie": "Er zijn op dit moment meerdere biosimilars geregistreerd in de Europese Unie",
+   "wees": "nee",
+   "datums": [],
+   "verlopen": true,
+   "voetnoot": 2
+  },
+  {
+   "naam": "Valsartan met sacubitril",
+   "merk": "Entresto®",
+   "spc": "verlopen",
+   "concurrentie": "Er zijn op dit moment meerdere biosimilars geregistreerd in de Europese Unie",
+   "wees": "nee",
+   "datums": [],
+   "verlopen": true,
+   "voetnoot": 0
+  },
+  {
+   "naam": "Vedolizumab",
+   "merk": "Entyvio®",
+   "spc": "12-04-2026",
+   "concurrentie": "Er zijn op dit moment meerder biosimilars in ontwikkeling (Polpharma Biologics, Advanz Pharma)",
+   "wees": "nee",
+   "datums": [
+    "2026-04-12"
+   ],
+   "verlopen": false,
+   "voetnoot": 0
+  }
+ ],
+ "voetnoten": [
+  "* een secundair patent voor een nieuwe toedieningsvorm voor daratumumab met de expiratiedatum 31-10-2036",
+  "** een secundair patent voor methode van gebruik bij indicatie colitis ulcerosa voor ustekinumab met de expiratiedatum 23-09-2039 en voor omalizumab met de expiratiedatum 22-05-2044 voor alle geregistreerde indicaties",
+  "** een secundair patent voor methode van gebruik bij indicatie colitis ulcerosa voor ustekinumab met de expiratiedatum 23-09-2039 en voor omalizumab met de expiratiedatum 22-05-2044 voor alle geregistreerde indicaties"
+ ]
+}

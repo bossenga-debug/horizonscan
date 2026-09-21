@@ -1,0 +1,21 @@
+# Wordt door deploy_ftp.py als .htaccess geplaatst in de map patentchecker.
+# De pagina wordt maandelijks vervangen; zonder dit blijven browsers de oude
+# versie tonen. De IfModule-blokken zorgen dat er niets stukgaat als de server
+# een van deze modules niet heeft.
+<IfModule mod_headers.c>
+  <FilesMatch "\.html$">
+    Header set Cache-Control "no-cache, must-revalidate"
+  </FilesMatch>
+</IfModule>
+
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/html "access plus 0 seconds"
+</IfModule>
+
+# De pagina is ruim 200 kB doordat alle data erin zit. Gecomprimeerd gaat
+# daar ruwweg driekwart af, wat op een trage verbinding het verschil maakt
+# tussen bruikbaar en niet.
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html
+</IfModule>

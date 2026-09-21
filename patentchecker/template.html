@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Patentchecker dure add-ons</title>
+<meta name="description" content="Wanneer vervalt de octrooibescherming van de duurste add-on geneesmiddelen, en welke biosimilars en generieken komen eraan.">
+<style>
+:root{
+  color-scheme:light;
+  --plane:#f9f9f7; --surface:#fcfcfb; --ink:#0b0b0b; --ink2:#52514e; --muted:#898781;
+  --grid:#e1e0d9; --as:#c3c2b7; --rand:rgba(11,11,11,.10); --wash:rgba(11,11,11,.04);
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100;
+  --goed:#0ca30c; --let:#b97f00; --ernstig:#ec835a; --kritiek:#d03b3b;
+  --staaf:#2a78d6; --staaf2:#c3c2b7;
+}
+@media (prefers-color-scheme:dark){:root:where(:not([data-theme="light"])){
+  color-scheme:dark;
+  --plane:#0d0d0d; --surface:#1a1a19; --ink:#fff; --ink2:#c3c2b7; --muted:#898781;
+  --grid:#2c2c2a; --as:#383835; --rand:rgba(255,255,255,.10); --wash:rgba(255,255,255,.05);
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500;
+  --goed:#2fbf2f; --let:#e0a520; --kritiek:#e66767;
+  --staaf:#3987e5; --staaf2:#4a4a46;
+}}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --plane:#0d0d0d; --surface:#1a1a19; --ink:#fff; --ink2:#c3c2b7; --muted:#898781;
+  --grid:#2c2c2a; --as:#383835; --rand:rgba(255,255,255,.10); --wash:rgba(255,255,255,.05);
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500;
+  --goed:#2fbf2f; --let:#e0a520; --kritiek:#e66767;
+  --staaf:#3987e5; --staaf2:#4a4a46;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--plane);color:var(--ink);
+  font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+h1{font-size:22px;margin:0;letter-spacing:-.01em}
+a{color:var(--s1)}
+.wrap{max-width:1500px;margin:0 auto;padding:20px 22px 80px}
+@media (max-width:600px){.wrap{padding:16px 16px 60px}}
+
+header{display:flex;flex-wrap:wrap;gap:14px;align-items:baseline;justify-content:space-between;margin-bottom:16px}
+.sub{color:var(--ink2);font-size:13.5px;margin-top:5px;max-width:78ch}
+.bijgewerkt{color:var(--muted);font-size:12.5px;white-space:nowrap}
+.kopzijde{display:flex;gap:12px;align-items:center}
+
+.cijfers{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:10px;margin-bottom:16px}
+.tegel{background:var(--surface);border:1px solid var(--rand);border-radius:10px;padding:12px 14px;
+  text-align:left;font:inherit;color:inherit;cursor:pointer}
+.tegel:hover{background:var(--wash)}
+.tegel .n{font-size:25px;font-weight:600;letter-spacing:-.02em;line-height:1.15;font-variant-numeric:tabular-nums}
+.tegel .l{font-size:12.5px;color:var(--ink2);margin-top:3px}
+.tegel .h{font-size:11.5px;color:var(--muted);margin-top:2px}
+
+.filters{background:var(--surface);border:1px solid var(--rand);border-radius:10px;
+  padding:12px 14px;margin-bottom:14px;display:flex;flex-wrap:wrap;gap:9px;align-items:center}
+input[type=search],select{font:inherit;font-size:13.5px;color:var(--ink);background:var(--surface);
+  border:1px solid var(--as);border-radius:7px;padding:7px 9px}
+input[type=search]{flex:1 1 240px;min-width:190px}
+select{max-width:260px}
+input:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid var(--s1);outline-offset:1px}
+.vink{display:inline-flex;align-items:center;gap:5px;font-size:13px;color:var(--ink2);
+  border:1px solid var(--as);border-radius:7px;padding:6px 9px;cursor:pointer;user-select:none}
+.vink input{margin:0;accent-color:var(--s1)}
+.vink:has(input:checked){border-color:var(--s1);color:var(--ink);background:var(--wash)}
+button{font:inherit;font-size:13.5px;color:var(--ink);background:var(--surface);
+  border:1px solid var(--as);border-radius:7px;padding:7px 11px;cursor:pointer}
+button:hover{background:var(--wash)}
+.telling{margin-left:auto;font-size:13px;color:var(--ink2);font-variant-numeric:tabular-nums}
+
+.tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
+.tab{border:1px solid var(--as);border-radius:7px;padding:7px 13px;font-size:13.5px;background:var(--surface);cursor:pointer}
+.tab[aria-selected=true]{background:var(--s1);border-color:var(--s1);color:#fff}
+
+.kaart{background:var(--surface);border:1px solid var(--rand);border-radius:10px;overflow:hidden}
+.schuif{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--grid);vertical-align:top}
+th{position:sticky;top:0;background:var(--surface);z-index:2;font-weight:600;font-size:12.5px;
+  color:var(--ink2);white-space:nowrap;border-bottom:1px solid var(--as)}
+th.sorteer{cursor:pointer}
+th.sorteer:hover{color:var(--ink)}
+th .pijl{color:var(--s1);font-size:10px}
+tbody tr.klik{cursor:pointer}
+tbody tr.klik:hover{background:var(--wash)}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+td.dat{white-space:nowrap;font-variant-numeric:tabular-nums}
+.stof{font-weight:600}
+.merk{color:var(--muted);font-weight:400;font-size:12.5px}
+.klein{font-size:12px;color:var(--muted)}
+.leeg{padding:36px 20px;text-align:center;color:var(--muted)}
+
+.label{display:inline-block;font-size:11.5px;padding:2px 8px;border-radius:20px;
+  border:1px solid var(--as);color:var(--ink2);white-space:nowrap}
+.label.concurrentie{border-color:var(--goed);color:var(--goed)}
+.label.binnenkort{border-color:var(--s1);color:var(--s1)}
+.label.vrij{border-color:var(--let);color:var(--let)}
+.label.beschermd{color:var(--ink2)}
+.label.onbekend,.label.groep{color:var(--muted);border-style:dashed}
+.bron{font-size:10.5px;letter-spacing:.02em;color:var(--muted);border:1px solid var(--grid);
+  border-radius:4px;padding:0 4px;margin-left:5px;vertical-align:1px}
+.bron.hs{border-color:var(--let);color:var(--let)}
+.vgl{font-size:12px;white-space:nowrap}
+.vgl.gelijk{color:var(--goed)}
+.vgl.verlenging{color:var(--ink2)}
+.vgl.verschil{color:var(--kritiek);font-weight:600}
+.tel{font-variant-numeric:tabular-nums;white-space:nowrap}
+.tel b{font-weight:600}
+.nul{color:var(--muted)}
+
+/* ---------- tijdlijn ---------- */
+.grafiek{padding:16px 18px 6px}
+.voetnoot{padding:0 18px 16px;font-size:12.5px;color:var(--muted);max-width:90ch}
+svg{display:block;width:100%;height:auto;max-width:1200px;margin:0 auto;overflow:visible}
+svg text{font:12px system-ui,-apple-system,"Segoe UI",sans-serif;fill:var(--muted)}
+svg .waarde{fill:var(--ink2);font-size:11.5px}
+svg .raak{fill:transparent;cursor:pointer}
+svg .raak:hover+rect,svg g.kolom:hover rect.st{opacity:.85}
+.tip{position:fixed;z-index:50;pointer-events:none;background:var(--surface);color:var(--ink);
+  border:1px solid var(--rand);border-radius:8px;padding:9px 11px;font-size:12.5px;
+  box-shadow:0 6px 22px rgba(0,0,0,.16);max-width:320px;display:none}
+.tip b{display:block;margin-bottom:5px;font-size:13px}
+.tip div{display:flex;justify-content:space-between;gap:14px;font-variant-numeric:tabular-nums}
+.jaarlijst{padding:4px 18px 18px;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:4px 22px}
+.jaarlijst h4{grid-column:1/-1;margin:14px 0 2px;font-size:13.5px}
+.jaarlijst a{display:flex;justify-content:space-between;gap:10px;font-size:13px;padding:3px 0;
+  border-bottom:1px solid var(--grid);color:var(--ink);text-decoration:none;cursor:pointer}
+.jaarlijst a:hover{color:var(--s1)}
+.jaarlijst a span:last-child{color:var(--ink2);font-variant-numeric:tabular-nums;white-space:nowrap}
+
+/* ---------- logboek ---------- */
+.peil{padding:14px 18px 4px;border-top:1px solid var(--grid);display:flex;gap:10px;align-items:baseline}
+.peil:first-child{border-top:0}
+.peil h3{margin:0;font-size:15px}
+.peil .tel{font-size:12.5px;color:var(--muted)}
+.mut{display:grid;grid-template-columns:110px 190px 1fr;gap:12px;padding:7px 18px;
+  border-bottom:1px solid var(--grid);font-size:13.5px;align-items:baseline;cursor:pointer}
+.mut:hover{background:var(--wash)}
+.mut .soort{font-size:11.5px;padding:2px 8px;border-radius:20px;border:1px solid var(--as);
+  color:var(--ink2);text-align:center;white-space:nowrap}
+.mut .soort.ema,.mut .soort.nl{border-color:var(--goed);color:var(--goed)}
+.mut .soort.spc{border-color:var(--s1);color:var(--s1)}
+@media (max-width:760px){.mut{grid-template-columns:1fr;gap:3px}}
+
+/* ---------- vergelijking ---------- */
+.vglkop{padding:14px 18px;display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.vglkop .tegel{cursor:default}
+.vglkop .tegel:hover{background:var(--surface)}
+
+/* ---------- detailpaneel ---------- */
+.dim{position:fixed;inset:0;background:rgba(0,0,0,.34);z-index:60;display:none}
+.dim.aan{display:block}
+.paneel{position:fixed;top:0;right:0;bottom:0;width:min(700px,100%);background:var(--surface);
+  z-index:61;transform:translateX(100%);transition:transform .18s ease;visibility:hidden;
+  display:flex;flex-direction:column;border-left:1px solid var(--rand)}
+.paneel.aan{transform:none;visibility:visible}
+.paneel .kop{padding:16px 20px;border-bottom:1px solid var(--grid);display:flex;gap:12px;
+  align-items:flex-start;justify-content:space-between}
+.paneel .kop h3{margin:0;font-size:19px;letter-spacing:-.01em}
+.paneel .kop .meta{color:var(--ink2);font-size:13px;margin-top:4px}
+.paneel .body{overflow-y:auto;padding:6px 20px 30px}
+.groep{margin-top:20px}
+.groep h4{margin:0 0 6px;font-size:12.5px;letter-spacing:.03em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.rij{display:grid;grid-template-columns:190px 1fr;gap:10px;padding:6px 0;border-bottom:1px solid var(--grid);font-size:13.5px}
+.rij dt{color:var(--ink2)}
+.rij dd{margin:0;overflow-wrap:anywhere}
+dl{margin:0}
+.lijst{margin:0;padding:0;list-style:none;font-size:13.5px}
+.lijst li{padding:6px 0;border-bottom:1px solid var(--grid)}
+.lijst .klein{display:block}
+.mini{width:100%;font-size:12.5px}
+.mini th,.mini td{padding:5px 8px 5px 0;position:static}
+.mini tr.bijzaak td{color:var(--muted)}
+.sluit{font-size:20px;line-height:1;padding:4px 10px}
+.knoppen{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.knoppen a{font-size:13px;border:1px solid var(--as);border-radius:7px;padding:5px 10px;text-decoration:none}
+.knoppen a:hover{background:var(--wash)}
+@media (max-width:760px){.rij{grid-template-columns:1fr;gap:2px}.rij dt{font-size:12px;color:var(--muted)}}
+
+/* ---------- uitleg ---------- */
+dialog{border:1px solid var(--rand);border-radius:12px;background:var(--surface);color:var(--ink);
+  max-width:760px;width:calc(100% - 32px);padding:0}
+dialog::backdrop{background:rgba(0,0,0,.4)}
+.uitleg{padding:18px 22px 22px;max-height:80vh;overflow-y:auto}
+.uitleg h2{font-size:17px;margin:0 0 8px}
+.uitleg h3{font-size:14px;margin:18px 0 4px}
+.uitleg p,.uitleg li{font-size:13.5px;line-height:1.55}
+.uitleg p{margin:4px 0 10px}
+.uitleg ul{padding-left:18px;margin:4px 0 10px}
+.uitleg li{margin:4px 0}
+.uitleg .dicht{float:right}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div>
+    <h1>Patentchecker dure add-on geneesmiddelen</h1>
+    <p class="sub" id="sub"></p>
+  </div>
+  <div class="kopzijde">
+    <span class="bijgewerkt" id="bijgewerkt"></span>
+    <button id="uitlegknop" type="button" aria-haspopup="dialog">Uitleg en bronnen</button>
+  </div>
+</header>
+
+<div class="cijfers" id="cijfers"></div>
+
+<div class="filters">
+  <input type="search" id="zoek" placeholder="Zoek op stof, merk, ATC, houder of concurrent…" aria-label="Zoeken">
+  <select id="f-fase" aria-label="Status"><option value="">Alle statussen</option></select>
+  <select id="f-jaar" aria-label="Vroegste toetreding in jaar"><option value="">Toetreding: alle jaren</option></select>
+  <label class="vink"><input type="checkbox" id="f-eval">Aanvraag bij EMA</label>
+  <label class="vink"><input type="checkbox" id="f-studie">Biosimilarstudie</label>
+  <label class="vink"><input type="checkbox" id="f-afwijking">Afwijking Horizonscan</label>
+  <label class="vink"><input type="checkbox" id="f-wees">Weesgeneesmiddel</label>
+  <button id="wis" type="button">Wis filters</button>
+  <button id="kopieer" type="button" title="Kopieer een link naar precies deze weergave">Kopieer link</button>
+  <span class="telling" id="telling"></span>
+</div>
+
+<div class="tabs" role="tablist">
+  <button class="tab" role="tab" data-tab="tabel" aria-selected="true">Tabel</button>
+  <button class="tab" role="tab" data-tab="tijdlijn" aria-selected="false">Tijdlijn</button>
+  <button class="tab" role="tab" data-tab="vergelijking" aria-selected="false">Vergelijking Horizonscan</button>
+  <button class="tab" role="tab" data-tab="logboek" aria-selected="false">Wijzigingen</button>
+</div>
+
+<section class="kaart" id="v-tabel">
+  <div class="schuif"><table><thead><tr id="koppen"></tr></thead><tbody id="lichaam"></tbody></table></div>
+</section>
+
+<section class="kaart" id="v-tijdlijn" hidden>
+  <div class="grafiek" id="grafiek"></div>
+  <p class="voetnoot" id="tijdvoet"></p>
+  <div class="jaarlijst" id="jaarlijst"></div>
+</section>
+
+<section class="kaart" id="v-vergelijking" hidden>
+  <div class="vglkop" id="vglkop"></div>
+  <div class="schuif"><table><thead><tr>
+    <th>Middel</th><th>Octrooiregister (RVO)</th><th>Horizonscan-overzicht</th><th>Uitkomst</th>
+  </tr></thead><tbody id="vgllichaam"></tbody></table></div>
+  <p class="voetnoot" id="vglvoet" style="padding-top:12px"></p>
+</section>
+
+<section class="kaart" id="v-logboek" hidden>
+  <div id="logboek"></div>
+</section>
+
+<p class="voetnoot" style="padding-left:0;margin-top:18px" id="colofon"></p>
+</div>
+
+<div class="tip" id="tip" role="status"></div>
+<div class="dim" id="dim"></div>
+<aside class="paneel" id="paneel" aria-label="Details" tabindex="-1">
+  <div class="kop">
+    <div><h3 id="p-titel"></h3><div class="meta" id="p-meta"></div></div>
+    <button class="sluit" id="p-sluit" type="button" aria-label="Sluiten">×</button>
+  </div>
+  <div class="body" id="p-body"></div>
+</aside>
+
+<dialog id="uitleg"><div class="uitleg">
+  <button class="dicht" type="button" onclick="this.closest('dialog').close()">Sluiten</button>
+  <h2>Hoe lees je dit overzicht?</h2>
+  <p id="u-selectie"></p>
+  <h3>Welke datum telt</h3>
+  <ul>
+    <li><b>SPC tot</b>: de einddatum van het aanvullend beschermingscertificaat (SPC) op het
+      basisoctrooi, inclusief een eventuele <b>pediatrische verlenging</b> van zes maanden. Het basisoctrooi
+      is een Europees octrooi (EP-nummer); het SPC wordt per land verleend. Deze pagina leest het
+      Nederlandse register van RVO. De datum is in vrijwel alle EU-landen gelijk, omdat hij wordt berekend vanaf
+      dezelfde eerste EU-handelsvergunning.</li>
+    <li><b>Marktbescherming</b>: tien jaar na de eerste EU-handelsvergunning mag er geen generiek of
+      biosimilar op de markt komen, los van octrooien. Een nieuwe indicatie kan daar één jaar aan toevoegen;
+      dat staat niet in de brondata, dus hier is gerekend met tien jaar. Voor weesgeneesmiddelen geldt ook
+      tien jaar marktexclusiviteit per weesindicatie.</li>
+    <li><b>Vroegste toetreding</b> is de laatste van die twee. Het is een ondergrens, geen voorspelling:
+      vervolgoctrooien (op een toedieningsvorm, dosering of indicatie), rechtszaken en de eigen
+      lanceerplanning van fabrikanten kunnen de werkelijke intrede later leggen. Een generiek
+      mag wél al vóór die datum geregistreerd worden. Daarom kan een middel zowel "loopt binnenkort af"
+      zijn als al een geregistreerde generiek hebben.</li>
+  </ul>
+  <h3>Statussen</h3>
+  <ul id="u-fasen"></ul>
+  <h3>Bronnen</h3>
+  <ul id="u-bronnen"></ul>
+  <h3>Beperkingen</h3>
+  <ul>
+    <li>Het register zoekt op de titel van het certificaat. Staat het SPC onder een chemische naam, dan valt
+      de pagina terug op de datum uit het Horizonscan-overzicht (gemarkeerd met <span class="bron hs">HS</span>).</li>
+    <li>Vervolgoctrooien staan niet in het SPC-register. Het Horizonscan-overzicht noemt er een paar in
+      voetnoten; die staan bij het middel.</li>
+    <li>De kosten zijn de Zvw-vergoeding uit het GIP (add-on). Het laatste jaar is voorlopig en nog niet
+      volledig gedeclareerd.</li>
+    <li>Het wijzigingenlogboek begint bij de eerste run van deze pagina; eerdere wijzigingen zijn niet bekend.</li>
+  </ul>
+</div></dialog>
+
+<script>
+const DATA = /*DATA*/null/*DATA*/;
+const M = DATA.middelen;
+const B = DATA.bronnen;
+const JAAR = B.gip_jaren[B.gip_jaren.length-1];
+const VORIG = B.gip_jaren[B.gip_jaren.length-2];
+const VANDAAG = DATA.bijgewerkt;
+
+const $ = s=>document.querySelector(s);
+const $$ = s=>[...document.querySelectorAll(s)];
+const esc = s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const nl = new Intl.NumberFormat("nl-NL");
+const eurKort = n=>{
+  if(!n) return "—";
+  const [d,e] = n>=1e9?[1e9,"mld"]:n>=1e6?[1e6,"mln"]:[1e3,"dzd"];
+  return "€ "+(n/d).toLocaleString("nl-NL",{maximumFractionDigits:1})+" "+e;
+};
+const MND = ["jan","feb","mrt","apr","mei","jun","jul","aug","sep","okt","nov","dec"];
+const MAAND = ["januari","februari","maart","april","mei","juni","juli","augustus","september","oktober","november","december"];
+const dat = iso=>{ if(!iso) return ""; const [j,m,d]=iso.split("-"); return `${+d} ${MND[m-1]} ${j}`; };
+const datLang = iso=>{ if(!iso) return ""; const [j,m,d]=iso.split("-"); return `${+d} ${MAAND[m-1]} ${j}`; };
+const meervoud = (n,een,veel)=>`${nl.format(n)} ${n===1?een:veel}`;
+function maandenTot(iso){
+  if(!iso) return null;
+  const [j,m]=iso.split("-").map(Number), [vj,vm]=VANDAAG.split("-").map(Number);
+  return (j-vj)*12+(m-vm);
+}
+function relatief(iso){
+  const n = maandenTot(iso); if(n==null) return "";
+  if(iso<=VANDAAG) return n===0?"deze maand verstreken":n>-24?`${-n} mnd geleden`:`${Math.floor(-n/12)} jaar geleden`;
+  if(n<24) return n===0?"deze maand":`over ${n} mnd`;
+  return `over ${Math.floor(n/12)} jr ${n%12?n%12+" mnd":""}`.trim();
+}
+
+const FASEN = {
+  concurrentie:["Concurrentie toegelaten","Bescherming verlopen en er is minstens één biosimilar of generiek geregistreerd (EU) of een tweede handelsvergunning op de NL add-on-lijst."],
+  vrij:["Verlopen, nog geen alternatief","Bescherming verlopen, maar nog geen geregistreerde biosimilar of generiek."],
+  binnenkort:[`Loopt af ≤ ${DATA.binnenkort/12} jaar`,`De vroegste toetreding valt binnen ${DATA.binnenkort} maanden.`],
+  beschermd:["Beschermd","Vroegste toetreding ligt verder dan dat in de toekomst."],
+  onbekend:["Onbekend","Geen SPC gevonden in het register of in het Horizonscan-overzicht, of alleen een lopende aanvraag."],
+  groep:["Productgroep","Geen enkelvoudige stof; een SPC-datum is hier niet van toepassing."],
+};
+const FASE_VOLGORDE = ["binnenkort","vrij","concurrentie","beschermd","onbekend","groep"];
+
+M.forEach(m=>{
+  m._k = m.kosten[JAAR]||0; m._kv = m.kosten[VORIG]||0;
+  m._afwijking = !!(m.hs && String(m.hs.vergelijking).startsWith("verschil"));
+  m._z = [m.naam,m.inn,m.atc,...m.merken,m.spc?.houder,m.spc?.basis,
+          ...m.ema_kopie.map(k=>k.naam+" "+k.houder),...m.pijplijn.map(p=>p.merk+" "+p.fabrikant),
+          ...m.studies.map(s=>s.sponsor+" "+s.nct),...Object.values(m.nl.reg)].join(" ").toLowerCase();
+});
+
+/* ---------------- staat en URL ---------------- */
+const STAAT = {tab:"tabel",q:"",fase:"",jaar:"",eval:false,studie:false,afwijking:false,wees:false,
+               sort:"toetreding",richting:1};
+const STANDAARD = {...STAAT};
+function naarHash(extra){
+  const p = new URLSearchParams();
+  for(const k in STAAT) if(STAAT[k]!==STANDAARD[k]) p.set(k,STAAT[k]);
+  if(extra) for(const k in extra) p.set(k,extra[k]);
+  return p.toString();
+}
+function leesHash(){
+  const h = location.hash.replace(/^#/,""); const p = new URLSearchParams(h);
+  Object.assign(STAAT,STANDAARD);                 // altijd vanaf de standaard: geen hangende filters
+  for(const [k,v] of p){
+    if(!(k in STAAT)) continue;
+    if(typeof STANDAARD[k]==="boolean") STAAT[k] = v==="true";
+    else if(k==="richting") STAAT[k] = v==="-1"?-1:1;
+    else if(k==="tab" && !["tabel","tijdlijn","vergelijking","logboek"].includes(v)) continue;
+    else if(k==="fase" && !FASEN[v]) continue;        // onbekende waarde negeren, niet breken
+    else STAAT[k] = v;
+  }
+  return p.get("atc");
+}
+
+/* ---------------- filteren ---------------- */
+function toetredingsjaar(m){ return m.toetreding ? (m.toetreding<=VANDAAG ? "verstreken" : m.toetreding.slice(0,4)) : ""; }
+function gefilterd(){
+  const q = STAAT.q.trim().toLowerCase().split(/\s+/).filter(Boolean);
+  return M.filter(m=>
+    q.every(w=>m._z.includes(w)) &&
+    (!STAAT.fase || m.fase===STAAT.fase) &&
+    (!STAAT.jaar || toetredingsjaar(m)===STAAT.jaar) &&
+    (!STAAT.eval || m.ema_eval.length) &&
+    (!STAAT.studie || m.studies.length) &&
+    (!STAAT.afwijking || m._afwijking) &&
+    (!STAAT.wees || m.wees));
+}
+
+/* ---------------- kerncijfers ---------------- */
+function cijfers(){
+  const som = f=>M.filter(f).reduce((s,m)=>s+m._k,0);
+  const tel = f=>M.filter(f).length;
+  const t = [
+    [meervoud(M.length,"middel","middelen"),`boven € ${nl.format(DATA.drempel/1e6)} mln per jaar`,`${eurKort(som(()=>true))} in ${JAAR}*`,{}],
+    [tel(m=>m.fase==="binnenkort"),FASEN.binnenkort[0],`${eurKort(som(m=>m.fase==="binnenkort"))} in ${JAAR}*`,{fase:"binnenkort"}],
+    [tel(m=>m.fase==="vrij"),FASEN.vrij[0],`${eurKort(som(m=>m.fase==="vrij"))} in ${JAAR}*`,{fase:"vrij"}],
+    [tel(m=>m.fase==="concurrentie"),FASEN.concurrentie[0],`${eurKort(som(m=>m.fase==="concurrentie"))} in ${JAAR}*`,{fase:"concurrentie"}],
+    [tel(m=>m.ema_eval.length),"met aanvraag bij EMA","biosimilar of generiek in beoordeling",{eval:true}],
+    [tel(m=>m._afwijking),"afwijkend van Horizonscan","andere datum dan het register",{afwijking:true}],
+  ];
+  $("#cijfers").innerHTML = t.map(([n,l,h,f],i)=>
+    `<button class="tegel" type="button" data-i="${i}"><div class="n">${typeof n==="number"?nl.format(n):esc(n)}</div>
+     <div class="l">${esc(l)}</div><div class="h">${esc(h)}</div></button>`).join("");
+  $$("#cijfers .tegel").forEach(b=>b.onclick=()=>{
+    Object.assign(STAAT,{...STANDAARD,tab:"tabel"},t[b.dataset.i][3]); zetHash(); teken();
+  });
+}
+
+/* ---------------- tabel ---------------- */
+const KOLOMMEN = [
+  {k:"naam",t:"Middel",s:m=>m.naam.toLowerCase()},
+  {k:"kosten",t:`Kosten ${JAAR}*`,s:m=>-m._k,num:true},
+  {k:"spc",t:"SPC tot",s:m=>m.spc?.einde||"9"},
+  {k:"hs",t:"Horizonscan",s:m=>m.hs?.datum||(m.hs?.verlopen?"0":"9")},
+  /* Eerst wat nog komt (dichtstbij bovenaan), dan wat al verstreken is (meest recent eerst). */
+  {k:"toetreding",t:"Vroegste toetreding",s:m=>!m.toetreding?"3":m.toetreding>VANDAAG?"1"+m.toetreding:"2"+(99999999-+m.toetreding.replace(/-/g,""))},
+  {k:"fase",t:"Status",s:m=>FASE_VOLGORDE.indexOf(m.fase)},
+  {k:"ema",t:"EMA: geregistreerd / in beoordeling",s:m=>-(m.ema_kopie.length*100+m.ema_eval.length)},
+  {k:"pijp",t:"Pijplijn",s:m=>-(m.pijplijn.length+m.studies.length)},
+  {k:"nl",t:"NL-vergunningen",s:m=>-m.nl.n,num:true},
+];
+function spcCel(m){
+  if(m.groep) return `<span class="nul">n.v.t.</span>`;
+  const s = m.spc;
+  if(!s) return `<span class="nul">niet gevonden</span>`;
+  const bron = s.bron==="Horizonscan" ? `<span class="bron hs" title="Niet gevonden in het register; datum uit het Horizonscan-overzicht">HS</span>` : "";
+  if(!s.einde) return s.klasse==="aanvraag" ? `<span class="klein">aanvraag loopt</span>` :
+    `verlopen${bron}<br><span class="klein">${s.einde_register?"ongeldig (basisoctrooi vervallen)":"datum onbekend"}</span>`;
+  const ext = s.verlenging_loopt ? ` <span class="klein" title="Pediatrische verlenging aangevraagd">+ verlenging?</span>` : "";
+  return `${dat(s.einde)}${bron}${ext}<br><span class="klein">${esc(relatief(s.einde))}</span>`;
+}
+function vglLabel(m){
+  if(!m.hs) return `<span class="nul">—</span>`;
+  const v = String(m.hs.vergelijking);
+  const hsTekst = m.hs.datum ? dat(m.hs.datum) : m.hs.verlopen ? "verlopen" : esc(m.hs.spc);
+  let uitk = "";
+  if(v==="gelijk") uitk = `<span class="vgl gelijk">= gelijk</span>`;
+  else if(v==="verlenging") uitk = `<span class="vgl verlenging">+6 mnd verlenging</span>`;
+  else if(v.startsWith("verschil")) uitk = `<span class="vgl verschil">≠ wijkt af</span>`;
+  return `${hsTekst}<br>${uitk||`<span class="klein">${m.spc?.bron==="Horizonscan"?"enige bron":""}</span>`}`;
+}
+function tabel(rijen){
+  const k = KOLOMMEN.find(k=>k.k===STAAT.sort)||KOLOMMEN[4];
+  rijen = [...rijen].sort((a,b)=>{const x=k.s(a),y=k.s(b); return (x<y?-1:x>y?1:0)*STAAT.richting || b._k-a._k;});
+  $("#koppen").innerHTML = KOLOMMEN.map(c=>`<th class="sorteer${c.num?" num":""}" data-k="${c.k}" aria-sort="${
+      c.k===STAAT.sort?(STAAT.richting>0?"ascending":"descending"):"none"}">${esc(c.t)}${
+      c.k===STAAT.sort?` <span class="pijl">${STAAT.richting>0?"▲":"▼"}</span>`:""}</th>`).join("");
+  $$("#koppen th").forEach(th=>th.onclick=()=>{
+    if(STAAT.sort===th.dataset.k) STAAT.richting*=-1; else {STAAT.sort=th.dataset.k; STAAT.richting=1;}
+    zetHash(); teken();
+  });
+  if(!rijen.length){ $("#lichaam").innerHTML = `<tr><td colspan="${KOLOMMEN.length}" class="leeg">Geen middelen bij deze filters.</td></tr>`; return; }
+  $("#lichaam").innerHTML = rijen.map(m=>{
+    const kopie = m.ema_kopie.filter(x=>x.status==="Authorised").length, opinie = m.ema_kopie.length-kopie;
+    return `<tr class="klik" data-atc="${m.atc}">
+    <td><span class="stof">${esc(m.naam)}</span>${m.wees?` <span class="klein" title="${m.wees==="ja"?"Weesgeneesmiddel":"Een latere formulering van dezelfde houder is weesgeneesmiddel"}">${m.wees==="ja"?"wees":"deels wees"}</span>`:""}<br>
+      <span class="merk">${esc(m.merken.join(", ")||m.atc)}</span></td>
+    <td class="num">${eurKort(m._k)}<br><span class="klein">${nl.format(m.gebruikers[JAAR]||0)} gebr.</span></td>
+    <td class="dat">${spcCel(m)}</td>
+    <td class="dat">${vglLabel(m)}</td>
+    <td class="dat">${m.toetreding?`${dat(m.toetreding)}<br><span class="klein">${
+      m.toetreding_door==="markt"?"marktbescherming":"SPC"} · ${esc(relatief(m.toetreding))}</span>`:`<span class="nul">—</span>`}</td>
+    <td><span class="label ${m.fase}">${esc(FASEN[m.fase][0])}</span></td>
+    <td class="tel">${kopie?`<b>${kopie}</b> geregistreerd`:`<span class="nul">0</span>`}${
+      opinie?` <span class="klein">+${opinie} pos. advies</span>`:""}${
+      m.ema_eval.length?`<br><b>${m.ema_eval.length}</b> in beoordeling`:""}</td>
+    <td class="tel">${m.pijplijn.length?`${m.pijplijn.length} Horizonscan`:""}${
+      m.pijplijn.length&&m.studies.length?"<br>":""}${m.studies.length?`${m.studies.length} ${m.studies.length===1?"studie":"studies"}`:""}${
+      !m.pijplijn.length&&!m.studies.length?`<span class="nul">—</span>`:""}</td>
+    <td class="num">${m.nl.n||`<span class="nul">0</span>`}</td></tr>`;}).join("");
+  $$("#lichaam tr.klik").forEach(tr=>tr.onclick=()=>open(tr.dataset.atc));
+}
+
+/* ---------------- tijdlijn ---------------- */
+function tijdlijn(rijen){
+  const tip = $("#tip");
+  const huidig = +VANDAAG.slice(0,4);
+  const r = rijen.filter(m=>m.toetreding);
+  const jaren = [...new Set(r.filter(m=>m.toetreding>VANDAAG).map(m=>+m.toetreding.slice(0,4)))];
+  const eind = Math.max(huidig+8, ...jaren);
+  const kolommen = [{sleutel:"verstreken",label:"Verstreken",m:r.filter(m=>m.toetreding<=VANDAAG)}];
+  for(let j=huidig;j<=eind;j++) kolommen.push({sleutel:String(j),label:String(j),m:r.filter(m=>m.toetreding>VANDAAG&&+m.toetreding.slice(0,4)===j)});
+  kolommen.forEach(k=>{k.som=k.m.reduce((s,m)=>s+m._k,0); k.m.sort((a,b)=>b._k-a._k);});
+  const max = Math.max(...kolommen.map(k=>k.som),1);
+  const W=1100,H=320,L=64,R=10,T=22,O=34, bw=(W-L-R)/kolommen.length, h=H-T-O;
+  const stap = [5e7,1e8,2e8,2.5e8,5e8,1e9].find(s=>max/s<=5)||1e9;
+  let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Kosten per jaar waarin de bescherming vervalt">`;
+  for(let v=0; v<=max+1; v+=stap){
+    const y=T+h-(v/max)*h;
+    svg+=`<line x1="${L}" x2="${W-R}" y1="${y}" y2="${y}" stroke="var(--grid)" stroke-width="1"/>
+          <text x="${L-8}" y="${y+4}" text-anchor="end">${eurKort(v).replace("€ ","€")}</text>`;
+  }
+  kolommen.forEach((k,i)=>{
+    const x=L+i*bw+bw*.18, w=bw*.64, hh=(k.som/max)*h, y=T+h-hh;
+    const kleur = k.sleutel==="verstreken"?"var(--staaf2)":"var(--staaf)";
+    svg+=`<g class="kolom" data-j="${k.sleutel}">
+      ${hh>0?`<path class="st" d="M${x},${T+h} v${-(hh-4)} q0,-4 4,-4 h${w-8} q4,0 4,4 v${hh-4} z" fill="${kleur}"/>`:""}
+      ${k.m.length?`<text class="waarde" x="${x+w/2}" y="${y-6}" text-anchor="middle">${k.m.length}</text>`:""}
+      <text x="${x+w/2}" y="${H-12}" text-anchor="middle">${k.label}</text>
+      <rect class="raak" x="${L+i*bw}" y="${T}" width="${bw}" height="${h+O}"/></g>`;
+  });
+  svg+=`<line x1="${L}" x2="${W-R}" y1="${T+h}" y2="${T+h}" stroke="var(--as)"/></svg>`;
+  $("#grafiek").innerHTML = svg;
+  $$("#grafiek g.kolom").forEach(g=>{
+    const k = kolommen.find(k=>k.sleutel===g.dataset.j);
+    g.onmousemove = e=>{
+      if(!k.m.length){ tip.style.display="none"; return; }
+      tip.innerHTML = `<b>${k.label==="Verstreken"?"Bescherming al verstreken":"Vroegste toetreding in "+k.label}</b>`+
+        k.m.slice(0,8).map(m=>`<div><span>${esc(m.naam)}</span><span>${eurKort(m._k)}</span></div>`).join("")+
+        (k.m.length>8?`<div><span>en ${k.m.length-8} meer</span><span></span></div>`:"")+
+        `<div style="border-top:1px solid var(--grid);margin-top:4px;padding-top:4px"><span>Samen (${JAAR}*)</span><span>${eurKort(k.som)}</span></div>`;
+      tip.style.display="block";
+      const x = Math.min(e.clientX+14, innerWidth-tip.offsetWidth-8), y = Math.min(e.clientY+14, innerHeight-tip.offsetHeight-8);
+      tip.style.left=x+"px"; tip.style.top=y+"px";
+    };
+    g.onmouseleave = ()=>tip.style.display="none";
+    g.onclick = ()=>{ if(!k.m.length) return; tip.style.display="none"; STAAT.jaar=k.sleutel; STAAT.tab="tabel"; zetHash(); teken(); };
+  });
+  $("#tijdvoet").textContent = `Hoogte = Zvw-vergoeding ${JAAR}* van de middelen waarvan de vroegste toetreding in dat jaar valt `+
+    `(de laatste van SPC-einde en marktbescherming); het getal boven de staaf is het aantal middelen. `+
+    `Klik op een staaf om die middelen in de tabel te zien. Productgroepen en middelen zonder datum staan er niet in.`;
+  $("#jaarlijst").innerHTML = kolommen.filter(k=>k.m.length).map(k=>
+    `<h4>${k.label==="Verstreken"?"Al verstreken":k.label} <span class="klein">· ${eurKort(k.som)}</span></h4>`+
+    k.m.map(m=>`<a data-atc="${m.atc}"><span>${esc(m.naam)} <span class="klein">${dat(m.toetreding)}</span></span><span>${eurKort(m._k)}</span></a>`).join("")).join("");
+  $$("#jaarlijst a").forEach(a=>a.onclick=()=>open(a.dataset.atc));
+}
+
+/* ---------------- vergelijking ---------------- */
+function vergelijking(rijen){
+  const r = rijen.filter(m=>m.hs||(!m.groep));
+  const soort = m=>{
+    if(!m.hs) return "geen";
+    const v=String(m.hs.vergelijking);
+    return v==="gelijk"?"gelijk":v==="verlenging"?"verlenging":v.startsWith("verschil")?"verschil":
+      (m.spc?.bron==="Horizonscan"?"alleenhs":"geen");
+  };
+  const tel = s=>r.filter(m=>soort(m)===s).length;
+  $("#vglkop").innerHTML = [
+    [tel("gelijk"),"zelfde datum","register en Horizonscan"],
+    [tel("verlenging"),"6 maanden later in register","pediatrische verlenging"],
+    [tel("verschil"),"wijkt af","nakijken"],
+    [tel("alleenhs"),"alleen in Horizonscan","niet in register op stofnaam"],
+    [r.filter(m=>!m.hs&&!m.groep).length,"niet in Horizonscan",`overzicht ${B.pdf_stand||"—"}`],
+  ].map(([n,l,h])=>`<div class="tegel"><div class="n">${n}</div><div class="l">${l}</div><div class="h">${h}</div></div>`).join("");
+  const volgorde = {verschil:0,alleenhs:1,verlenging:2,gelijk:3,geen:4};
+  const lijst = [...r].sort((a,b)=>volgorde[soort(a)]-volgorde[soort(b)]||b._k-a._k);
+  $("#vgllichaam").innerHTML = lijst.map(m=>{
+    const s=soort(m), v=String(m.hs?.vergelijking||"");
+    const rvo = m.spc?.bron==="RVO" ? `${m.spc.einde?dat(m.spc.einde):"aanvraag loopt"} <span class="klein">${esc(m.spc.status)}${
+        m.spc.verlenging?" · verlenging: "+esc(m.spc.verlenging):""}</span>` :
+        (m.spc?.aanvraag_rvo?`<span class="klein">alleen aanvraag ${esc(m.spc.aanvraag_rvo)}</span>`:`<span class="nul">niet gevonden</span>`);
+    const hs = m.hs ? `${esc(m.hs.spc)}` : `<span class="nul">staat er niet in</span>`;
+    const uit = {gelijk:`<span class="vgl gelijk">= gelijk</span>`,
+      verlenging:`<span class="vgl verlenging">register 6 mnd later: pediatrische verlenging</span>`,
+      verschil:`<span class="vgl verschil">≠ ${v.includes(":")?(()=>{const d=+v.split(":")[1];return (d>0?"register ":"Horizonscan ")+Math.round(Math.abs(d)/30.4)+" mnd later";})():"status verschilt"}</span>`,
+      alleenhs:`<span class="klein">Horizonscan-datum overgenomen</span>`, geen:`<span class="nul">—</span>`}[s];
+    return `<tr class="klik" data-atc="${m.atc}"><td><span class="stof">${esc(m.naam)}</span><br><span class="merk">${esc(m.merken.join(", "))}</span></td>
+      <td>${rvo}</td><td>${hs}</td><td>${uit}</td></tr>`;}).join("");
+  $$("#vgllichaam tr.klik").forEach(tr=>tr.onclick=()=>open(tr.dataset.atc));
+  $("#vglvoet").innerHTML = B.pdf_fout ? `Het nieuwste Horizonscan-overzicht patentverloop kon bij deze update niet worden gelezen `+
+    `(${esc(B.pdf_fout)}); de vergelijking ontbreekt tot dat is opgelost.` : B.pdf_stand ? `Horizonscan-overzicht patentverloop, stand ${esc(B.pdf_stand)}`+
+    (B.pdf_url?` (<a href="${esc(B.pdf_url)}" target="_blank" rel="noopener">bron</a>)`:"")+
+    `. Dat overzicht verschijnt ongeveer eens per jaar; het register wordt doorlopend bijgewerkt. `+
+    `Een verschil van precies zes maanden is bijna altijd een pediatrische verlenging die na het overzicht is toegekend.` : "Horizonscan-overzicht niet beschikbaar bij deze bouw.";
+}
+
+/* ---------------- logboek ---------------- */
+function logboek(){
+  const L = DATA.logboek, zicht = new Set(gefilterd().map(m=>m.atc));
+  const regels = L.regels.filter(r=>zicht.has(r.atc)||!M.some(m=>m.atc===r.atc));
+  if(!regels.length){
+    $("#logboek").innerHTML = `<p class="leeg">Nog geen wijzigingen vastgelegd. Het logboek begint op ${datLang(L.begin)};
+      bij elke maandelijkse update verschijnt hier wat er veranderde: een nieuwe of verlengde SPC-datum, een nieuwe
+      biosimilar of generiek bij EMA, een aanvraag in beoordeling, een nieuwe studie of een extra handelsvergunning in Nederland.</p>`;
+    return;
+  }
+  const per = {}; regels.forEach(r=>(per[r.datum]=per[r.datum]||[]).push(r));
+  const SOORT = {bron:"bron",nieuw:"nieuw",weg:"uit overzicht",spc:"SPC",ema:"EMA",aanvraag:"aanvraag",studie:"studie",pijplijn:"Horizonscan",nl:"NL-lijst"};
+  $("#logboek").innerHTML = Object.keys(per).sort().reverse().map(d=>
+    `<div class="peil"><h3>${datLang(d)}</h3><span class="tel">${meervoud(per[d].length,"wijziging","wijzigingen")}</span></div>`+
+    per[d].map(r=>`<div class="mut" data-atc="${r.atc}"><span class="soort ${r.soort}">${SOORT[r.soort]||r.soort}</span>
+      <span class="stof">${esc(r.naam)}</span><span>${esc(r.tekst)}</span></div>`).join("")).join("");
+  $$("#logboek .mut").forEach(el=>el.onclick=()=>{ if(M.some(m=>m.atc===el.dataset.atc)) open(el.dataset.atc); });
+}
+
+/* ---------------- detailpaneel ---------------- */
+const rij = (dt,dd)=>dd||dd===0?`<div class="rij"><dt>${dt}</dt><dd>${dd}</dd></div>`:"";
+const espacenet = ep=>`<a href="https://worldwide.espacenet.com/patent/search?q=pn%3D${encodeURIComponent(ep)}" target="_blank" rel="noopener">${esc(ep)}</a>`;
+function open(atc, nietInHash){
+  const m = M.find(x=>x.atc===atc); if(!m) return;
+  $("#p-titel").textContent = m.naam;
+  $("#p-meta").innerHTML = `${esc(m.atc)} · ${esc(m.merken.join(", ")||m.inn)} · <span class="label ${m.fase}">${esc(FASEN[m.fase][0])}</span>`;
+  let h = "";
+  if(m.groep) h += `<div class="groep"><p style="font-size:13.5px">${esc(m.groep)}</p></div>`;
+
+  h += `<div class="groep"><h4>Kosten en gebruik (Zvw, add-on)</h4><dl>`+
+    B.gip_jaren.slice(-3).map(j=>rij(j+(B.voorlopig.includes(j)?"*":""),`${eurKort(m.kosten[j])} · ${nl.format(m.gebruikers[j]||0)} gebruikers`)).join("")+`</dl></div>`;
+
+  if(!m.groep){
+    const s = m.spc;
+    h += `<div class="groep"><h4>Bescherming</h4><dl>`+
+      rij("Vroegste toetreding", m.toetreding?`<b>${datLang(m.toetreding)}</b> (${m.toetreding_door==="markt"?"einde marktbescherming":"einde SPC"}; ${esc(relatief(m.toetreding))})`:"onbekend")+
+      rij("SPC tot", s ? (s.einde?datLang(s.einde):s.klasse==="aanvraag"?"aanvraag loopt":"verlopen")+
+        (s.einde_register&&s.einde_register!==s.einde?` <span class="klein">(zou zijn afgelopen op ${datLang(s.einde_register)})</span>`:"")+(s.bron==="Horizonscan"?` <span class="bron hs">HS</span> <span class="klein">niet op stofnaam in het register gevonden${s.aanvraag_rvo?"; register kent alleen aanvraag "+esc(s.aanvraag_rvo):""}</span>`:"") : "geen certificaat gevonden")+
+      (s&&s.bron==="RVO" ? rij("Status register", esc(s.status)) + rij("Certificaat", `${esc(s.nr)} · ${esc(s.titel)}`) +
+         rij("Basisoctrooi", s.basis?espacenet(s.basis):"") + rij("Houder", esc(s.houder)) +
+         rij("Pediatrische verlenging", esc(s.verlenging)||"geen") : "")+
+      rij("Eerste EU-vergunning", m.eerste_vergunning?datLang(m.eerste_vergunning):"")+
+      rij("Marktbescherming tot", m.marktbescherming?`${datLang(m.marktbescherming)} <span class="klein">(10 jaar; +1 jaar mogelijk bij nieuwe indicatie)</span>`:"")+
+      rij("Weesgeneesmiddel", m.wees==="ja"?"ja (10 jaar marktexclusiviteit per weesindicatie)":
+          m.wees==="deels"?`een latere formulering (${esc(m.merken_later.join(", "))}) heeft een weesstatus`:"")+
+      rij("Latere eigen producten", esc(m.merken_later.join(", ")))+`</dl></div>`;
+
+    if(m.certificaten.length){
+      h += `<div class="groep"><h4>Alle certificaten in het register (${m.certificaten.length})</h4>
+        <table class="mini"><thead><tr><th>Nr</th><th>Titel</th><th>Status</th><th>Einde</th></tr></thead><tbody>`+
+        m.certificaten.map(c=>`<tr class="${c.hoofd?"":"bijzaak"}"><td>${esc(c.nr)}</td><td>${esc(c.titel)}<br><span class="klein">${esc(c.houder)}${c.basis?" · "+esc(c.basis):""}</span></td>
+          <td>${esc(c.status)}</td><td class="dat">${c.einde?dat(c.einde):""}</td></tr>`).join("")+
+        `</tbody></table>${m.certificaten.some(c=>!c.hoofd)?`<p class="klein">Grijs: combinaties of afgeleide stoffen, die niet meetellen voor de datum hierboven.</p>`:""}</div>`;
+    }
+    if(m.hs){
+      const voet = m.hs.voetnoot ? B.pdf_voetnoten.filter(v=>v.startsWith("*".repeat(m.hs.voetnoot)+" ") && v.toLowerCase().includes(m.inn.toLowerCase())) : [];
+      h += `<div class="groep"><h4>Horizonscan-overzicht (stand ${esc(B.pdf_stand)})</h4><dl>`+
+        rij("SPC-datum", esc(m.hs.spc)) + rij("Generieken en biosimilars", esc(m.hs.concurrentie)) +
+        rij("Weesindicatie", esc(m.hs.wees)) + voet.map(v=>rij("Vervolgoctrooi", esc(v.replace(/^\*+\s*/,"")))).join("")+`</dl></div>`;
+    }
+  }
+
+  const kopie = m.ema_kopie, ev = m.ema_eval;
+  h += `<div class="groep"><h4>Biosimilars en generieken bij EMA</h4>`+
+    (kopie.length||ev.length ? `<ul class="lijst">`+
+      kopie.map(k=>`<li>${k.url?`<a href="${esc(k.url)}" target="_blank" rel="noopener">${esc(k.naam)}</a>`:esc(k.naam)} · ${k.soort}
+        <span class="klein">${k.status==="Authorised"?"geregistreerd "+datLang(k.datum):"positief CHMP-advies "+datLang(k.datum)} · ${esc(k.houder)}</span></li>`).join("")+
+      ev.map(e=>`<li>Aanvraag in beoordeling <span class="klein">gestart ${esc(e.start)} · ${esc(e.type)} · EMA-lijst ${esc(B.eval)}</span></li>`).join("")+`</ul>` :
+      `<p class="klein">Geen geregistreerde of aangevraagde biosimilar of generiek.</p>`)+
+    (m.ema_overig.length?`<p class="klein">Andere producten met dezelfde stof, niet als biosimilar of generiek gemarkeerd: ${esc(m.ema_overig.join(", "))}.</p>`:"")+
+    (m.ema_kopie_weg?`<p class="klein">Daarnaast ${meervoud(m.ema_kopie_weg,"ingetrokken of vervallen product","ingetrokken of vervallen producten")}.</p>`:"")+`</div>`;
+
+  if(m.pijplijn.length) h += `<div class="groep"><h4>In de Horizonscan-pijplijn</h4><ul class="lijst">`+
+    m.pijplijn.map(p=>`<li>${esc(p.merk||p.stof)} · ${esc(p.fabrikant)} <span class="klein">${esc(p.reden)}${p.fase?" · "+esc(p.fase):""}${
+      p.verwacht?" · verwacht "+esc(p.verwacht):""}${p.indiening?" · ingediend "+esc(p.indiening):""}</span></li>`).join("")+`</ul></div>`;
+
+  if(m.studies.length) h += `<div class="groep"><h4>Biosimilarstudies (ClinicalTrials.gov)</h4><ul class="lijst">`+
+    m.studies.map(s=>`<li><a href="https://clinicaltrials.gov/study/${esc(s.nct)}" target="_blank" rel="noopener">${esc(s.nct)}</a> · ${esc(s.sponsor)}
+      <span class="klein">${esc(s.fase.replace(/PHASE/g,"fase "))} · ${esc(s.status.toLowerCase().replace(/_/g," "))}${s.start?" · start "+esc(s.start):""}</span>
+      <span class="klein">${esc(s.titel)}</span></li>`).join("")+`</ul></div>`;
+
+  const reg = Object.entries(m.nl.reg);
+  h += `<div class="groep"><h4>Nederlandse add-on-lijst (Farmatec ${esc(B.gs)})</h4>`+
+    (reg.length?`<ul class="lijst">${reg.map(([r,f])=>`<li>${esc(r)} <span class="klein">${esc(f)}</span></li>`).join("")}</ul>
+      <p class="klein">${meervoud(reg.length,"handelsvergunning","handelsvergunningen")}; parallelimport telt niet apart mee.</p>`:
+      `<p class="klein">Niet op de lijst.</p>`)+`</div>`;
+
+  h += `<div class="knoppen">
+    <a href="${esc(DATA.addon)}#atc=${esc(m.atc)}" target="_blank" rel="noopener">Add-on dashboard</a>
+    ${m.ema_url?`<a href="${esc(m.ema_url)}" target="_blank" rel="noopener">EPAR bij EMA</a>`:""}
+    <a href="https://mijnoctrooi.rvo.nl/fo-eregister-view/" target="_blank" rel="noopener">Octrooiregister RVO</a>
+    <a href="${esc(DATA.horizonscan)}" target="_blank" rel="noopener">Horizonscan-overzicht</a></div>`;
+
+  $("#p-body").innerHTML = h;
+  $("#paneel").classList.add("aan"); $("#dim").classList.add("aan");
+  $("#paneel").focus(); $("#p-body").scrollTop = 0;
+  if(!nietInHash) history.replaceState(null,"","#"+naarHash({atc}));
+}
+function sluit(){
+  $("#paneel").classList.remove("aan"); $("#dim").classList.remove("aan");
+  history.replaceState(null,"","#"+naarHash());
+}
+$("#p-sluit").onclick = sluit; $("#dim").onclick = sluit;
+addEventListener("keydown",e=>{ if(e.key==="Escape" && $("#paneel").classList.contains("aan")) sluit(); });
+
+/* ---------------- samenstellen ---------------- */
+function zetHash(){ history.replaceState(null,"","#"+naarHash()); }
+function teken(){
+  $("#zoek").value = STAAT.q; $("#f-fase").value = STAAT.fase; $("#f-jaar").value = STAAT.jaar;
+  ["eval","studie","afwijking","wees"].forEach(k=>$("#f-"+k).checked = STAAT[k]);
+  $$(".tab").forEach(t=>t.setAttribute("aria-selected", t.dataset.tab===STAAT.tab));
+  ["tabel","tijdlijn","vergelijking","logboek"].forEach(t=>$("#v-"+t).hidden = t!==STAAT.tab);
+  const r = gefilterd();
+  $("#telling").textContent = r.length===M.length ? meervoud(M.length,"middel","middelen") : `${r.length} van ${M.length} middelen`;
+  if(STAAT.tab==="tabel") tabel(r);
+  if(STAAT.tab==="tijdlijn") tijdlijn(r);
+  if(STAAT.tab==="vergelijking") vergelijking(r);
+  if(STAAT.tab==="logboek") logboek();
+}
+
+function init(){
+  $("#sub").textContent = `De add-on geneesmiddelen met meer dan € ${nl.format(DATA.drempel/1e6)} mln Zvw-vergoeding per jaar: `+
+    `wanneer vervalt de octrooibescherming (SPC), en welke biosimilars en generieken komen eraan.`;
+  $("#bijgewerkt").textContent = "Bijgewerkt " + datLang(DATA.bijgewerkt);
+  for(const f of FASE_VOLGORDE) $("#f-fase").insertAdjacentHTML("beforeend",`<option value="${f}">${FASEN[f][0]}</option>`);
+  const jaren = [...new Set(M.map(toetredingsjaar).filter(Boolean))].sort();
+  for(const j of jaren) $("#f-jaar").insertAdjacentHTML("beforeend",`<option value="${j}">${j==="verstreken"?"Al verstreken":"Toetreding in "+j}</option>`);
+
+  $("#u-selectie").textContent = `Dit overzicht volgt elk add-on geneesmiddel (ATC-5) waarvan de Zvw-vergoeding in ${VORIG} of ${JAAR}* `+
+    `boven € ${nl.format(DATA.drempel/1e6)} mln lag: ${M.length} middelen. Twee jaren, omdat ${JAAR} nog niet volledig gedeclareerd is. `+
+    `Het wordt maandelijks bijgewerkt.`;
+  $("#u-fasen").innerHTML = FASE_VOLGORDE.map(f=>`<li><span class="label ${f}">${FASEN[f][0]}</span> ${FASEN[f][1]}</li>`).join("");
+  $("#u-bronnen").innerHTML = [
+    `<b>Octrooiregister RVO</b> (Octrooicentrum Nederland): SPC's, einddatum en pediatrische verlenging.`,
+    `<b>EMA-medicijnentabel</b>: geregistreerde biosimilars en generieken, eerste vergunningsdatum, weesstatus.`,
+    `<b>EMA-lijst aanvragen in beoordeling</b> (${esc(B.eval||"—")}): biosimilars en generieken vóór registratie.`,
+    `<b>Horizonscan Geneesmiddelen</b>: biosimilars en generieken in de pijplijn, en het overzicht patentverloop (stand ${esc(B.pdf_stand||"—")}) ter vergelijking.`,
+    `<b>ClinicalTrials.gov</b>: studies met een biosimilar van het middel in de titel.`,
+    `<b>Farmatec add-on GS-lijst</b> (${esc(B.gs||"—")}): handelsvergunningen in Nederland.`,
+    `<b>GIP-databank</b> (Zorginstituut): Zvw-vergoeding en gebruikers, ${B.gip_jaren[0]}–${JAAR}; * = voorlopig.`,
+  ].map(x=>`<li>${x}</li>`).join("");
+  $("#colofon").innerHTML = `Bronnen: octrooiregister RVO, EMA, Horizonscan Geneesmiddelen, ClinicalTrials.gov, Farmatec, GIP-databank. `+
+    `* ${JAAR} is voorlopig. De data zijn indicatief; aan dit overzicht kunnen geen rechten worden ontleend.`;
+
+  $("#uitlegknop").onclick = ()=>$("#uitleg").showModal();
+  $("#zoek").oninput = e=>{ STAAT.q=e.target.value; zetHash(); teken(); };
+  $("#f-fase").onchange = e=>{ STAAT.fase=e.target.value; zetHash(); teken(); };
+  $("#f-jaar").onchange = e=>{ STAAT.jaar=e.target.value; zetHash(); teken(); };
+  ["eval","studie","afwijking","wees"].forEach(k=>$("#f-"+k).onchange=e=>{ STAAT[k]=e.target.checked; zetHash(); teken(); });
+  $("#wis").onclick = ()=>{ const tab=STAAT.tab; Object.assign(STAAT,STANDAARD,{tab}); zetHash(); teken(); };
+  $$(".tab").forEach(t=>t.onclick=()=>{ STAAT.tab=t.dataset.tab; zetHash(); teken(); });
+  $("#kopieer").onclick = async()=>{
+    const url = location.href.split("#")[0]+"#"+naarHash();
+    try{ await navigator.clipboard.writeText(url); $("#kopieer").textContent="Gekopieerd"; }
+    catch{ prompt("Kopieer deze link:",url); }
+    setTimeout(()=>$("#kopieer").textContent="Kopieer link",1600);
+  };
+  addEventListener("hashchange",()=>{ const a=leesHash(); teken(); if(a) open(a,true); else if($("#paneel").classList.contains("aan")) {$("#paneel").classList.remove("aan");$("#dim").classList.remove("aan");} });
+
+  const atc = leesHash();
+  cijfers(); teken();
+  if(atc) open(atc,true);
+}
+init();
+</script>
+</body>
+</html>

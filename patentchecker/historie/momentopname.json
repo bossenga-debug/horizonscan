@@ -1,0 +1,1444 @@
+{
+ "A16AB04": {
+  "eval": 0,
+  "kopie": [],
+  "naam": "Agalsidase beta",
+  "nl": [
+   "EU/1/01/188"
+  ],
+  "pijplijn": [],
+  "spc_bron": "Horizonscan",
+  "spc_einde": "",
+  "spc_klasse": "verlopen",
+  "studies": [
+   "NCT05843916"
+  ],
+  "verlenging": ""
+ },
+ "A16AB07": {
+  "eval": 0,
+  "kopie": [],
+  "naam": "Alglucosidase alfa",
+  "nl": [
+   "EU/1/06/333"
+  ],
+  "pijplijn": [],
+  "spc_bron": "RVO",
+  "spc_einde": "2020-01-01",
+  "spc_klasse": "verlopen",
+  "studies": [],
+  "verlenging": ""
+ },
+ "B02BD02": {
+  "eval": 0,
+  "kopie": [],
+  "naam": "Factor viii",
+  "nl": [
+   "114882",
+   "114887",
+   "29925",
+   "EU/1/03/271",
+   "EU/1/13/888",
+   "EU/1/14/936",
+   "EU/1/15/1046",
+   "EU/1/16/1158",
+   "EU/1/17/1247",
+   "EU/1/18/1324",
+   "EU/1/19/1374",
+   "EU/1/24/1824",
+   "EU/1/99/103"
+  ],
+  "pijplijn": [],
+  "spc_bron": "",
+  "spc_einde": "",
+  "spc_klasse": "",
+  "studies": [],
+  "verlenging": ""
+ },
+ "B02BD04": {
+  "eval": 0,
+  "kopie": [],
+  "naam": "Factor ix",
+  "nl": [
+   "EU/1/14/970",
+   "EU/1/16/1095",
+   "EU/1/16/1098",
+   "EU/1/17/1193",
+   "EU/1/97/047"
+  ],
+  "pijplijn": [],
+  "spc_bron": "",
+  "spc_einde": "",
+  "spc_klasse": "",
+  "studies": [],
+  "verlenging": ""
+ },
+ "B02BX06": {
+  "eval": 0,
+  "kopie": [],
+  "naam": "Emicizumab",
+  "nl": [
+   "EU/1/18/1271"
+  ],
+  "pijplijn": [],
+  "spc_bron": "RVO",
+  "spc_einde": "2033-08-26",
+  "spc_klasse": "actief",
+  "studies": [],
+  "verlenging": "Extension Granted"
+ },
+ "B03XA02": {
+  "eval": 0,
+  "kopie": [],
+  "naam": "Darbepoetine alfa",
+  "nl": [
+   "EU/1/01/185"
+  ],
+  "pijplijn": [],
+  "spc_bron": "RVO",
+  "spc_einde": "2016-06-07",
+  "spc_klasse": "verlopen",
+  "studies": [],
+  "verlenging": ""
+ },
+ "D11AH05": {
+  "eval": 0,
+  "kopie": [],
+  "naam": "Dupilumab",
+  "nl": [
+   "EU/1/17/1229"
+  ],
+  "pijplijn": [],
+  "spc_bron": "RVO",
+  "spc_einde": "2033-03-27",
+  "spc_klasse": "actief",
+  "studies": [],
+  "verlenging": "Extension Granted"
+ },
+ "H01AC01": {
+  "eval": 0,
+  "kopie": [
+   "Omnitrope (Authorised)"
+  ],
+  "naam": "Somatropine",
+  "nl": [
+   "105180",
+   "105181",
+   "15790",
+   "25480",
+   "EU/1/00/164",
+   "EU/1/06/332"
+  ],
+  "pijplijn": [],
+  "spc_bron": "",
+  "spc_einde": "",
+  "spc_klasse": "",
+  "studies": [],
+  "verlenging": ""
+ },
+ "J06BA02": {
+  "eval": 0,
+  "kopie": [],
+  "naam": "Immunoglobuline normaal intravasculair",
+  "nl": [
+   "104459",
+   "111798",
+   "116224",
+   "117388",
+   "118226",
+   "123226",
+   "17033",
+   "17034",
+   "31627",
+   "32712",
+   "33687",
+   "EU/1/05/329",
+   "EU/1/07/404",
+   "EU/1/08/446"
+  ],
+  "pijplijn": [],
+  "spc_bron": "",
+  "spc_einde": "",
+  "spc_klasse": "",
+  "studies": [],
+  "verlenging": ""
+ },
+ "L01EB04": {
+  "eval": 0,
+  "kopie": [],
+  "naam": "Osimertinib",
+  "nl": [
+   "EU/1/16/1086"
+  ],
+  "pijplijn": [],
+  "spc_bron": "Horizonscan",
+  "spc_einde": "2026-02-01",
+  "spc_klasse": "verlopen",
+  "studies": [],
+  "verlenging": ""
+ },
+ "L01EC02": {
+  "eval": 0,
+  "kopie": [],
+  "naam": "Dabrafenib",
+  "nl": [
+   "EU/1/13/865",
+   "EU/1/23/1767"
+  ],
+  "pijplijn": [],
+  "spc_bron": "Horizonscan",
+  "spc_einde": "2029-05-10",
+  "spc_klasse": "actief",
+  "studies": [],
+  "verlenging": ""
+ },
+ "L01EC03": {
+  "eval": 0,
+  "kopie": [],
+  "naam": "Encorafenib",
+  "nl": [
+   "EU/1/18/1314"
+  ],
+  "pijplijn": [],
+  "spc_bron": "RVO",
+  "spc_einde": "2033-09-23",
+  "spc_klasse": "actief",
+  "studies": [],
+  "verlenging": ""
+ },
+ "L01ED03": {
+  "eval": 0,
+  "kopie": [],
+  "naam": "Alectinib",
+  "nl": [
+   "EU/1/16/1169"
+  ],
+  "pijplijn": [],
+  "spc_bron": "RVO",
+  "spc_einde": "2032-02-19",
+  "spc_klasse": "actief",
+  "studies": [],
+  "verlenging": ""
+ },
+ "L01EE01": {
+  "eval": 0,
+  "kopie": [],
+  "naam": "Trametinib",
+  "nl": [
+   "EU/1/14/931",
+   "EU/1/23/1781"
+  ],
+  "pijplijn": [],
+  "spc_bron": "RVO",
+  "spc_einde": "2029-07-01",
+  "spc_klasse": "actief",
+  "studies": [],
+  "verlenging": ""
+ },
+ "L01EE03": {
+  "eval": 0,
+  "kopie": [],
+  "naam": "Binimetinib",
+  "nl": [
+   "EU/1/18/1315"
+  ],
+  "pijplijn": [],
+  "spc_bron": "RVO",
+  "spc_einde": "2028-09-12",
+  "spc_klasse": "actief",
+  "studies": [],
+  "verlenging": "Extension Granted"
+ },
+ "L01EF01": {
+  "eval": 1,
+  "kopie": [
+   "Palbociclib Viatris (Authorised)"
+  ],
+  "naam": "Palbociclib",
+  "nl": [
+   "EU/1/16/1147"
+  ],
+  "pijplijn": [
+   "Palbociclib Viatris (Viatris)"
+  ],
+  "spc_bron": "RVO",
+  "spc_einde": "2028-07-09",
+  "spc_klasse": "actief",
+  "studies": [],
+  "verlenging": "Extension Granted"
+ },
+ "L01EF02": {
+  "eval": 0,
+  "kopie": [],
+  "naam": "Ribociclib",
+  "nl": [
+   "EU/1/17/1221"
+  ],
+  "pijplijn": [],
+  "spc_bron": "RVO",
+  "spc_einde": "2033-02-23",
+  "spc_klasse": "actief",
+  "studies": [],
+  "verlenging": "Extension Granted"
+ },
+ "L01EJ01": {
+  "eval": 2,
+  "kopie": [
+   "Ruxolitinib Viatris (Opinion)",
+   "Ruxolitinib Zentiva (Opinion)"
+  ],
+  "naam": "Ruxolitinib",
+  "nl": [
+   "EU/1/12/773"
+  ],
+  "pijplijn": [],
+  "spc_bron": "RVO",
+  "spc_einde": "2028-02-27",
+  "spc_klasse": "actief",
+  "studies": [],
+  "verlenging": "Extension Granted"
+ },
+ "L01EL01": {
+  "eval": 0,
+  "kopie": [],
+  "naam": "Ibrutinib",
+  "nl": [
+   "EU/1/14/945"
+  ],
+  "pijplijn": [],
+  "spc_bron": "RVO",
+  "spc_einde": "2030-04-22",
+  "spc_klasse": "actief",
+  "studies": [],
+  "verlenging": "Extension Granted"
+ },
+ "L01EL03": {
+  "eval": 0,
+  "kopie": [],
+  "naam": "Zanubrutinib",
+  "nl": [
+   "EU/1/21/1576"
+  ],
+  "pijplijn": [],
+  "spc_bron": "RVO",
+  "spc_einde": "2036-11-22",
+  "spc_klasse": "actief",
+  "studies": [],
+  "verlenging": ""
+ },
+ "L01FA01": {
+  "eval": 0,
+  "kopie": [
+   "Blitzima (Authorised)",
+   "Ituxredi (Authorised)",
+   "Rixathon (Authorised)",
+   "Riximyo (Authorised)",
+   "Ruxience (Authorised)",
+   "Truxima (Authorised)"
+  ],
+  "naam": "Rituximab",
+  "nl": [
+   "EU/1/16/1167",
+   "EU/1/17/1185",
+   "EU/1/20/1431",
+   "EU/1/24/1861",
+   "EU/1/98/067"
+  ],
+  "pijplijn": [],
+  "spc_bron": "",
+  "spc_einde": "",
+  "spc_klasse": "",
+  "studies": [
+   "NCT02268045",
+   "NCT02787239",
+   "NCT03054259",
+   "NCT03218072",
+   "NCT03976102",
+   "NCT04268771",
+   "NCT04361279",
+   "NCT04402580",
+   "NCT04491721",
+   "NCT04928573",
+   "NCT05406401",
+   "NCT05696613",
+   "NCT05704400",
+   "NCT05716334",
+   "NCT05850546"
+  ],
+  "verlenging": ""
+ },
+ "L01FC01": {
+  "eval": 0,
+  "kopie": [],
+  "naam": "Daratumumab",
+  "nl": [
+   "EU/1/16/1101"
+  ],
+  "pijplijn": [],
+  "spc_bron": "RVO",
+  "spc_einde": "2031-03-22",
+  "spc_klasse": "actief",
+  "studies": [],
+  "verlenging": ""
+ },
+ "L01FD01": {
+  "eval": 0,
+  "kopie": [
+   "Dazublys (Authorised)",
+   "Herwenda (Authorised)",
+   "Herzuma (Authorised)",
+   "Kanjinti (Authorised)",
+   "Ogivri (Authorised)",
+   "Ontruzant (Authorised)",
+   "Trazimera (Authorised)",
+   "Zercepac (Authorised)"
+  ],
+  "naam": "Trastuzumab",
+  "nl": [
+   "EU/1/00/145",
+   "EU/1/17/1241",
+   "EU/1/17/1257",
+   "EU/1/18/1295",
+   "EU/1/18/1341",
+   "EU/1/20/1456",
+   "EU/1/25/1949"
+  ],
+  "pijplijn": [],
+  "spc_bron": "RVO",
+  "spc_einde": "2014-07-28",
+  "spc_klasse": "verlopen",
+  "studies": [
+   "NCT02149524",
+   "NCT03084237",
+   "NCT03242239",
+   "NCT03425656",
+   "NCT03698383",
+   "NCT03755141",
+   "NCT03766607",
+   "NCT03811418",
+   "NCT03892655",
+   "NCT04215159",
+   "NCT04644406",
+   "NCT05530057",
+   "NCT06083662",
+   "NCT06907082",
+   "NCT07108127"
+  ],
+  "verlenging": ""
+ },
+ "L01FD02": {
+  "eval": 2,
+  "kopie": [
+   "Pebrilzo (Opinion)",
+   "Poherdy (Authorised)"
+  ],
+  "naam": "Pertuzumab",
+  "nl": [
+   "EU/1/13/813"
+  ],
+  "pijplijn": [
+   "Poherdy (Organon)"
+  ],
+  "spc_bron": "RVO",
+  "spc_einde": "2025-06-22",
+  "spc_klasse": "verlopen",
+  "studies": [
+   "NCT03811418",
+   "NCT05346224",
+   "NCT06038539",
+   "NCT07108127",
+   "NCT07542496"
+  ],
+  "verlenging": ""
+ },
+ "L01FD03": {
+  "eval": 0,
+  "kopie": [],
+  "naam": "Trastuzumab emtansine",
+  "nl": [
+   "EU/1/13/885"
+  ],
+  "pijplijn": [],
+  "spc_bron": "RVO",
+  "spc_einde": "2028-11-18",
+  "spc_klasse": "actief",
+  "studies": [],
+  "verlenging": ""
+ },
+ "L01FD04": {
+  "eval": 0,
+  "kopie": [],
+  "naam": "Trastuzumab deruxtecan",
+  "nl": [
+   "EU/1/20/1508"
+  ],
+  "pijplijn": [],
+  "spc_bron": "RVO",
+  "spc_einde": "2036-01-19",
+  "spc_klasse": "actief",
+  "studies": [],
+  "verlenging": ""
+ },
+ "L01FF01": {
+  "eval": 0,
+  "kopie": [],
+  "naam": "Nivolumab",
+  "nl": [
+   "EU/1/15/1014"
+  ],
+  "pijplijn": [],
+  "spc_bron": "RVO",
+  "spc_einde": "2030-12-23",
+  "spc_klasse": "actief",
+  "studies": [
+   "NCT06587451",
+   "NCT07221734"
+  ],
+  "verlenging": "Extension Granted"
+ },
+ "L01FF02": {
+  "eval": 0,
+  "kopie": [],
+  "naam": "Pembrolizumab",
+  "nl": [
+   "EU/1/15/1024"
+  ],
+  "pijplijn": [],
+  "spc_bron": "RVO",
+  "spc_einde": "2031-01-20",
+  "spc_klasse": "actief",
+  "studies": [
+   "NCT05668650",
+   "NCT06153238",
+   "NCT06159790",
+   "NCT06348199",
+   "NCT06551064",
+   "NCT06643117",
+   "NCT06687369",
+   "NCT07162883"
+  ],
+  "verlenging": "Extension Granted"
+ },
+ "L01FF03": {
+  "eval": 0,
+  "kopie": [],
+  "naam": "Durvalumab",
+  "nl": [
+   "EU/1/18/1322"
+  ],
+  "pijplijn": [],
+  "spc_bron": "RVO",
+  "spc_einde": "2034-03-24",
+  "spc_klasse": "actief",
+  "studies": [],
+  "verlenging": "Extension Granted"
+ },
+ "L01FF04": {
+  "eval": 0,
+  "kopie": [],
+  "naam": "Avelumab",
+  "nl": [
+   "EU/1/17/1214"
+  ],
+  "pijplijn": [],
+  "spc_bron": "RVO",
+  "spc_einde": "2032-09-19",
+  "spc_klasse": "actief",
+  "studies": [],
+  "verlenging": ""
+ },
+ "L01FG01": {
+  "eval": 2,
+  "kopie": [
+   "Abevmy (Authorised)",
+   "Alymsys (Authorised)",
+   "Avzivi (Authorised)",
+   "Aybintio (Authorised)",
+   "Mvasi (Authorised)",
+   "Oyavas (Authorised)",
+   "Vegzelma (Authorised)",
+   "Zirabev (Authorised)"
+  ],
+  "naam": "Bevacizumab",
+  "nl": [
+   "EU/1/04/300",
+   "EU/1/18/1344",
+   "EU/1/20/1454",
+   "EU/1/20/1509",
+   "EU/1/20/1510",
+   "EU/1/20/1515",
+   "EU/1/22/1667"
+  ],
+  "pijplijn": [
+   "Lytenava (Outlook Therapeutics)"
+  ],
+  "spc_bron": "RVO",
+  "spc_einde": "2020-06-15",
+  "spc_klasse": "verlopen",
+  "studies": [
+   "NCT02069704",
+   "NCT02754882",
+   "NCT03131700",
+   "NCT03293654",
+   "NCT03296163",
+   "NCT03645876",
+   "NCT03952403",
+   "NCT04238650",
+   "NCT04238663",
+   "NCT04408989",
+   "NCT04527068",
+   "NCT04670978",
+   "NCT04796025",
+   "NCT04843943",
+   "NCT04856787",
+   "NCT04954794",
+   "NCT05009017",
+   "NCT05029973",
+   "NCT05251662",
+   "NCT05355155",
+   "NCT05386524",
+   "NCT05427305",
+   "NCT05530785",
+   "NCT06031285",
+   "NCT06285019",
+   "NCT06313268",
+   "NCT06349980",
+   "NCT06370065",
+   "NCT06667050",
+   "NCT06808685",
+   "NCT06860490",
+   "NCT07324824",
+   "NCT07331883",
+   "NCT07560488"
+  ],
+  "verlenging": "Extension Granted"
+ },
+ "L01FX04": {
+  "eval": 0,
+  "kopie": [],
+  "naam": "Ipilimumab",
+  "nl": [
+   "EU/1/11/698"
+  ],
+  "pijplijn": [],
+  "spc_bron": "RVO",
+  "spc_einde": "2026-02-23",
+  "spc_klasse": "verlopen",
+  "studies": [
+   "NCT06841185",
+   "NCT07176650"
+  ],
+  "verlenging": "Extension Granted"
+ },
+ "L01XG02": {
+  "eval": 0,
+  "kopie": [],
+  "naam": "Carfilzomib",
+  "nl": [
+   "EU/1/15/1060"
+  ],
+  "pijplijn": [],
+  "spc_bron": "RVO",
+  "spc_einde": "2030-08-07",
+  "spc_klasse": "actief",
+  "studies": [],
+  "verlenging": ""
+ },
+ "L01XK01": {
+  "eval": 0,
+  "kopie": [],
+  "naam": "Olaparib",
+  "nl": [
+   "EU/1/14/959"
+  ],
+  "pijplijn": [],
+  "spc_bron": "RVO",
+  "spc_einde": "2029-03-11",
+  "spc_klasse": "actief",
+  "studies": [],
+  "verlenging": ""
+ },
+ "L01XL03": {
+  "eval": 0,
+  "kopie": [],
+  "naam": "Axicabtagen ciloleucel",
+  "nl": [
+   "EU/1/18/1299"
+  ],
+  "pijplijn": [],
+  "spc_bron": "Horizonscan",
+  "spc_einde": "",
+  "spc_klasse": "verlopen",
+  "studies": [],
+  "verlenging": ""
+ },
+ "L01XX52": {
+  "eval": 0,
+  "kopie": [],
+  "naam": "Venetoclax",
+  "nl": [
+   "EU/1/16/1138"
+  ],
+  "pijplijn": [],
+  "spc_bron": "RVO",
+  "spc_einde": "2031-12-06",
+  "spc_klasse": "actief",
+  "studies": [],
+  "verlenging": ""
+ },
+ "L02BB04": {
+  "eval": 0,
+  "kopie": [
+   "Enzalutamide Accordpharma (Authorised)",
+   "Enzalutamide Viatris (Authorised)"
+  ],
+  "naam": "Enzalutamide",
+  "nl": [
+   "EU/1/13/846"
+  ],
+  "pijplijn": [],
+  "spc_bron": "RVO",
+  "spc_einde": "2028-06-24",
+  "spc_klasse": "actief",
+  "studies": [],
+  "verlenging": ""
+ },
+ "L02BX03": {
+  "eval": 0,
+  "kopie": [
+   "Abiraterone Accord (Authorised)",
+   "Abiraterone Krka (Authorised)",
+   "Abiraterone Mylan (Authorised)"
+  ],
+  "naam": "Abirateron",
+  "nl": [
+   "125586",
+   "126068",
+   "127038",
+   "127526",
+   "127909",
+   "129618",
+   "129779",
+   "132030",
+   "132031",
+   "EU/1/11/714",
+   "EU/1/20/1512",
+   "EU/1/21/1553",
+   "EU/1/21/1571"
+  ],
+  "pijplijn": [
+   "Abiraterone Krka (KrKa)",
+   "Abiraterone Mylan (Mylan)"
+  ],
+  "spc_bron": "",
+  "spc_einde": "",
+  "spc_klasse": "",
+  "studies": [],
+  "verlenging": ""
+ },
+ "L04AA24": {
+  "eval": 1,
+  "kopie": [],
+  "naam": "Abatacept",
+  "nl": [
+   "EU/1/07/389"
+  ],
+  "pijplijn": [],
+  "spc_bron": "RVO",
+  "spc_einde": "2017-12-15",
+  "spc_klasse": "verlopen",
+  "studies": [
+   "NCT02923583",
+   "NCT07744828"
+  ],
+  "verlenging": "Extension Granted"
+ },
+ "L04AB01": {
+  "eval": 0,
+  "kopie": [
+   "Benepali (Authorised)",
+   "Erelzi (Authorised)",
+   "Fubelv (Authorised)",
+   "Nepexto (Authorised)"
+  ],
+  "naam": "Etanercept",
+  "nl": [
+   "EU/1/15/1074",
+   "EU/1/17/1195",
+   "EU/1/99/126"
+  ],
+  "pijplijn": [],
+  "spc_bron": "RVO",
+  "spc_einde": "2015-02-02",
+  "spc_klasse": "verlopen",
+  "studies": [
+   "NCT01891864",
+   "NCT04582084",
+   "NCT05424393",
+   "NCT06392074",
+   "NCT06596772"
+  ],
+  "verlenging": ""
+ },
+ "L04AB02": {
+  "eval": 0,
+  "kopie": [
+   "Flixabi (Authorised)",
+   "Remsima (Authorised)",
+   "Zessly (Authorised)"
+  ],
+  "naam": "Infliximab",
+  "nl": [
+   "EU/1/13/853",
+   "EU/1/13/854",
+   "EU/1/16/1106",
+   "EU/1/18/1280",
+   "EU/1/99/116"
+  ],
+  "pijplijn": [],
+  "spc_bron": "Horizonscan",
+  "spc_einde": "",
+  "spc_klasse": "verlopen",
+  "studies": [
+   "NCT02148640",
+   "NCT02452151",
+   "NCT02925338",
+   "NCT03192878",
+   "NCT03884439",
+   "NCT03885037",
+   "NCT03885089",
+   "NCT03890445",
+   "NCT05663268",
+   "NCT05796245",
+   "NCT06043752",
+   "NCT06591273"
+  ],
+  "verlenging": ""
+ },
+ "L04AB04": {
+  "eval": 0,
+  "kopie": [
+   "Amgevita (Authorised)",
+   "Amsparity (Authorised)",
+   "Hefiya (Authorised)",
+   "Hukyndra (Authorised)",
+   "Hulio (Authorised)",
+   "Hyrimoz (Authorised)",
+   "Idacio (Authorised)",
+   "Imraldi (Authorised)",
+   "Libmyris (Authorised)",
+   "Yuflyma (Authorised)"
+  ],
+  "naam": "Adalimumab",
+  "nl": [
+   "EU/1/03/256",
+   "EU/1/16/1164",
+   "EU/1/17/1216",
+   "EU/1/18/1286",
+   "EU/1/19/1356",
+   "EU/1/20/1513",
+   "EU/1/21/1589"
+  ],
+  "pijplijn": [],
+  "spc_bron": "RVO",
+  "spc_einde": "2018-10-15",
+  "spc_klasse": "verlopen",
+  "studies": [
+   "NCT02016105",
+   "NCT02581345",
+   "NCT02722044",
+   "NCT03259074",
+   "NCT03890445",
+   "NCT04018599",
+   "NCT04131322",
+   "NCT04808739",
+   "NCT05051943",
+   "NCT05172817",
+   "NCT05190484",
+   "NCT05240859",
+   "NCT05427942",
+   "NCT05598684",
+   "NCT05633771",
+   "NCT05803187",
+   "NCT06291948",
+   "NCT06310837"
+  ],
+  "verlenging": "Extension Granted"
+ },
+ "L04AB05": {
+  "eval": 0,
+  "kopie": [],
+  "naam": "Certolizumab pegol",
+  "nl": [
+   "EU/1/09/544"
+  ],
+  "pijplijn": [],
+  "spc_bron": "RVO",
+  "spc_einde": "2024-10-05",
+  "spc_klasse": "verlopen",
+  "studies": [],
+  "verlenging": ""
+ },
+ "L04AB06": {
+  "eval": 0,
+  "kopie": [
+   "Gobivaz (Authorised)",
+   "Gotenfia (Authorised)"
+  ],
+  "naam": "Golimumab",
+  "nl": [
+   "EU/1/09/546",
+   "EU/1/25/1988",
+   "EU/1/25/2009"
+  ],
+  "pijplijn": [
+   "Golimumab (Alvotech)"
+  ],
+  "spc_bron": "RVO",
+  "spc_einde": "2025-04-05",
+  "spc_klasse": "verlopen",
+  "studies": [],
+  "verlenging": "Extension Granted"
+ },
+ "L04AC05": {
+  "eval": 0,
+  "kopie": [
+   "Fymskina (Authorised)",
+   "Imuldosa (Authorised)",
+   "Otulfi (Authorised)",
+   "Pyzchiva (Authorised)",
+   "Steqeyma (Authorised)",
+   "Usgena (Authorised)",
+   "Usrenty (Authorised)",
+   "Usymro (Authorised)",
+   "Uzpruvo (Authorised)",
+   "Wezenla (Authorised)",
+   "Yesintek (Authorised)"
+  ],
+  "naam": "Ustekinumab",
+  "nl": [
+   "EU/1/08/494",
+   "EU/1/23/1784",
+   "EU/1/24/1801",
+   "EU/1/24/1823",
+   "EU/1/24/1844",
+   "EU/1/24/1863",
+   "EU/1/24/1872",
+   "EU/1/24/1892",
+   "EU/1/25/1957"
+  ],
+  "pijplijn": [
+   "Ustekinumab (Janssen)"
+  ],
+  "spc_bron": "RVO",
+  "spc_einde": "2024-07-19",
+  "spc_klasse": "verlopen",
+  "studies": [
+   "NCT04595409",
+   "NCT04772274",
+   "NCT04930042",
+   "NCT04967508",
+   "NCT06481215",
+   "NCT06488664",
+   "NCT06738277",
+   "NCT06997055",
+   "NCT07077681",
+   "NCT07244614"
+  ],
+  "verlenging": "Extension Granted"
+ },
+ "L04AC07": {
+  "eval": 0,
+  "kopie": [
+   "Avtozma (Authorised)",
+   "Tocilizumab STADA (previously Tofidence) (Authorised)",
+   "Tuyory (Authorised)",
+   "Tyenne (Authorised)"
+  ],
+  "naam": "Tocilizumab",
+  "nl": [
+   "EU/1/08/492",
+   "EU/1/23/1754",
+   "EU/1/24/1896"
+  ],
+  "pijplijn": [
+   "Onteeo (Fresenius Kabi)"
+  ],
+  "spc_bron": "RVO",
+  "spc_einde": "2020-07-01",
+  "spc_klasse": "verlopen",
+  "studies": [
+   "NCT06247722",
+   "NCT06271018",
+   "NCT06475508",
+   "NCT06481202",
+   "NCT06488521"
+  ],
+  "verlenging": "Extension Granted"
+ },
+ "L04AC08": {
+  "eval": 0,
+  "kopie": [],
+  "naam": "Canakinumab",
+  "nl": [
+   "EU/1/09/564"
+  ],
+  "pijplijn": [],
+  "spc_bron": "RVO",
+  "spc_einde": "2025-04-26",
+  "spc_klasse": "verlopen",
+  "studies": [
+   "NCT06497491"
+  ],
+  "verlenging": "Extension Granted"
+ },
+ "L04AC10": {
+  "eval": 1,
+  "kopie": [],
+  "naam": "Secukinumab",
+  "nl": [
+   "EU/1/14/980"
+  ],
+  "pijplijn": [
+   "Secukinumab-bthr (Bio-Thera Solutions)"
+  ],
+  "spc_bron": "RVO",
+  "spc_einde": "2030-07-18",
+  "spc_klasse": "actief",
+  "studies": [],
+  "verlenging": "Extension Granted"
+ },
+ "L04AC13": {
+  "eval": 0,
+  "kopie": [],
+  "naam": "Ixekizumab",
+  "nl": [
+   "EU/1/15/1085"
+  ],
+  "pijplijn": [],
+  "spc_bron": "RVO",
+  "spc_einde": "2031-04-27",
+  "spc_klasse": "actief",
+  "studies": [
+   "NCT07789964"
+  ],
+  "verlenging": ""
+ },
+ "L04AC16": {
+  "eval": 0,
+  "kopie": [],
+  "naam": "Guselkumab",
+  "nl": [
+   "EU/1/17/1234"
+  ],
+  "pijplijn": [],
+  "spc_bron": "RVO",
+  "spc_einde": "2031-12-27",
+  "spc_klasse": "actief",
+  "studies": [],
+  "verlenging": ""
+ },
+ "L04AC18": {
+  "eval": 0,
+  "kopie": [],
+  "naam": "Risankizumab",
+  "nl": [
+   "EU/1/19/1361"
+  ],
+  "pijplijn": [],
+  "spc_bron": "RVO",
+  "spc_einde": "2034-04-29",
+  "spc_klasse": "actief",
+  "studies": [
+   "NCT07258745"
+  ],
+  "verlenging": ""
+ },
+ "L04AF03": {
+  "eval": 0,
+  "kopie": [],
+  "naam": "Upadacitinib",
+  "nl": [
+   "EU/1/19/1404"
+  ],
+  "pijplijn": [],
+  "spc_bron": "RVO",
+  "spc_einde": "2034-12-17",
+  "spc_klasse": "actief",
+  "studies": [],
+  "verlenging": ""
+ },
+ "L04AG03": {
+  "eval": 0,
+  "kopie": [
+   "Tyruko (Authorised)"
+  ],
+  "naam": "Natalizumab",
+  "nl": [
+   "EU/1/06/346",
+   "EU/1/23/1745"
+  ],
+  "pijplijn": [
+   "Natalizumab (Polpharma)"
+  ],
+  "spc_bron": "RVO",
+  "spc_einde": "2020-02-01",
+  "spc_klasse": "verlopen",
+  "studies": [
+   "NCT04115488"
+  ],
+  "verlenging": "Lapsed coursed by the lapse of the basic patent Art. 15 (b) of the Regulation EC No. 469/2009"
+ },
+ "L04AG05": {
+  "eval": 2,
+  "kopie": [],
+  "naam": "Vedolizumab",
+  "nl": [
+   "EU/1/14/923"
+  ],
+  "pijplijn": [],
+  "spc_bron": "RVO",
+  "spc_einde": "2026-04-12",
+  "spc_klasse": "verlopen",
+  "studies": [
+   "NCT05771155"
+  ],
+  "verlenging": ""
+ },
+ "L04AG08": {
+  "eval": 0,
+  "kopie": [],
+  "naam": "Ocrelizumab",
+  "nl": [
+   "EU/1/17/1231"
+  ],
+  "pijplijn": [],
+  "spc_bron": "RVO",
+  "spc_einde": "2028-12-15",
+  "spc_klasse": "actief",
+  "studies": [
+   "NCT06847724",
+   "NCT07606521"
+  ],
+  "verlenging": ""
+ },
+ "L04AJ01": {
+  "eval": 0,
+  "kopie": [
+   "Bekemv (Authorised)",
+   "Epysqli (Authorised)"
+  ],
+  "naam": "Eculizumab",
+  "nl": [
+   "EU/1/07/393",
+   "EU/1/23/1727",
+   "EU/1/23/1735"
+  ],
+  "pijplijn": [
+   "ABP 959 (Amgen)",
+   "BCD-148 ()",
+   "Bekemv (Amgen)",
+   "SB12 (Samsung Bioepis)"
+  ],
+  "spc_bron": "RVO",
+  "spc_einde": "2020-04-30",
+  "spc_klasse": "verlopen",
+  "studies": [
+   "NCT04058158"
+  ],
+  "verlenging": ""
+ },
+ "L04AJ02": {
+  "eval": 0,
+  "kopie": [],
+  "naam": "Ravulizumab",
+  "nl": [
+   "EU/1/19/1371"
+  ],
+  "pijplijn": [],
+  "spc_bron": "",
+  "spc_einde": "",
+  "spc_klasse": "",
+  "studies": [],
+  "verlenging": ""
+ },
+ "L04AX06": {
+  "eval": 0,
+  "kopie": [
+   "Pomalidomide Accord (Authorised)",
+   "Pomalidomide Krka (Authorised)",
+   "Pomalidomide Teva (Authorised)",
+   "Pomalidomide Viatris (Authorised)",
+   "Pomalidomide Zentiva (Authorised)"
+  ],
+  "naam": "Pomalidomide",
+  "nl": [
+   "132061",
+   "132065",
+   "132066",
+   "132067",
+   "132085",
+   "132090",
+   "132093",
+   "132094",
+   "132127",
+   "132128",
+   "132129",
+   "132130",
+   "132972",
+   "132973",
+   "132974",
+   "132975",
+   "EU/1/13/850",
+   "EU/1/23/1785",
+   "EU/1/24/1831",
+   "EU/1/24/1832"
+  ],
+  "pijplijn": [
+   "Pomalidomide ()"
+  ],
+  "spc_bron": "RVO",
+  "spc_einde": "",
+  "spc_klasse": "verlopen",
+  "studies": [],
+  "verlenging": ""
+ },
+ "M03AX01": {
+  "eval": 0,
+  "kopie": [],
+  "naam": "Botuline toxine",
+  "nl": [
+   "110868",
+   "113961",
+   "113963",
+   "115734",
+   "117146",
+   "117380//117146",
+   "121158//117146",
+   "123678//17505",
+   "129147//117146",
+   "129817//117146",
+   "130179//17505",
+   "132929//117146",
+   "134102//117146",
+   "134754//117146",
+   "17505"
+  ],
+  "pijplijn": [],
+  "spc_bron": "",
+  "spc_einde": "",
+  "spc_klasse": "",
+  "studies": [],
+  "verlenging": ""
+ },
+ "M05BX05": {
+  "eval": 0,
+  "kopie": [],
+  "naam": "Burosumab",
+  "nl": [
+   "EU/1/17/1262"
+  ],
+  "pijplijn": [],
+  "spc_bron": "RVO",
+  "spc_einde": "2033-02-13",
+  "spc_klasse": "actief",
+  "studies": [],
+  "verlenging": ""
+ },
+ "M09AX07": {
+  "eval": 0,
+  "kopie": [],
+  "naam": "Nusinersen",
+  "nl": [
+   "EU/1/17/1188"
+  ],
+  "pijplijn": [],
+  "spc_bron": "Horizonscan",
+  "spc_einde": "2031-06-22",
+  "spc_klasse": "actief",
+  "studies": [],
+  "verlenging": ""
+ },
+ "M09AX09": {
+  "eval": 0,
+  "kopie": [],
+  "naam": "Onasemnogeen abeparvovec",
+  "nl": [
+   "EU/1/20/1443"
+  ],
+  "pijplijn": [],
+  "spc_bron": "Horizonscan",
+  "spc_einde": "2028-10-02",
+  "spc_klasse": "actief",
+  "studies": [],
+  "verlenging": ""
+ },
+ "N07XX12": {
+  "eval": 0,
+  "kopie": [],
+  "naam": "Patisiran",
+  "nl": [
+   "EU/1/18/1320"
+  ],
+  "pijplijn": [],
+  "spc_bron": "RVO",
+  "spc_einde": "2033-08-28",
+  "spc_klasse": "actief",
+  "studies": [],
+  "verlenging": ""
+ },
+ "R03DX05": {
+  "eval": 2,
+  "kopie": [
+   "Adcomfo (Opinion)",
+   "Omlyclo (Authorised)"
+  ],
+  "naam": "Omalizumab",
+  "nl": [
+   "EU/1/05/319",
+   "EU/1/24/1817"
+  ],
+  "pijplijn": [
+   "BP001 (Biosana Pharma)",
+   "GBR310 (Glenmark)",
+   "STI-004 (Sorrento Therapeutics)"
+  ],
+  "spc_bron": "RVO",
+  "spc_einde": "2017-08-13",
+  "spc_klasse": "verlopen",
+  "studies": [
+   "NCT05053334",
+   "NCT07425639"
+  ],
+  "verlenging": ""
+ },
+ "R03DX09": {
+  "eval": 0,
+  "kopie": [],
+  "naam": "Mepolizumab",
+  "nl": [
+   "EU/1/15/1043"
+  ],
+  "pijplijn": [],
+  "spc_bron": "RVO",
+  "spc_einde": "2021-06-21",
+  "spc_klasse": "verlopen",
+  "studies": [],
+  "verlenging": "Extension Granted"
+ },
+ "R03DX10": {
+  "eval": 0,
+  "kopie": [],
+  "naam": "Benralizumab",
+  "nl": [
+   "EU/1/17/1252"
+  ],
+  "pijplijn": [],
+  "spc_bron": "RVO",
+  "spc_einde": "2025-04-06",
+  "spc_klasse": "verlopen",
+  "studies": [],
+  "verlenging": ""
+ },
+ "S01LA04": {
+  "eval": 1,
+  "kopie": [
+   "Byooviz (Authorised)",
+   "Epruvy (previously Ranibizumab Midas) (Authorised)",
+   "Ranivisio (Authorised)",
+   "Ranluspec (Authorised)",
+   "Rexatilux (Authorised)",
+   "Rimmyrah (Authorised)",
+   "Vislyfa (Authorised)",
+   "Ximluci (Authorised)"
+  ],
+  "naam": "Ranibizumab",
+  "nl": [
+   "EU/1/06/374",
+   "EU/1/21/1572",
+   "EU/1/22/1673",
+   "EU/1/22/1691",
+   "EU/1/25/2012"
+  ],
+  "pijplijn": [
+   "Byooviz (Samsung Bioepis)",
+   "PF582 (Hospira/Pfenex)",
+   "Ranivisio ()",
+   "Ximluci ()",
+   "Xlucane (Xbrane Biopharma)"
+  ],
+  "spc_bron": "RVO",
+  "spc_einde": "2022-07-23",
+  "spc_klasse": "verlopen",
+  "studies": [
+   "NCT02121353",
+   "NCT02611778",
+   "NCT03150589",
+   "NCT03805100",
+   "NCT04690556",
+   "NCT07520045",
+   "NCT07663370"
+  ],
+  "verlenging": "Extension Granted"
+ },
+ "S01LA05": {
+  "eval": 0,
+  "kopie": [
+   "Afiveg (Authorised)",
+   "Afqlir (Authorised)",
+   "Ahzantive (Authorised)",
+   "Baiama (Authorised)",
+   "Eiyzey (Authorised)",
+   "Eydenzelt (Authorised)",
+   "Eyluxvi (Authorised)",
+   "Mynzepli (Authorised)",
+   "Opuviz (Authorised)",
+   "Pavblu (Authorised)",
+   "Vgenfli (Authorised)",
+   "Yesafili (Authorised)"
+  ],
+  "naam": "Aflibercept",
+  "nl": [
+   "EU/1/12/797",
+   "EU/1/24/1865",
+   "EU/1/24/1867",
+   "EU/1/24/1888",
+   "EU/1/24/1895",
+   "EU/1/25/1909",
+   "EU/1/25/1961",
+   "EU/1/25/1964"
+  ],
+  "pijplijn": [
+   "M-710 (Momenta/Mylan)"
+  ],
+  "spc_bron": "RVO",
+  "spc_einde": "2025-11-22",
+  "spc_klasse": "verlopen",
+  "studies": [
+   "NCT04450329",
+   "NCT04522167",
+   "NCT05161806",
+   "NCT05282004",
+   "NCT05345236",
+   "NCT07235527"
+  ],
+  "verlenging": "Extension Granted"
+ },
+ "S01LA09": {
+  "eval": 0,
+  "kopie": [],
+  "naam": "Faricimab",
+  "nl": [
+   "EU/1/22/1683"
+  ],
+  "pijplijn": [],
+  "spc_bron": "RVO",
+  "spc_einde": "2037-09-15",
+  "spc_klasse": "actief",
+  "studies": [],
+  "verlenging": ""
+ },
+ "_bronnen": {
+  "pdf_stand": "april 2025"
+ }
+}

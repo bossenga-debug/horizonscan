@@ -1,0 +1,83 @@
+name: Patentchecker bijwerken
+
+# De patentchecker staat als submap in deze repo omdat hij hetzelfde FTP-account
+# gebruikt als de horizonscan (public_html als hoofdmap). GitHub-secrets zijn niet
+# terug te lezen en gelden per repository; zo hoeven ze niet opnieuw te worden
+# ingevoerd. Deze workflow staat verder los van horizonscan.yml.
+
+on:
+  schedule:
+    # 10e van de maand 05:00 UTC. Bewust niet de 5e (horizonscan) of de 8e
+    # (add-on dashboard): zo staat de nieuwe Farmatec-lijst van die maand er al.
+    - cron: '0 5 10 * *'
+  workflow_dispatch:        # met de knop "Run workflow" ook handmatig te starten
+  push:
+    branches: [main]
+    # Alleen bij een wijziging aan de patentchecker zelf. De workflow commit ook
+    # zelf, maar dat lokt geen nieuwe run uit: pushes met de standaard
+    # GITHUB_TOKEN starten geen workflows.
+    paths:
+      - 'patentchecker/template.html'
+      - 'patentchecker/*.py'
+      - '.github/workflows/patentchecker.yml'
+
+permissions:
+  contents: write
+
+# Twee runs tegelijk zouden allebei van dezelfde momentopname uitgaan en
+# elkaars wijzigingen overschrijven.
+concurrency:
+  group: patentchecker
+  cancel-in-progress: false
+
+defaults:
+  run:
+    working-directory: patentchecker
+
+jobs:
+  bijwerken:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: patentchecker/requirements.txt
+
+      - name: Afhankelijkheden installeren
+        run: pip install -r requirements.txt
+
+      # bron/ staat niet in de repo en wordt elke run vers opgehaald; historie/
+      # wél, want zonder vorige momentopname is er niets om tegen af te zetten.
+      # --ci stopt hard als een bron van indeling verandert of het register leeg
+      # antwoordt, zodat er nooit een halve pagina online komt. Een push (een
+      # wijziging aan de tool zelf) bouwt vers maar legt geen meetpunt vast.
+      - name: Bronnen ophalen en pagina bouwen
+        run: python3 bijwerken.py --ci ${{ github.event_name == 'push' && '--geen-historie' || '' }}
+
+      # Eerst binnenhalen wat de horizonscan-workflow intussen commitde: beide
+      # workflows pushen naar dezelfde branch.
+      - name: Wijzigingen vastleggen in de repo
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add patentchecker.html historie/
+          git diff --cached --quiet && echo "geen wijzigingen" || \
+            git commit -m "Patentchecker bijgewerkt $(date +%F)"
+          git pull --rebase
+          git push
+
+      - name: Uploaden naar medicatieadvies.nl
+        env:
+          # Hetzelfde account als de horizonscan; de doelmap is geen geheim en
+          # staat daarom gewoon hier.
+          FTP_HOST: ${{ secrets.FTP_HOST_HORIZONSCAN || secrets.FTP_HOST }}
+          FTP_USER: ${{ secrets.FTP_USER_HORIZONSCAN || secrets.FTP_USER }}
+          FTP_PASS: ${{ secrets.FTP_PASS_HORIZONSCAN || secrets.FTP_PASS }}
+          FTP_DIR:  patentchecker
+          FTP_CERT_HOST: ${{ secrets.FTP_CERT_HOST }}
+          FTP_INSECURE_TLS: ${{ secrets.FTP_INSECURE_TLS }}
+        run: python3 deploy_ftp.py
