@@ -188,9 +188,19 @@ dialog::backdrop{background:rgba(0,0,0,.4)}
 .uitleg ul{padding-left:18px;margin:4px 0 10px}
 .uitleg li{margin:4px 0}
 .uitleg .dicht{float:right}
+
+/* Balk boven de kop: terug naar de startpagina van de site. Zelfde plek en
+   vorm als op de preferentiebeleid-pagina, zodat de pagina's één geheel zijn. */
+.terugbalk{background:var(--surface);border-bottom:1px solid var(--rand);padding:9px 18px}
+.terugbalk a{color:var(--s1);font-size:13px;text-decoration:none}
+.terugbalk a:hover{text-decoration:underline}
+@media print{.terugbalk{display:none}}
 </style>
 </head>
 <body>
+<div class="terugbalk">
+  <a href="https://medicatieadvies.nl">&larr; Terug naar Medicatieadvies.nl</a>
+</div>
 <div class="wrap">
 <header>
   <div>

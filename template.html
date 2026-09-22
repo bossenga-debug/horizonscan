@@ -193,9 +193,24 @@ dl{margin:0}
   .rij dt{font-size:12px;color:var(--muted)}
   .knip{max-width:22ch}
 }
+
+/* Balk boven de kop: terug naar de startpagina van de site. Zelfde plek en
+   vorm als op de preferentiebeleid-pagina, zodat de pagina's één geheel zijn. */
+.terugbalk{background:var(--surface);border-bottom:1px solid var(--rand)}
+/* De balk loopt over de volle breedte, de link zelf lijnt uit op dezelfde
+   kolom als de titel eronder -- vandaar dezelfde max-width en zijmarge als
+   .wrap. Het binnenste blok draagt de padding en niet de link, anders wordt
+   de hele balk klikbaar tot aan de rechterrand. */
+.terugbalk>div{max-width:1500px;margin:0 auto;padding:9px 22px}
+.terugbalk a{color:var(--s1);font-size:13px;text-decoration:none}
+.terugbalk a:hover{text-decoration:underline}
+@media print{.terugbalk{display:none}}
 </style>
 </head>
 <body>
+<div class="terugbalk">
+  <div><a href="https://medicatieadvies.nl">&larr; Terug naar Medicatieadvies.nl</a></div>
+</div>
 <div class="wrap">
 <header>
   <div>
