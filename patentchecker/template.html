@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Patentchecker dure add-ons</title>
+<title>Patentchecker dure geneesmiddelen</title>
 <meta name="description" content="Wanneer vervalt de octrooibescherming van de duurste add-on geneesmiddelen, en welke biosimilars en generieken komen eraan.">
 <style>
 :root{
@@ -41,7 +41,9 @@ a{color:var(--s1)}
 header{display:flex;flex-wrap:wrap;gap:14px;align-items:baseline;justify-content:space-between;margin-bottom:16px}
 .sub{color:var(--ink2);font-size:13.5px;margin-top:5px;max-width:78ch}
 .bijgewerkt{color:var(--muted);font-size:12.5px;white-space:nowrap}
-.kopzijde{display:flex;gap:12px;align-items:center}
+.kopzijde{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.ander{font-size:13px;border:1px solid var(--as);border-radius:7px;padding:6px 11px;text-decoration:none}
+.ander:hover{background:var(--wash)}
 
 .cijfers{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:10px;margin-bottom:16px}
 .tegel{background:var(--surface);border:1px solid var(--rand);border-radius:10px;padding:12px 14px;
@@ -204,11 +206,12 @@ dialog::backdrop{background:rgba(0,0,0,.4)}
 <div class="wrap">
 <header>
   <div>
-    <h1>Patentchecker dure add-on geneesmiddelen</h1>
+    <h1 id="titel"></h1>
     <p class="sub" id="sub"></p>
   </div>
   <div class="kopzijde">
     <span class="bijgewerkt" id="bijgewerkt"></span>
+    <a class="ander" id="ander" href="#"></a>
     <button id="uitlegknop" type="button" aria-haspopup="dialog">Uitleg en bronnen</button>
   </div>
 </header>
@@ -314,6 +317,8 @@ const B = DATA.bronnen;
 const JAAR = B.gip_jaren[B.gip_jaren.length-1];
 const VORIG = B.gip_jaren[B.gip_jaren.length-2];
 const VANDAAG = DATA.bijgewerkt;
+/* Het add-on bestand markeert voorlopige jaren met een ster, het farmaciebestand niet. */
+const JL = JAAR + (B.voorlopig.includes(JAAR) ? "*" : "");
 
 const $ = s=>document.querySelector(s);
 const $$ = s=>[...document.querySelectorAll(s)];
@@ -342,21 +347,34 @@ function relatief(iso){
 }
 
 const FASEN = {
-  concurrentie:["Concurrentie toegelaten","Bescherming verlopen en er is minstens één biosimilar of generiek geregistreerd (EU) of een tweede handelsvergunning op de NL add-on-lijst."],
+  concurrentie:["Concurrentie toegelaten","Bescherming verlopen en er is minstens één biosimilar of generiek geregistreerd (EU)"+
+    (DATA.set.naam==="gvs" ? ", of het middel is preferent aangewezen." : ", of er is een tweede handelsvergunning op de NL add-on-lijst.")],
   vrij:["Verlopen, nog geen alternatief","Bescherming verlopen, maar nog geen geregistreerde biosimilar of generiek."],
   binnenkort:[`Loopt af ≤ ${DATA.binnenkort/12} jaar`,`De vroegste toetreding valt binnen ${DATA.binnenkort} maanden.`],
   beschermd:["Beschermd","Vroegste toetreding ligt verder dan dat in de toekomst."],
-  onbekend:["Onbekend","Geen SPC gevonden in het register of in het Horizonscan-overzicht, of alleen een lopende aanvraag."],
+  onbekend:["Onbekend","Geen SPC gevonden in het register of in het Horizonscan-overzicht, of alleen een lopende aanvraag"+
+    (DATA.set.naam==="gvs" ? ", en geen centrale EU-registratie waaruit de marktbescherming volgt. Bij oudere stoffen betekent dat meestal dat de bescherming allang verlopen is."
+                           : ".")],
   groep:["Productgroep","Geen enkelvoudige stof; een SPC-datum is hier niet van toepassing."],
 };
 const FASE_VOLGORDE = ["binnenkort","vrij","concurrentie","beschermd","onbekend","groep"];
+
+/* Het Nederlandse concurrentiesignaal verschilt per set: bij add-on middelen het
+   aantal handelsvergunningen op de Farmatec-lijst, bij GVS-middelen of het middel
+   preferent is aangewezen (dat kan alleen bij meerdere leveranciers). */
+const PREF = DATA.set.naam === "gvs";
+const NL_KOP = PREF ? "Preferent aangewezen" : "NL-vergunningen";
+const nlCel = m => m.nl.n
+  ? (PREF ? `${m.nl.n} van 10 <span class="klein">verzekeraars</span>` : m.nl.n)
+  : `<span class="nul">${PREF ? "nee" : "0"}</span>`;
 
 M.forEach(m=>{
   m._k = m.kosten[JAAR]||0; m._kv = m.kosten[VORIG]||0;
   m._afwijking = !!(m.hs && String(m.hs.vergelijking).startsWith("verschil"));
   m._z = [m.naam,m.inn,m.atc,...m.merken,m.spc?.houder,m.spc?.basis,
           ...m.ema_kopie.map(k=>k.naam+" "+k.houder),...m.pijplijn.map(p=>p.merk+" "+p.fabrikant),
-          ...m.studies.map(s=>s.sponsor+" "+s.nct),...Object.values(m.nl.reg)].join(" ").toLowerCase();
+          ...m.studies.map(s=>s.sponsor+" "+s.nct),
+          ...Object.values(m.nl.reg||{}), ...(m.nl.fabrikanten||[])].join(" ").toLowerCase();
 });
 
 /* ---------------- staat en URL ---------------- */
@@ -402,10 +420,10 @@ function cijfers(){
   const som = f=>M.filter(f).reduce((s,m)=>s+m._k,0);
   const tel = f=>M.filter(f).length;
   const t = [
-    [meervoud(M.length,"middel","middelen"),`boven € ${nl.format(DATA.drempel/1e6)} mln per jaar`,`${eurKort(som(()=>true))} in ${JAAR}*`,{}],
-    [tel(m=>m.fase==="binnenkort"),FASEN.binnenkort[0],`${eurKort(som(m=>m.fase==="binnenkort"))} in ${JAAR}*`,{fase:"binnenkort"}],
-    [tel(m=>m.fase==="vrij"),FASEN.vrij[0],`${eurKort(som(m=>m.fase==="vrij"))} in ${JAAR}*`,{fase:"vrij"}],
-    [tel(m=>m.fase==="concurrentie"),FASEN.concurrentie[0],`${eurKort(som(m=>m.fase==="concurrentie"))} in ${JAAR}*`,{fase:"concurrentie"}],
+    [meervoud(M.length,"middel","middelen"), TOP?`duurste ${DATA.set.kop}`:`boven € ${nl.format(DATA.drempel/1e6)} mln per jaar`,`${eurKort(som(()=>true))} in ${JL}`,{}],
+    [tel(m=>m.fase==="binnenkort"),FASEN.binnenkort[0],`${eurKort(som(m=>m.fase==="binnenkort"))} in ${JL}`,{fase:"binnenkort"}],
+    [tel(m=>m.fase==="vrij"),FASEN.vrij[0],`${eurKort(som(m=>m.fase==="vrij"))} in ${JL}`,{fase:"vrij"}],
+    [tel(m=>m.fase==="concurrentie"),FASEN.concurrentie[0],`${eurKort(som(m=>m.fase==="concurrentie"))} in ${JL}`,{fase:"concurrentie"}],
     [tel(m=>m.ema_eval.length),"met aanvraag bij EMA","biosimilar of generiek in beoordeling",{eval:true}],
     [tel(m=>m._afwijking),"afwijkend van Horizonscan","andere datum dan het register",{afwijking:true}],
   ];
@@ -420,7 +438,7 @@ function cijfers(){
 /* ---------------- tabel ---------------- */
 const KOLOMMEN = [
   {k:"naam",t:"Middel",s:m=>m.naam.toLowerCase()},
-  {k:"kosten",t:`Kosten ${JAAR}*`,s:m=>-m._k,num:true},
+  {k:"kosten",t:`Kosten ${JL}`,s:m=>-m._k,num:true},
   {k:"spc",t:"SPC tot",s:m=>m.spc?.einde||"9"},
   {k:"hs",t:"Horizonscan",s:m=>m.hs?.datum||(m.hs?.verlopen?"0":"9")},
   /* Eerst wat nog komt (dichtstbij bovenaan), dan wat al verstreken is (meest recent eerst). */
@@ -428,7 +446,7 @@ const KOLOMMEN = [
   {k:"fase",t:"Status",s:m=>FASE_VOLGORDE.indexOf(m.fase)},
   {k:"ema",t:"EMA: geregistreerd / in beoordeling",s:m=>-(m.ema_kopie.length*100+m.ema_eval.length)},
   {k:"pijp",t:"Pijplijn",s:m=>-(m.pijplijn.length+m.studies.length)},
-  {k:"nl",t:"NL-vergunningen",s:m=>-m.nl.n,num:true},
+  {k:"nl",t:NL_KOP,s:m=>-m.nl.n,num:true},
 ];
 function spcCel(m){
   if(m.groep) return `<span class="nul">n.v.t.</span>`;
@@ -478,7 +496,7 @@ function tabel(rijen){
     <td class="tel">${m.pijplijn.length?`${m.pijplijn.length} Horizonscan`:""}${
       m.pijplijn.length&&m.studies.length?"<br>":""}${m.studies.length?`${m.studies.length} ${m.studies.length===1?"studie":"studies"}`:""}${
       !m.pijplijn.length&&!m.studies.length?`<span class="nul">—</span>`:""}</td>
-    <td class="num">${m.nl.n||`<span class="nul">0</span>`}</td></tr>`;}).join("");
+    <td class="num">${nlCel(m)}</td></tr>`;}).join("");
   $$("#lichaam tr.klik").forEach(tr=>tr.onclick=()=>open(tr.dataset.atc));
 }
 
@@ -519,7 +537,7 @@ function tijdlijn(rijen){
       tip.innerHTML = `<b>${k.label==="Verstreken"?"Bescherming al verstreken":"Vroegste toetreding in "+k.label}</b>`+
         k.m.slice(0,8).map(m=>`<div><span>${esc(m.naam)}</span><span>${eurKort(m._k)}</span></div>`).join("")+
         (k.m.length>8?`<div><span>en ${k.m.length-8} meer</span><span></span></div>`:"")+
-        `<div style="border-top:1px solid var(--grid);margin-top:4px;padding-top:4px"><span>Samen (${JAAR}*)</span><span>${eurKort(k.som)}</span></div>`;
+        `<div style="border-top:1px solid var(--grid);margin-top:4px;padding-top:4px"><span>Samen (${JL})</span><span>${eurKort(k.som)}</span></div>`;
       tip.style.display="block";
       const x = Math.min(e.clientX+14, innerWidth-tip.offsetWidth-8), y = Math.min(e.clientY+14, innerHeight-tip.offsetHeight-8);
       tip.style.left=x+"px"; tip.style.top=y+"px";
@@ -527,7 +545,7 @@ function tijdlijn(rijen){
     g.onmouseleave = ()=>tip.style.display="none";
     g.onclick = ()=>{ if(!k.m.length) return; tip.style.display="none"; STAAT.jaar=k.sleutel; STAAT.tab="tabel"; zetHash(); teken(); };
   });
-  $("#tijdvoet").textContent = `Hoogte = Zvw-vergoeding ${JAAR}* van de middelen waarvan de vroegste toetreding in dat jaar valt `+
+  $("#tijdvoet").textContent = `Hoogte = Zvw-vergoeding ${JL} van de middelen waarvan de vroegste toetreding in dat jaar valt `+
     `(de laatste van SPC-einde en marktbescherming); het getal boven de staaf is het aantal middelen. `+
     `Klik op een staaf om die middelen in de tabel te zien. Productgroepen en middelen zonder datum staan er niet in.`;
   $("#jaarlijst").innerHTML = kolommen.filter(k=>k.m.length).map(k=>
@@ -656,11 +674,23 @@ function open(atc, nietInHash){
       <span class="klein">${esc(s.fase.replace(/PHASE/g,"fase "))} · ${esc(s.status.toLowerCase().replace(/_/g," "))}${s.start?" · start "+esc(s.start):""}</span>
       <span class="klein">${esc(s.titel)}</span></li>`).join("")+`</ul></div>`;
 
+  if(PREF){
+    h += `<div class="groep"><h4>Preferentiebeleid in Nederland</h4>`+
+      (m.nl.n?`<dl>`+
+        rij("Aangewezen door", `${meervoud(m.nl.n,"verzekeraarsgroep","verzekeraarsgroepen")} van 10 <span class="klein">${esc(m.nl.verzekeraars.join(", "))}</span>`)+
+        rij("Aangewezen fabrikanten", esc(m.nl.fabrikanten.join(", ")))+
+        rij("Clusters", `${meervoud(m.nl.clusters,"sterkte of vorm","sterktes of vormen")}`)+`</dl>
+        <p class="klein">Preferentiebeleid kan alleen bij een stof met meerdere leveranciers; aangewezen betekent dus
+        dat er generieken op de Nederlandse markt zijn. Bron: de preferentiepagina van deze site (${esc(B.pref||"—")}).</p>`:
+        `<p class="klein">Niet preferent aangewezen door een van de tien verzekeraarsgroepen — meestal omdat er nog geen
+         generiek is, soms omdat de verzekeraars dit middel er (nog) niet in betrekken.</p>`)+`</div>`;
+  } else {
   const reg = Object.entries(m.nl.reg);
   h += `<div class="groep"><h4>Nederlandse add-on-lijst (Farmatec ${esc(B.gs)})</h4>`+
     (reg.length?`<ul class="lijst">${reg.map(([r,f])=>`<li>${esc(r)} <span class="klein">${esc(f)}</span></li>`).join("")}</ul>
       <p class="klein">${meervoud(reg.length,"handelsvergunning","handelsvergunningen")}; parallelimport telt niet apart mee.</p>`:
       `<p class="klein">Niet op de lijst.</p>`)+`</div>`;
+  }
 
   h += `<div class="knoppen">
     <a href="${esc(DATA.addon)}#atc=${esc(m.atc)}" target="_blank" rel="noopener">Add-on dashboard</a>
@@ -695,17 +725,31 @@ function teken(){
   if(STAAT.tab==="logboek") logboek();
 }
 
+const TOP = DATA.set.selectie === "top";
+const SELECTIE = TOP
+  ? `de ${nl.format(DATA.top)} duurste ${DATA.set.kop} van ${JAAR}`
+  : `de ${DATA.set.kop} met meer dan € ${nl.format(DATA.drempel/1e6)} mln Zvw-vergoeding per jaar`;
+
 function init(){
-  $("#sub").textContent = `De add-on geneesmiddelen met meer dan € ${nl.format(DATA.drempel/1e6)} mln Zvw-vergoeding per jaar: `+
-    `wanneer vervalt de octrooibescherming (SPC), en welke biosimilars en generieken komen eraan.`;
+  document.title = DATA.set.titel;
+  $("#titel").textContent = DATA.set.titel;
+  $("#sub").textContent = `${SELECTIE.charAt(0).toUpperCase()+SELECTIE.slice(1)}: wanneer vervalt de `+
+    `octrooibescherming (SPC), en welke biosimilars en generieken komen eraan.`;
   $("#bijgewerkt").textContent = "Bijgewerkt " + datLang(DATA.bijgewerkt);
+  $("#ander").textContent = "Ook: " + DATA.set.ander.kop + " →";
+  $("#ander").href = DATA.set.ander.url;
+  $("#ander").title = "De patentchecker voor " + DATA.set.ander.kop;
   for(const f of FASE_VOLGORDE) $("#f-fase").insertAdjacentHTML("beforeend",`<option value="${f}">${FASEN[f][0]}</option>`);
   const jaren = [...new Set(M.map(toetredingsjaar).filter(Boolean))].sort();
   for(const j of jaren) $("#f-jaar").insertAdjacentHTML("beforeend",`<option value="${j}">${j==="verstreken"?"Al verstreken":"Toetreding in "+j}</option>`);
 
-  $("#u-selectie").textContent = `Dit overzicht volgt elk add-on geneesmiddel (ATC-5) waarvan de Zvw-vergoeding in ${VORIG} of ${JAAR}* `+
-    `boven € ${nl.format(DATA.drempel/1e6)} mln lag: ${M.length} middelen. Twee jaren, omdat ${JAAR} nog niet volledig gedeclareerd is. `+
-    `Het wordt maandelijks bijgewerkt.`;
+  $("#u-selectie").textContent = TOP
+    ? `Dit overzicht volgt de ${nl.format(DATA.top)} ATC-codes met de hoogste Zvw-vergoeding in ${JAAR} binnen de `+
+      `extramurale farmacie (het geneesmiddelenvergoedingssysteem, GVS): samen ${eurKort(M.reduce((s,m)=>s+m._k,0))}. `+
+      `Eén jaar en een vast aantal, omdat dit de kop is van een lijst van ruim duizend ATC-codes. Het wordt maandelijks bijgewerkt.`
+    : `Dit overzicht volgt elk add-on geneesmiddel (ATC-5) waarvan de Zvw-vergoeding in ${VORIG} of ${JL} `+
+      `boven € ${nl.format(DATA.drempel/1e6)} mln lag: ${M.length} middelen. Twee jaren, omdat ${JAAR} nog niet volledig `+
+      `gedeclareerd is. Het wordt maandelijks bijgewerkt.`;
   $("#u-fasen").innerHTML = FASE_VOLGORDE.map(f=>`<li><span class="label ${f}">${FASEN[f][0]}</span> ${FASEN[f][1]}</li>`).join("");
   $("#u-bronnen").innerHTML = [
     `<b>Octrooiregister RVO</b> (Octrooicentrum Nederland): SPC's, einddatum en pediatrische verlenging.`,
@@ -713,11 +757,14 @@ function init(){
     `<b>EMA-lijst aanvragen in beoordeling</b> (${esc(B.eval||"—")}): biosimilars en generieken vóór registratie.`,
     `<b>Horizonscan Geneesmiddelen</b>: biosimilars en generieken in de pijplijn, en het overzicht patentverloop (stand ${esc(B.pdf_stand||"—")}) ter vergelijking.`,
     `<b>ClinicalTrials.gov</b>: studies met een biosimilar van het middel in de titel.`,
-    `<b>Farmatec add-on GS-lijst</b> (${esc(B.gs||"—")}): handelsvergunningen in Nederland.`,
+    PREF ? `<b>Preferentiebeleid</b> (${esc(B.pref||"—")}): welke verzekeraars het middel preferent aanwijzen — `+
+            `het teken dat er generieken op de Nederlandse markt zijn. Van de preferentiepagina van deze site.`
+         : `<b>Farmatec add-on GS-lijst</b> (${esc(B.gs||"—")}): handelsvergunningen in Nederland.`,
     `<b>GIP-databank</b> (Zorginstituut): Zvw-vergoeding en gebruikers, ${B.gip_jaren[0]}–${JAAR}; * = voorlopig.`,
   ].map(x=>`<li>${x}</li>`).join("");
-  $("#colofon").innerHTML = `Bronnen: octrooiregister RVO, EMA, Horizonscan Geneesmiddelen, ClinicalTrials.gov, Farmatec, GIP-databank. `+
-    `* ${JAAR} is voorlopig. De data zijn indicatief; aan dit overzicht kunnen geen rechten worden ontleend.`;
+  $("#colofon").innerHTML = `Bronnen: octrooiregister RVO, EMA, Horizonscan Geneesmiddelen, ClinicalTrials.gov, `+
+    `${PREF?"preferentiebeleid van de zorgverzekeraars":"Farmatec"}, GIP-databank. `+
+    `${B.voorlopig.includes(JAAR)?`* ${JAAR} is voorlopig. `:""}De data zijn indicatief; aan dit overzicht kunnen geen rechten worden ontleend.`;
 
   $("#uitlegknop").onclick = ()=>$("#uitleg").showModal();
   $("#zoek").oninput = e=>{ STAAT.q=e.target.value; zetHash(); teken(); };

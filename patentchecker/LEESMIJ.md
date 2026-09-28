@@ -1,7 +1,14 @@
-# Patentchecker dure add-on geneesmiddelen
+# Patentchecker dure geneesmiddelen
 
-Eén zelfstandige pagina (`patentchecker.html`) die voor elk add-on geneesmiddel
-met meer dan € 10 mln Zvw-vergoeding per jaar laat zien:
+Twee zelfstandige pagina's op dezelfde code en hetzelfde sjabloon:
+
+| Set | Pagina | Selectie | Bron van de kosten |
+|---|---|---|---|
+| `addon` | `patentchecker.html` → `/patentchecker/` | boven € 10 mln per jaar (69 middelen) | GIP add-on Zvw |
+| `gvs` | `patentchecker_gvs.html` → `/patentchecker/gvs.html` | de 100 duurste van het laatste jaar | GIP farmacie Zvw |
+
+De sets staan in `SETS` in `middelen.py`; `--set addon`, `--set gvs` of allebei
+(de standaard). Beide pagina's laten per middel zien:
 
 - wanneer het **SPC** (aanvullend beschermingscertificaat op het Europese
   basisoctrooi) afloopt, inclusief pediatrische verlenging;
@@ -11,17 +18,19 @@ met meer dan € 10 mln Zvw-vergoeding per jaar laat zien:
 - hoeveel **handelsvergunningen** er op de Nederlandse add-on-lijst staan;
 - of de datum **overeenkomt met het Horizonscan-overzicht** patentverloop.
 
-Bedoeld voor <https://medicatieadvies.nl/patentchecker/>. Zelfde opzet als de
-horizonscan- en add-on-pagina's.
+Wat de sets verschilt, staat bij "Nederlandse concurrentie" hieronder. Zelfde
+opzet als de horizonscan- en add-on-pagina's.
 
 ## Gebruik
 
 ```
-python3 bijwerken.py            # alles ophalen en herbouwen (duurt ~5 minuten door het register)
-python3 bijwerken.py --altijd   # ook herbouwen als er niets veranderd is
-python3 bouw_site.py            # alleen herbouwen uit bron/ (bijv. na een wijziging aan template.html)
+python3 bijwerken.py                   # beide sets ophalen en herbouwen (~20 min door het register)
+python3 bijwerken.py --altijd          # ook herbouwen als er niets veranderd is
+python3 bouw_site.py                   # alleen herbouwen uit bron/ (na een wijziging aan template.html)
+python3 bouw_site.py --set gvs         # één set
+python3 ophalen.py --set gvs           # idem bij het ophalen
 python3 ophalen.py --zonder-register   # snel: alles behalve RVO en ClinicalTrials.gov
-python3 deploy_ftp.py [--dry-run]      # uploaden
+python3 deploy_ftp.py [--dry-run]      # beide pagina's uploaden
 ```
 
 `bouw_site.py --geen-historie` bouwt zonder een meetpunt in het logboek te zetten;
@@ -31,13 +40,14 @@ gebruik dat bij proberen, anders krijgt het logboek een extra datum.
 
 | Bestand | Wat |
 |---|---|
-| `middelen.py` | selectie (drempel, productgroepen), naamkoppeling NL ↔ INN, lezers voor GIP, EMA en Farmatec |
+| `middelen.py` | de sets, selectie (drempel of top-N, productgroepen), naamkoppeling NL ↔ INN, lezers voor GIP, EMA en Farmatec |
 | `ophalen.py` | haalt alle bronnen naar `bron/` (niet in git) |
 | `rvo.py` | leest SPC's uit het octrooiregister |
 | `hs_pdf.py` | leest de tabel uit het Horizonscan-overzicht patentverloop |
 | `bouw_site.py` | voegt samen, vergelijkt met `historie/`, schrijft `patentchecker.html` |
 | `template.html` | de pagina; de data komt op de plek van `/*DATA*/null/*DATA*/` |
-| `historie/` | momentopname, logboek en elke gelezen editie van het Horizonscan-overzicht (wél in git) |
+| `historie/` | momentopname en logboek van de add-on set, plus elke gelezen editie van het Horizonscan-overzicht (wél in git) |
+| `historie/gvs/` | idem voor de GVS-set |
 
 ## Bronnen
 
@@ -49,8 +59,20 @@ gebruik dat bij proberen, anders krijgt het logboek een extra datum.
 | Horizonscan-export (8 domeinen) | biosimilars/generieken in de pijplijn | sessiecookie nodig, lezen op kolompositie |
 | Horizonscan-overzicht patentverloop (PDF) | vergelijking + terugval | zie "Nieuwe Horizonscan-publicatie" |
 | ClinicalTrials.gov API v2 | biosimilarstudies | filter op titel, zie `biosimilar_van()` |
-| Farmatec add-on GS-lijst | handelsvergunningen in NL | tel `RegistratieNummer`, niet `Fabrikant` |
-| GIP add-on Zvw meerjaren | selectie en kosten | laatste jaar voorlopig |
+| Farmatec add-on GS-lijst | handelsvergunningen in NL (set addon) | tel `RegistratieNummer`, niet `Fabrikant` |
+| Preferentiebeleid (eigen pagina) | concurrentie in NL (set gvs) | JSON uit de broncode van medicatieadvies.nl/preferentiebeleid |
+| GIP add-on / farmacie Zvw meerjaren | selectie en kosten | add-on markeert voorlopige jaren met `*`, farmacie niet |
+
+## Nederlandse concurrentie
+
+Voor add-on middelen telt het aantal handelsvergunningen op de Farmatec
+add-on GS-lijst. Voor GVS-middelen bestaat zo'n lijst niet. Daar gebruiken we
+of het middel **preferent is aangewezen**: preferentiebeleid kan alleen bij een
+stof met meerdere leveranciers, dus aangewezen betekent dat er generieken op de
+Nederlandse markt zijn. Die gegevens komen uit de preferentiepagina van deze
+site zelf (`const DATA` in de HTML; lezen met `json.JSONDecoder().raw_decode`,
+niet met een regex — de data bevat zelf accolades). Lukt dat niet, dan valt
+alleen die kolom weg.
 
 ## Het octrooiregister
 
@@ -96,6 +118,15 @@ melding op het tabblad Vergelijking. Pas dan `hs_pdf.py` aan. Testen kan los:
 Een naam in de PDF die niet koppelt (een typefout zoals "Ocrilizumab"), zet je
 in `PDF_NAAM` in `bouw_site.py`.
 
+## Combinatiepreparaten
+
+GIP schrijft "Ivacaftor met tezacaftor en elexacaftor", EMA
+"ivacaftor;tezacaftor;elexacaftor". `inn_voor()` koppelt daarom als tweede stap
+op de vérzameling stofnamen — nog steeds exact per stof. In het octrooiregister
+wordt per component gezocht, en een certificaat telt alleen mee als álle stoffen
+in de titel staan: een SPC op alleen valsartan hoort niet bij valsartan met
+sacubitril.
+
 ## Interpretatie
 
 - **Vroegste toetreding** = de laatste van SPC-einde en marktbescherming. Het is
@@ -120,7 +151,9 @@ dat het FTP-wachtwoord opnieuw opgezocht moest worden.
 
 Workflow `../.github/workflows/patentchecker.yml` draait op de 10e van de maand
 (horizonscan de 5e, addon de 8e), bij een handmatige start en bij een push naar
-`patentchecker/`. Hij staat los van de horizonscan-workflow en gebruikt
+`patentchecker/`. Eén run doet beide sets en zet ze in dezelfde map:
+`index.html` (add-on) en `gvs.html` (GVS). Reken op ruim twintig minuten;
+het octrooiregister is het langste onderdeel. Hij staat los van de horizonscan-workflow en gebruikt
 `FTP_*_HORIZONSCAN` (terugvallend op `FTP_*`) en `FTP_CERT_HOST`. De doelmap
 `patentchecker` staat gewoon in de workflow. Die map bestaat in `public_html`;
 `deploy_ftp.py` maakt geen mappen aan en stopt als de doelmap niet klopt.

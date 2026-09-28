@@ -29,8 +29,7 @@ import hs_pdf
 
 HIER = middelen.HIER
 BRON = middelen.BRON
-HISTORIE = os.path.join(HIER, 'historie')
-UIT = os.path.join(HIER, 'patentchecker.html')
+PATENTCHECKER = 'https://medicatieadvies.nl/patentchecker/'
 VANDAAG = datetime.date.today()
 
 ADDON_DASHBOARD = 'https://medicatieadvies.nl/addon/'
@@ -80,7 +79,22 @@ VERVOLG = re.compile(r'^(of|or|desgewenst|een|a|in|inclusief|including|dan wel|'
                      r'en (zouten|farmaceutisch)|and (salts|pharmaceutically))\b', re.I)
 
 
-def hoofdcertificaat(titel, namen, merken):
+def hoofdcertificaat(titel, namen, merken, delen=(), stoffen=()):
+    """Bij een combinatiepreparaat moeten álle stoffen in de titel staan, en geen
+    andere. Een certificaat op alleen valsartan hoort niet bij valsartan met
+    sacubitril, en het certificaat op glycopyrronium + formoterol + beclometason
+    niet bij formoterol met beclometason."""
+    if len(delen) > 1:
+        t = titel.lower()
+        eigen = {d.lower()[:8] for d in delen}
+        if not all(d in t for d in eigen):
+            return False
+        # Andere bekende stoffen in de titel: dan gaat het om een ander product.
+        return not any(s not in eigen for s in stoffen if s in t)
+    return _hoofdcertificaat(titel, namen, merken)
+
+
+def _hoofdcertificaat(titel, namen, merken):
     """Gaat dit certificaat over de stof zelf, en niet over een combinatie of
     een afgeleide? 'Ruxolitinib of een farmaceutisch aanvaardbaar zout' en
     'Osimertinib (Tagrisso)' wel; 'Trastuzumab emtansine' niet (voor
@@ -96,7 +110,7 @@ def hoofdcertificaat(titel, namen, merken):
     return False
 
 
-def kies_spc(certs, namen, merken):
+def kies_spc(certs, namen, merken, delen=(), stoffen=()):
     """Het bepalende certificaat: het actieve met de laatste einddatum; anders een
     lopende aanvraag; anders het laatst verlopen certificaat."""
     for c in certs:
@@ -109,8 +123,8 @@ def kies_spc(certs, namen, merken):
             c['einde_register'], c['einde'] = c.get('einde', ''), c['vervallen']
         elif c['status'].startswith('Invalid') and c.get('einde'):
             c['einde_register'], c['einde'] = c['einde'], ''
-        c['hoofd'] = hoofdcertificaat(c['titel'], namen, merken) or \
-            any(c['titel'].lower().startswith(m.lower()) for m in merken)
+        c['hoofd'] = hoofdcertificaat(c['titel'], namen, merken, delen, stoffen) or \
+            (len(delen) < 2 and any(c['titel'].lower().startswith(m.lower()) for m in merken))
         v = (c.get('verlenging') or '').lower()
         c['verlenging_loopt'] = ('pending' in v or 'filed' in v) and 'granted' not in v
     hoofd = [c for c in certs if c['hoofd']]
@@ -203,7 +217,11 @@ def fase(m):
     if m['groep']:
         return 'groep'
     grens = m['toetreding']
-    heeft_concurrent = bool(m['ema_kopie']) or m['nl']['n'] > 1
+    # Concurrentie: een geregistreerde biosimilar of generiek bij EMA, of het
+    # Nederlandse signaal van de set (tweede handelsvergunning, of preferent
+    # aangewezen -- dat kan alleen bij meerdere leveranciers).
+    heeft_concurrent = bool(m['ema_kopie']) or (
+        m['nl']['n'] > 1 if m['nl']['soort'] == 'farmatec' else m['nl']['n'] > 0)
     if not grens and not m['spc']:
         return 'concurrentie' if heeft_concurrent else 'onbekend'
     if grens and grens > VANDAAG.isoformat():
@@ -213,16 +231,24 @@ def fase(m):
     return 'concurrentie' if heeft_concurrent else 'vrij'
 
 
-def bouw():
-    gip, voorlopig = middelen.lees_gip()
-    gekozen, jaren = middelen.selectie(gip)
+def bouw(set_):
+    gip, voorlopig = middelen.lees_gip(os.path.join(BRON, set_['gip']))
+    gekozen, jaren = middelen.selectie(gip, set_)
     ema = middelen.lees_ema()
     inns = sorted({(r['International non-proprietary name (INN) / common name'] or '').strip() for r in ema} - {''})
-    gs, gs_versie = middelen.lees_gs()
+    gs, gs_versie = (middelen.lees_gs() if set_['nl_bron'] == 'farmatec' else ({}, ''))
+    pref = lees_json('preferentiebeleid.json', None) if set_['nl_bron'] == 'preferentie' else None
     evaluatie, eval_peil = lees_evaluatie()
     pijplijn = lees_hs_pijplijn()
-    rvo = lees_json('rvo.json', {})
-    ctgov = lees_json('ctgov.json', {})
+    rvo = lees_json(f"rvo_{set_['naam']}.json", {})
+    ctgov = lees_json(f"ctgov_{set_['naam']}.json", {})
+
+    # Alle stofnamen die we kennen, als begin van acht letters. Daarmee is te zien
+    # of in de titel van een certificaat een stof staat die niet bij dit middel hoort.
+    stoffen = {middelen.sleutel(c)[:8] for naam in
+               [o['naam'] for o in gip.values()] + inns
+               for c in middelen.componenten(naam) if len(c) > 5}
+    stoffen = {s for s in stoffen if len(s) == 8}
 
     pdf, pdf_fout = lees_hs_overzicht()
     pdf_url = open(os.path.join(BRON, 'hs_patent.url')).read().strip() \
@@ -233,7 +259,7 @@ def bouw():
         g = gip[atc]
         inn = middelen.inn_voor(atc, g['naam'], inns)
         rij = {'atc': atc, 'naam': g['naam'], 'inn': inn, 'kosten': g['kosten'],
-               'gebruikers': g['gebruikers'], 'groep': middelen.GROEPEN.get(atc, '')}
+               'gebruikers': g['gebruikers'], 'groep': middelen.groep_van(atc, g['naam'])}
 
         # EMA: origineel en kopieën
         eigen = [r for r in ema if middelen.zelfde_stof(
@@ -279,8 +305,9 @@ def bouw():
 
         # Octrooiregister
         certs = rvo.get(atc, [])
+        delen = middelen.componenten(inn)
         spc = kies_spc(certs, sorted({inn, g['naam']}, key=len, reverse=True),
-                       rij['merken']) if not rij['groep'] else None
+                       rij['merken'], delen, stoffen) if not rij['groep'] else None
         # Eerst de certificaten over de stof zelf, binnen elke groep de laatste einddatum bovenaan.
         certs = sorted(certs, key=lambda c: c.get('einde') or '', reverse=True)
         rij['certificaten'] = sorted(certs, key=lambda c: not c.get('hoofd'))
@@ -312,13 +339,13 @@ def bouw():
 
         rij['pijplijn'] = [p for p in pijplijn if hs_stof_past(p['stof'], inn)]
         rij['studies'] = ctgov.get(atc, [])
-        nl = gs.get(atc, {'reg': {}, 'artikelen': []})
-        rij['nl'] = {'n': len(nl['reg']), 'reg': nl['reg'], 'artikelen': nl['artikelen']}
+        rij['nl'] = nl_blok(set_, atc, gs, pref)
         rij['fase'] = fase(rij)
         uit.append(rij)
 
     bronnen = {
         'gip_jaren': jaren, 'voorlopig': voorlopig, 'gs': gs_versie, 'eval': eval_peil,
+        'pref': (pref or {}).get('gegenereerd', ''),
         'pdf_stand': pdf['stand'], 'pdf_url': pdf_url,
         'pdf_voetnoten': list(dict.fromkeys(pdf['voetnoten'])), 'pdf_fout': pdf_fout,
     }
@@ -351,12 +378,34 @@ def lees_hs_overzicht():
               f'        De pagina wordt gebouwd zonder vergelijking; kijk hs_pdf.py na.')
         return leeg, fout
     naam = 'hs_patent_' + re.sub(r'\W+', '_', pdf['stand'].lower()) + '.json'
-    pad_hist = os.path.join(HISTORIE, naam)
+    # De PDF geldt voor beide sets, dus één plek: de map historie/ zelf.
+    pad_hist = os.path.join(HIER, 'historie', naam)
     if not os.path.exists(pad_hist):
-        os.makedirs(HISTORIE, exist_ok=True)
+        os.makedirs(os.path.dirname(pad_hist), exist_ok=True)
         json.dump(pdf, open(pad_hist, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
         print(f'Horizonscan-overzicht stand {pdf["stand"]} bewaard in historie/{naam}')
     return pdf, ''
+
+
+def nl_blok(set_, atc, gs, pref):
+    """Wat er in Nederland over concurrentie te zeggen is. Dat verschilt per set:
+
+    add-on  het aantal handelsvergunningen op de Farmatec add-on GS-lijst. Eén
+            vergunning betekent geen concurrentie.
+    GVS     of het middel preferent is aangewezen. Voor GVS-middelen bestaat
+            geen lijst zoals die van Farmatec, maar preferentiebeleid kán alleen
+            bij een stof met meerdere leveranciers -- aangewezen is dus het
+            bewijs dat er generieken op de Nederlandse markt zijn.
+    """
+    if set_['nl_bron'] == 'farmatec':
+        o = gs.get(atc, {'reg': {}, 'artikelen': []})
+        return {'soort': 'farmatec', 'n': len(o['reg']), 'reg': o['reg'], 'artikelen': o['artikelen']}
+    o = (pref or {}).get('atc', {}).get(atc)
+    return {'soort': 'preferentie', 'n': len(o['verzekeraars']) if o else 0,
+            'verzekeraars': o['verzekeraars'] if o else [],
+            'fabrikanten': o['fabrikanten'] if o else [],
+            'clusters': o['clusters'] if o else 0,
+            'stof': o['stof'] if o else ''}
 
 
 def vergelijk(spc, hs, stand):
@@ -387,7 +436,7 @@ def momentopname(rij):
         'eval': len(rij['ema_eval']),
         'studies': sorted(s['nct'] for s in rij['studies']),
         'pijplijn': sorted(f"{p['merk'] or p['stof']} ({p['fabrikant']})" for p in rij['pijplijn']),
-        'nl': sorted(rij['nl']['reg']),
+        'nl': sorted(rij['nl'].get('reg') or rij['nl'].get('verzekeraars') or []),
     }
 
 
@@ -426,10 +475,11 @@ def mutaties(oud, nieuw):
     return uit
 
 
-def werk_historie(rijen, bronnen, vastleggen):
-    os.makedirs(HISTORIE, exist_ok=True)
-    pad_moment = os.path.join(HISTORIE, 'momentopname.json')
-    pad_log = os.path.join(HISTORIE, 'logboek.json')
+def werk_historie(rijen, bronnen, set_, vastleggen):
+    historie = os.path.join(HIER, set_['historie'])
+    os.makedirs(historie, exist_ok=True)
+    pad_moment = os.path.join(historie, 'momentopname.json')
+    pad_log = os.path.join(historie, 'logboek.json')
     log = json.load(open(pad_log, encoding='utf-8')) if os.path.exists(pad_log) else \
         {'begin': VANDAAG.isoformat(), 'regels': []}
     nieuw = {r['atc']: momentopname(r) for r in rijen}
@@ -453,18 +503,23 @@ def werk_historie(rijen, bronnen, vastleggen):
     return log
 
 
-def main():
-    rijen, bronnen = bouw()
-    log = werk_historie(rijen, bronnen, '--geen-historie' not in sys.argv)
+def bouw_set(set_, sjabloon):
+    rijen, bronnen = bouw(set_)
+    log = werk_historie(rijen, bronnen, set_, '--geen-historie' not in sys.argv)
+    ander = middelen.SETS['gvs' if set_['naam'] == 'addon' else 'addon']
 
     data = {'bijgewerkt': VANDAAG.isoformat(), 'drempel': middelen.DREMPEL,
-            'binnenkort': BINNENKORT_MAANDEN, 'bronnen': bronnen, 'middelen': rijen,
+            'top': middelen.TOP, 'binnenkort': BINNENKORT_MAANDEN,
+            'set': {'naam': set_['naam'], 'titel': set_['titel'], 'kop': set_['kop'],
+                    'selectie': set_['selectie'],
+                    'ander': {'naam': ander['naam'], 'kop': ander['kop'],
+                              'url': PATENTCHECKER + ('' if ander['naam'] == 'addon'
+                                                      else ander['publicatie'])}},
+            'bronnen': bronnen, 'middelen': rijen,
             'logboek': log, 'addon': ADDON_DASHBOARD, 'horizonscan': HORIZONSCAN_SITE}
-    sjabloon = open(os.path.join(HIER, 'template.html'), encoding='utf-8').read()
     blob = json.dumps(data, ensure_ascii=False, separators=(',', ':')).replace('</', '<\\/')
-    if '/*DATA*/null/*DATA*/' not in sjabloon:
-        sys.exit('template.html mist de plek voor de data (/*DATA*/null/*DATA*/)')
-    open(UIT, 'w', encoding='utf-8').write(sjabloon.replace('/*DATA*/null/*DATA*/', blob))
+    uit = os.path.join(HIER, set_['pagina'])
+    open(uit, 'w', encoding='utf-8').write(sjabloon.replace('/*DATA*/null/*DATA*/', blob))
 
     tel = {}
     for r in rijen:
@@ -473,7 +528,25 @@ def main():
     geen = [r['naam'] for r in rijen if not r['spc'] and not r['groep']]
     if geen:
         print('Zonder SPC in register of Horizonscan: ' + ', '.join(geen))
-    print(f'Geschreven: {os.path.basename(UIT)} ({os.path.getsize(UIT) / 1024:.0f} kB)')
+    print(f'Geschreven: {os.path.basename(uit)} ({os.path.getsize(uit) / 1024:.0f} kB)')
+
+
+def main():
+    sjabloon = open(os.path.join(HIER, 'template.html'), encoding='utf-8').read()
+    if '/*DATA*/null/*DATA*/' not in sjabloon:
+        sys.exit('template.html mist de plek voor de data (/*DATA*/null/*DATA*/)')
+    for set_ in ophalen_sets():
+        print(f"\n== set {set_['naam']} ==")
+        bouw_set(set_, sjabloon)
+
+
+def ophalen_sets():
+    for i, arg in enumerate(sys.argv):
+        if arg == '--set' and i + 1 < len(sys.argv):
+            return [middelen.set_van(n) for n in sys.argv[i + 1].split(',')]
+        if arg.startswith('--set='):
+            return [middelen.set_van(n) for n in arg.split('=', 1)[1].split(',')]
+    return list(middelen.SETS.values())
 
 
 if __name__ == '__main__':

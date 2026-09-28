@@ -61,6 +61,9 @@ jobs:
           git add horizonscan.html historie/
           git diff --cached --quiet && echo "geen wijzigingen" || \
             git commit -m "Horizonscan bijgewerkt $(date +%F)"
+          # Eerst binnenhalen wat de patentchecker-workflow intussen committe:
+          # beide workflows pushen naar dezelfde branch en kunnen tegelijk draaien.
+          git pull --rebase
           git push
 
       - name: Uploaden naar medicatieadvies.nl

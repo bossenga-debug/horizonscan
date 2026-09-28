@@ -5,10 +5,15 @@ Gedeeld door ophalen.py (die per middel het octrooiregister en ClinicalTrials.go
 bevraagt) en bouw_site.py (die alles samenvoegt). Zo kan de selectie nooit
 tussen die twee uit elkaar lopen.
 
-De selectie: elk add-on geneesmiddel (ATC-5) waarvan de Zvw-vergoeding in een
-van de twee laatste GIP-jaren boven DREMPEL lag. Twee jaren en niet één, omdat
-het laatste jaar voorlopig is en nog niet volledig gedeclareerd: een middel dat
-in 2024 € 11 mln kostte en in het halfvolle 2025 € 9 mln, hoort er gewoon bij.
+Er zijn twee sets, met dezelfde code en hetzelfde sjabloon (zie SETS):
+
+  addon  add-on geneesmiddelen (intramuraal), elk middel boven DREMPEL in een
+         van de twee laatste GIP-jaren. Twee jaren en niet één, omdat het
+         laatste jaar voorlopig is: een middel dat in het ene jaar € 11 mln
+         kostte en in het halfvolle laatste jaar € 9 mln, hoort er gewoon bij.
+  gvs    extramurale geneesmiddelen (GVS): de duurste TOP van het laatste jaar.
+         Hier is een vast aantal logischer dan een drempel -- het gaat om de
+         kop van een veel bredere lijst (ruim 5.000 ATC-codes).
 """
 import os
 import re
@@ -19,6 +24,42 @@ HIER = os.path.dirname(os.path.abspath(__file__))
 BRON = os.path.join(HIER, 'bron')
 
 DREMPEL = 10_000_000
+TOP = 100
+
+# Per set: waar de cijfers vandaan komen, hoe geselecteerd wordt en hoe de
+# pagina heet. De rest van de code is voor beide sets gelijk.
+SETS = {
+    'addon': {
+        'naam': 'addon',
+        'titel': 'Patentchecker dure add-on geneesmiddelen',
+        'kop': 'add-on geneesmiddelen',
+        'gip': 'gip_addon.csv',
+        'gip_linktekst': r'GIP\s+Addon\s+Zvw\s+meerjaren',
+        'selectie': 'drempel',
+        'pagina': 'patentchecker.html',
+        'publicatie': 'index.html',
+        'historie': 'historie',
+        'nl_bron': 'farmatec',      # handelsvergunningen op de add-on GS-lijst
+    },
+    'gvs': {
+        'naam': 'gvs',
+        'titel': 'Patentchecker dure GVS-geneesmiddelen',
+        'kop': 'extramurale geneesmiddelen (GVS)',
+        'gip': 'gip_farmacie.csv',
+        'gip_linktekst': r'GIP\s+Farmacie\s+Zvw\s+meerjaren',
+        'selectie': 'top',
+        'pagina': 'patentchecker_gvs.html',
+        'publicatie': 'gvs.html',
+        'historie': os.path.join('historie', 'gvs'),
+        'nl_bron': 'preferentie',   # preferentiebeleid van de zorgverzekeraars
+    },
+}
+
+
+def set_van(naam):
+    if naam not in SETS:
+        raise SystemExit(f'Onbekende set "{naam}"; kies uit: {", ".join(SETS)}')
+    return SETS[naam]
 
 # ATC-codes die geen enkelvoudige werkzame stof zijn maar een productgroep. Een
 # SPC hoort bij één stof, dus hier valt geen patentdatum te geven. Ze blijven
@@ -91,12 +132,18 @@ def zelfde_stof(ema_inn, inn):
     return False
 
 
-def lees_gip(pad=None):
-    """GIP add-on Zvw meerjaren -> {atc: {'naam', 'kosten': {jaar: €}, 'gebruikers': {...}}}
+ATC5 = re.compile(r'^[A-Z]\d{2}[A-Z]{2}\d{2}$')
 
-    Het bestand gebruikt '#' als scheidingsteken en zet een '*' achter voorlopige
-    jaren; die ster bewaren we apart."""
-    pad = pad or os.path.join(BRON, 'gip_addon.csv')
+
+def lees_gip(pad):
+    """GIP-meerjarenbestand (add-on of farmacie) ->
+    {atc: {'naam', 'kosten': {jaar: €}, 'gebruikers': {...}}}
+
+    Beide bestanden hebben dezelfde eerste kolommen. Het bestand gebruikt '#' als
+    scheidingsteken en zet een '*' achter voorlopige jaren; die ster bewaren we
+    apart. Regels zonder geldige ATC-5 (het farmaciebestand heeft een regel
+    'XXXXXXX Geen ATC-code' van ruim € 100 mln) vallen af: zonder stof valt er
+    niets over octrooien te zeggen."""
     uit, voorlopig = {}, set()
     with open(pad, encoding='utf-8-sig') as f:
         kop = [k.strip() for k in f.readline().split('#')]
@@ -109,17 +156,39 @@ def lees_gip(pad=None):
             jaar = v[0].rstrip('*')
             if v[0].endswith('*'):
                 voorlopig.add(jaar)
+            if not ATC5.match(v[1].upper()):
+                continue
             o = uit.setdefault(v[1], {'naam': ' '.join(v[2].split()), 'kosten': {}, 'gebruikers': {}})
             o['kosten'][jaar] = float(v[3] or 0)
             o['gebruikers'][jaar] = int(float(v[4] or 0))
     return uit, sorted(voorlopig)
 
 
-def selectie(gip):
+def selectie(gip, set_=None):
+    """De middelen van een set, duurste eerst, plus de jaren in het bestand."""
+    set_ = set_ or SETS['addon']
     jaren = sorted({j for o in gip.values() for j in o['kosten']})
+    if set_['selectie'] == 'top':
+        # Eén jaar: bij een top-N zou meetellen van het voorlaatste jaar de lijst
+        # oprekken tot meer dan TOP middelen, en dan is "top 100" niet waar meer.
+        sleutel = lambda a: -gip[a]['kosten'].get(jaren[-1], 0)
+        return sorted(gip, key=sleutel)[:TOP], jaren
     laatste = jaren[-2:]
+    sleutel = lambda a: -max(gip[a]['kosten'].get(j, 0) for j in laatste)
     gekozen = [a for a, o in gip.items() if max(o['kosten'].get(j, 0) for j in laatste) >= DREMPEL]
-    return sorted(gekozen, key=lambda a: -max(gip[a]['kosten'].get(j, 0) for j in laatste)), jaren
+    return sorted(gekozen, key=sleutel), jaren
+
+
+def groep_van(atc, naam):
+    """Productgroepen: een ATC-code die geen enkelvoudige stof is. Naast de vaste
+    lijst herkennen we ze aan de GIP-naam: 'Macrogol combinatiepreparaten' en
+    'Fluticason combinatiepreparaten' zijn verzamelingen van producten."""
+    if atc in GROEPEN:
+        return GROEPEN[atc]
+    if re.search(r'combinatiepreparaten', naam, re.I):
+        return ('Verzamelcode voor combinatiepreparaten: meerdere samenstellingen onder '
+                'één ATC-code, elk met een eigen registratie. Eén SPC-datum bestaat hier niet.')
+    return ''
 
 
 def lees_ema(pad=None):
@@ -149,14 +218,39 @@ def lees_ema(pad=None):
     return uit
 
 
+def componenten(naam):
+    """De losse stoffen in een GIP-naam: 'Ivacaftor met tezacaftor en elexacaftor'
+    -> drie namen. Combinaties schrijft GIP met 'met' en 'en', EMA met schuine
+    strepen of komma's."""
+    delen = re.split(r'\s+met\s+|\s+en\s+|\s*[/,;]\s*', naam, flags=re.I)
+    return [d.strip() for d in delen if len(d.strip()) > 3]
+
+
 def inn_voor(atc, gip_naam, ema_inns):
-    """De Engelse INN bij een GIP-regel: handmatig, anders via de sleutel."""
+    """De Engelse INN bij een GIP-regel: handmatig, anders via de sleutel.
+
+    Voor combinatiepreparaten valt de hele naam niet samen ('Emtricitabine
+    tenofoviralafenamide darunavir cobicistat' tegenover
+    'darunavir / cobicistat / emtricitabine / tenofovir alafenamide'), maar de
+    verzameling stofnamen wel. Daarom als tweede stap op die verzameling
+    vergelijken -- nog steeds exact per stof, dus zonder te gokken."""
     if atc in INN:
         return INN[atc]
     k = sleutel(gip_naam)
     for inn in ema_inns:
         if sleutel(inn) == k:
             return inn
+    eigen = {sleutel(c) for c in componenten(gip_naam)}
+    if len(eigen) > 1:
+        for inn in ema_inns:
+            if {sleutel(c) for c in componenten(inn)} == eigen:
+                return inn
+        # Ook met de losse woorden: GIP plakt soms twee stofnamen aan elkaar.
+        woorden = set(sleutel(gip_naam).split())
+        for inn in ema_inns:
+            k2 = set(sleutel(inn).split())
+            if len(k2) > 1 and k2 == woorden:
+                return inn
     return gip_naam.lower()
 
 

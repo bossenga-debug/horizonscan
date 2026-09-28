@@ -34,6 +34,8 @@ BASE = os.path.dirname(os.path.abspath(__file__))
 # map en kan daar niet uit. Alle data zit in dat ene bestand.
 BESTANDEN = [
     (os.path.join(BASE, 'patentchecker.html'), 'index.html'),
+    # Tweede set: de duurste extramurale (GVS) middelen, zelfde map.
+    (os.path.join(BASE, 'patentchecker_gvs.html'), 'gvs.html'),
 ]
 
 # Wordt alleen geplaatst als er nog geen .htaccess staat, zodat een eigen versie

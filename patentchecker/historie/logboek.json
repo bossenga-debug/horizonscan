@@ -1,4 +1,12 @@
 {
  "begin": "2026-09-21",
- "regels": []
+ "regels": [
+  {
+   "datum": "2026-09-28",
+   "atc": "L01EJ01",
+   "naam": "Ruxolitinib",
+   "soort": "ema",
+   "tekst": "EMA: Ruxolitinib Viatris (Authorised)"
+  }
+ ]
 }
