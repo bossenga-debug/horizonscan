@@ -500,7 +500,7 @@ function tabel(rijen){
     <td class="tel">${m.pijplijn.length?`${m.pijplijn.length} Horizonscan`:""}${
       m.pijplijn.length&&m.studies.length?"<br>":""}${m.studies.length?`${m.studies.length} ${m.studies.length===1?"studie":"studies"}`:""}${
       !m.pijplijn.length&&!m.studies.length?`<span class="nul">—</span>`:""}</td>
-    <td class="num">${nlCel(m)}</td></tr>`;}).join("");
+    ${PREF ? "" : `<td class="num">${nlCel(m)}</td>`}</tr>`;}).join("");
   $$("#lichaam tr.klik").forEach(tr=>tr.onclick=()=>open(tr.dataset.atc));
 }
 
