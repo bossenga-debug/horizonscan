@@ -419,19 +419,21 @@ function gefilterd(){
 function cijfers(){
   const som = f=>M.filter(f).reduce((s,m)=>s+m._k,0);
   const tel = f=>M.filter(f).length;
+  const leeg = f => GEZEEFD && !M.some(f);  // statussen die in deze set niet meer voorkomen
   const t = [
-    [meervoud(M.length,"middel","middelen"), TOP?`duurste ${DATA.set.kop}`:`boven € ${nl.format(DATA.drempel/1e6)} mln per jaar`,`${eurKort(som(()=>true))} in ${JL}`,{}],
+    [meervoud(M.length,"middel","middelen"), `boven € ${nl.format(DATA.drempel/1e6)} mln per jaar`+(GEZEEFD?", nog beschermd":""),`${eurKort(som(()=>true))} in ${JL}`,{}],
     [tel(m=>m.fase==="binnenkort"),FASEN.binnenkort[0],`${eurKort(som(m=>m.fase==="binnenkort"))} in ${JL}`,{fase:"binnenkort"}],
     [tel(m=>m.fase==="vrij"),FASEN.vrij[0],`${eurKort(som(m=>m.fase==="vrij"))} in ${JL}`,{fase:"vrij"}],
     [tel(m=>m.fase==="concurrentie"),FASEN.concurrentie[0],`${eurKort(som(m=>m.fase==="concurrentie"))} in ${JL}`,{fase:"concurrentie"}],
     [tel(m=>m.ema_eval.length),"met aanvraag bij EMA","biosimilar of generiek in beoordeling",{eval:true}],
     [tel(m=>m._afwijking),"afwijkend van Horizonscan","andere datum dan het register",{afwijking:true}],
   ];
-  $("#cijfers").innerHTML = t.map(([n,l,h,f],i)=>
+  const zichtbaar = t.filter(([n,l,h,f])=>!(f.fase && leeg(m=>m.fase===f.fase)));
+  $("#cijfers").innerHTML = zichtbaar.map(([n,l,h,f],i)=>
     `<button class="tegel" type="button" data-i="${i}"><div class="n">${typeof n==="number"?nl.format(n):esc(n)}</div>
      <div class="l">${esc(l)}</div><div class="h">${esc(h)}</div></button>`).join("");
   $$("#cijfers .tegel").forEach(b=>b.onclick=()=>{
-    Object.assign(STAAT,{...STANDAARD,tab:"tabel"},t[b.dataset.i][3]); zetHash(); teken();
+    Object.assign(STAAT,{...STANDAARD,tab:"tabel"},zichtbaar[b.dataset.i][3]); zetHash(); teken();
   });
 }
 
@@ -725,10 +727,10 @@ function teken(){
   if(STAAT.tab==="logboek") logboek();
 }
 
-const TOP = DATA.set.selectie === "top";
-const SELECTIE = TOP
-  ? `de ${nl.format(DATA.top)} duurste ${DATA.set.kop} van ${JAAR}`
-  : `de ${DATA.set.kop} met meer dan € ${nl.format(DATA.drempel/1e6)} mln Zvw-vergoeding per jaar`;
+/* De GVS-set is gezeefd: preferente middelen en middelen waarvan de bescherming
+   verlopen is, staan er niet in. Dat verandert een paar teksten. */
+const GEZEEFD = PREF;
+const SELECTIE = `de ${DATA.set.kop} met meer dan € ${nl.format(DATA.drempel/1e6)} mln Zvw-vergoeding per jaar`;
 
 function init(){
   document.title = DATA.set.titel;
@@ -743,10 +745,13 @@ function init(){
   const jaren = [...new Set(M.map(toetredingsjaar).filter(Boolean))].sort();
   for(const j of jaren) $("#f-jaar").insertAdjacentHTML("beforeend",`<option value="${j}">${j==="verstreken"?"Al verstreken":"Toetreding in "+j}</option>`);
 
-  $("#u-selectie").textContent = TOP
-    ? `Dit overzicht volgt de ${nl.format(DATA.top)} ATC-codes met de hoogste Zvw-vergoeding in ${JAAR} binnen de `+
-      `extramurale farmacie (het geneesmiddelenvergoedingssysteem, GVS): samen ${eurKort(M.reduce((s,m)=>s+m._k,0))}. `+
-      `Eén jaar en een vast aantal, omdat dit de kop is van een lijst van ruim duizend ATC-codes. Het wordt maandelijks bijgewerkt.`
+  $("#u-selectie").textContent = GEZEEFD
+    ? `Dit overzicht volgt de ${nl.format(M.length)} extramurale middelen (GVS) die in ${JAAR} meer dan `+
+      `€ ${nl.format(DATA.drempel/1e6)} mln kostten en waarvan de bescherming nog niet verlopen is: samen `+
+      `${eurKort(M.reduce((s,m)=>s+m._k,0))}. Middelen die preferent zijn aangewezen doen niet mee — daar zijn al `+
+      `generieken — en zodra de bescherming van een middel verloopt, valt het af. Zo blijven alleen de middelen over `+
+      `waar nog iets te gebeuren staat: nu vallen ${nl.format(B.preferent_over)} ATC-codes af omdat ze preferent zijn en `+
+      `${nl.format(B.uitgesloten)} omdat de bescherming verlopen is. Het wordt maandelijks bijgewerkt.`
     : `Dit overzicht volgt elk add-on geneesmiddel (ATC-5) waarvan de Zvw-vergoeding in ${VORIG} of ${JL} `+
       `boven € ${nl.format(DATA.drempel/1e6)} mln lag: ${M.length} middelen. Twee jaren, omdat ${JAAR} nog niet volledig `+
       `gedeclareerd is. Het wordt maandelijks bijgewerkt.`;

@@ -1,298 +1,27 @@
 {
- "A02BC01": {
+ "A06AX04": {
   "eval": 0,
   "kopie": [],
-  "naam": "Omeprazol",
-  "nl": [
-   "ASR",
-   "CARESQ",
-   "CZ",
-   "DSW",
-   "MENZIS",
-   "ONVZ",
-   "SALLAND",
-   "VGZ",
-   "ZK",
-   "ZZ"
-  ],
+  "naam": "Linaclotide",
+  "nl": [],
   "pijplijn": [],
-  "spc_bron": "",
-  "spc_einde": "",
-  "spc_klasse": "",
+  "spc_bron": "RVO",
+  "spc_einde": "2027-11-27",
+  "spc_klasse": "actief",
   "studies": [],
   "verlenging": ""
  },
- "A02BC02": {
+ "A08AA12": {
   "eval": 0,
   "kopie": [],
-  "naam": "Pantoprazol",
-  "nl": [
-   "ASR",
-   "CARESQ",
-   "CZ",
-   "DSW",
-   "MENZIS",
-   "ONVZ",
-   "SALLAND",
-   "VGZ",
-   "ZK",
-   "ZZ"
-  ],
-  "pijplijn": [],
-  "spc_bron": "",
-  "spc_einde": "",
-  "spc_klasse": "",
-  "studies": [],
-  "verlenging": ""
- },
- "A02BC05": {
-  "eval": 0,
-  "kopie": [],
-  "naam": "Esomeprazol",
-  "nl": [
-   "ASR",
-   "CARESQ",
-   "CZ",
-   "DSW",
-   "MENZIS",
-   "ONVZ",
-   "SALLAND",
-   "VGZ",
-   "ZK",
-   "ZZ"
-  ],
-  "pijplijn": [],
-  "spc_bron": "",
-  "spc_einde": "",
-  "spc_klasse": "",
-  "studies": [],
-  "verlenging": ""
- },
- "A05AX05": {
-  "eval": 0,
-  "kopie": [],
-  "naam": "Odevixibat",
-  "nl": [
-   "ONVZ"
-  ],
+  "naam": "Setmelanotide",
+  "nl": [],
   "pijplijn": [],
   "spc_bron": "RVO",
   "spc_einde": "2036-07-18",
   "spc_klasse": "actief",
   "studies": [],
   "verlenging": ""
- },
- "A06AD65": {
-  "eval": 0,
-  "kopie": [],
-  "naam": "Macrogol combinatiepreparaten",
-  "nl": [
-   "ASR",
-   "CARESQ",
-   "CZ",
-   "DSW",
-   "MENZIS",
-   "ONVZ",
-   "SALLAND",
-   "VGZ",
-   "ZK",
-   "ZZ"
-  ],
-  "pijplijn": [],
-  "spc_bron": "",
-  "spc_einde": "",
-  "spc_klasse": "",
-  "studies": [],
-  "verlenging": ""
- },
- "A07EC02": {
-  "eval": 0,
-  "kopie": [],
-  "naam": "Mesalazine",
-  "nl": [
-   "ASR",
-   "CARESQ",
-   "CZ",
-   "DSW",
-   "MENZIS",
-   "ONVZ",
-   "SALLAND",
-   "VGZ",
-   "ZK",
-   "ZZ"
-  ],
-  "pijplijn": [],
-  "spc_bron": "Horizonscan",
-  "spc_einde": "",
-  "spc_klasse": "verlopen",
-  "studies": [],
-  "verlenging": ""
- },
- "A09AA02": {
-  "eval": 0,
-  "kopie": [],
-  "naam": "Multi-enzymen (lipase protease enz)",
-  "nl": [
-   "ASR",
-   "CARESQ",
-   "CZ",
-   "DSW",
-   "MENZIS",
-   "ONVZ",
-   "SALLAND",
-   "VGZ",
-   "ZK",
-   "ZZ"
-  ],
-  "pijplijn": [],
-  "spc_bron": "",
-  "spc_einde": "",
-  "spc_klasse": "",
-  "studies": [],
-  "verlenging": ""
- },
- "A10AB05": {
-  "eval": 2,
-  "kopie": [
-   "Dazparda (Authorised)",
-   "Insulin aspart Sanofi (Authorised)",
-   "Kirsty (previously Kixelle) (Authorised)"
-  ],
-  "naam": "Insuline aspart",
-  "nl": [
-   "ASR",
-   "CARESQ",
-   "CZ",
-   "DSW",
-   "ONVZ",
-   "SALLAND",
-   "VGZ",
-   "ZK",
-   "ZZ"
-  ],
-  "pijplijn": [
-   "Insulin aspart Sanofi (Sanofi)",
-   "Kixelle (Mylan)"
-  ],
-  "spc_bron": "RVO",
-  "spc_einde": "2011-08-28",
-  "spc_klasse": "verlopen",
-  "studies": [
-   "NCT05802862"
-  ],
-  "verlenging": ""
- },
- "A10AE04": {
-  "eval": 0,
-  "kopie": [
-   "Abasaglar (previously Abasria) (Authorised)",
-   "Ondibta (Authorised)",
-   "Semglee (Authorised)"
-  ],
-  "naam": "Insuline glargine",
-  "nl": [
-   "ASR",
-   "CARESQ",
-   "CZ",
-   "DSW",
-   "MENZIS",
-   "ONVZ",
-   "SALLAND",
-   "VGZ",
-   "ZK",
-   "ZZ"
-  ],
-  "pijplijn": [],
-  "spc_bron": "",
-  "spc_einde": "",
-  "spc_klasse": "",
-  "studies": [
-   "NCT04591457",
-   "NCT06624943"
-  ],
-  "verlenging": ""
- },
- "A10AE06": {
-  "eval": 0,
-  "kopie": [],
-  "naam": "Insuline degludec",
-  "nl": [],
-  "pijplijn": [],
-  "spc_bron": "",
-  "spc_einde": "",
-  "spc_klasse": "",
-  "studies": [
-   "NCT05802862"
-  ],
-  "verlenging": ""
- },
- "A10BA02": {
-  "eval": 0,
-  "kopie": [],
-  "naam": "Metformine",
-  "nl": [
-   "ASR",
-   "CARESQ",
-   "CZ",
-   "DSW",
-   "MENZIS",
-   "ONVZ",
-   "SALLAND",
-   "VGZ",
-   "ZK",
-   "ZZ"
-  ],
-  "pijplijn": [],
-  "spc_bron": "RVO",
-  "spc_einde": "2034-11-12",
-  "spc_klasse": "aanvraag",
-  "studies": [],
-  "verlenging": ""
- },
- "A10BB09": {
-  "eval": 0,
-  "kopie": [],
-  "naam": "Gliclazide",
-  "nl": [
-   "ASR",
-   "CARESQ",
-   "CZ",
-   "DSW",
-   "MENZIS",
-   "ONVZ",
-   "SALLAND",
-   "VGZ",
-   "ZK",
-   "ZZ"
-  ],
-  "pijplijn": [],
-  "spc_bron": "",
-  "spc_einde": "",
-  "spc_klasse": "",
-  "studies": [],
-  "verlenging": ""
- },
- "A10BJ02": {
-  "eval": 0,
-  "kopie": [],
-  "naam": "Liraglutide",
-  "nl": [
-   "ASR",
-   "CARESQ",
-   "CZ",
-   "DSW",
-   "MENZIS",
-   "SALLAND",
-   "VGZ",
-   "ZK",
-   "ZZ"
-  ],
-  "pijplijn": [],
-  "spc_bron": "RVO",
-  "spc_einde": "2023-02-21",
-  "spc_klasse": "verlopen",
-  "studies": [],
-  "verlenging": "Extension Granted"
  },
  "A10BJ06": {
   "eval": 3,
@@ -332,100 +61,55 @@
   "studies": [],
   "verlenging": ""
  },
- "A10BX16": {
+ "A16AA07": {
   "eval": 0,
   "kopie": [],
-  "naam": "Tirzepatide",
-  "nl": [
-   "MENZIS"
-  ],
+  "naam": "Metreleptine",
+  "nl": [],
+  "pijplijn": [],
+  "spc_bron": "",
+  "spc_einde": "",
+  "spc_klasse": "",
+  "studies": [],
+  "verlenging": ""
+ },
+ "A16AX09": {
+  "eval": 0,
+  "kopie": [],
+  "naam": "Glycerolfenylbutyraat",
+  "nl": [],
   "pijplijn": [],
   "spc_bron": "RVO",
-  "spc_einde": "2037-09-18",
+  "spc_einde": "2030-11-30",
   "spc_klasse": "actief",
   "studies": [],
   "verlenging": ""
  },
- "B01AC04": {
-  "eval": 0,
-  "kopie": [
-   "Clopidogrel BGR (previously Zylagren) (Authorised)",
-   "Clopidogrel HCS (Authorised)",
-   "Clopidogrel Krka (Authorised)",
-   "Clopidogrel Krka d.d. (previously Zopya) (Authorised)",
-   "Clopidogrel TAD (Authorised)",
-   "Clopidogrel Taw Pharma (previously Clopidogrel Mylan) (Authorised)",
-   "Clopidogrel Teva (hydrogen sulphate) (Authorised)",
-   "Clopidogrel Viatris (previously Clopidogrel Taw Pharma) (Authorised)",
-   "Clopidogrel ratiopharm (Authorised)",
-   "Grepid (Authorised)",
-   "Zyllt (Authorised)"
-  ],
-  "naam": "Clopidogrel",
-  "nl": [
-   "ASR",
-   "CARESQ",
-   "CZ",
-   "DSW",
-   "MENZIS",
-   "ONVZ",
-   "SALLAND",
-   "VGZ",
-   "ZK",
-   "ZZ"
-  ],
-  "pijplijn": [],
-  "spc_bron": "",
-  "spc_einde": "",
-  "spc_klasse": "",
-  "studies": [],
-  "verlenging": ""
- },
- "B01AC06": {
+ "A16AX16": {
   "eval": 0,
   "kopie": [],
-  "naam": "Acetylsalicylzuur",
-  "nl": [
-   "ASR",
-   "CARESQ",
-   "CZ",
-   "DSW",
-   "MENZIS",
-   "ONVZ",
-   "SALLAND",
-   "VGZ",
-   "ZK",
-   "ZZ"
-  ],
-  "pijplijn": [],
-  "spc_bron": "",
-  "spc_einde": "",
-  "spc_klasse": "",
-  "studies": [],
-  "verlenging": ""
- },
- "B01AC24": {
-  "eval": 0,
-  "kopie": [],
-  "naam": "Ticagrelor",
-  "nl": [
-   "ASR",
-   "CARESQ",
-   "CZ",
-   "DSW",
-   "MENZIS",
-   "ONVZ",
-   "SALLAND",
-   "VGZ",
-   "ZK",
-   "ZZ"
-  ],
+  "naam": "Givosiran",
+  "nl": [],
   "pijplijn": [],
   "spc_bron": "RVO",
-  "spc_einde": "2025-06-01",
-  "spc_klasse": "verlopen",
+  "spc_einde": "2035-03-03",
+  "spc_klasse": "actief",
   "studies": [],
-  "verlenging": "Extension Granted"
+  "verlenging": ""
+ },
+ "B01AC21": {
+  "eval": 0,
+  "kopie": [],
+  "naam": "Treprostinil",
+  "nl": [],
+  "pijplijn": [
+   "Orepaxam (Ferrer Internat)"
+  ],
+  "spc_bron": "",
+  "spc_einde": "",
+  "spc_klasse": "",
+  "studies": [],
+  "verlenging": ""
  },
  "B01AC27": {
   "eval": 0,
@@ -436,56 +120,6 @@
   "spc_bron": "RVO",
   "spc_einde": "2027-10-24",
   "spc_klasse": "actief",
-  "studies": [],
-  "verlenging": "Extension Granted"
- },
- "B01AE07": {
-  "eval": 0,
-  "kopie": [],
-  "naam": "Dabigatranetexilaat",
-  "nl": [
-   "ASR",
-   "CARESQ",
-   "CZ",
-   "DSW",
-   "MENZIS",
-   "ONVZ",
-   "SALLAND",
-   "VGZ",
-   "ZK",
-   "ZZ"
-  ],
-  "pijplijn": [],
-  "spc_bron": "Horizonscan",
-  "spc_einde": "",
-  "spc_klasse": "verlopen",
-  "studies": [],
-  "verlenging": ""
- },
- "B01AF01": {
-  "eval": 0,
-  "kopie": [
-   "Rivaroxaban Accord (Authorised)",
-   "Rivaroxaban Viatris (previously Rivaroxaban Mylan) (Authorised)",
-   "Svariya (previously Rivaroxaban Koanaa) (Authorised)"
-  ],
-  "naam": "Rivaroxaban",
-  "nl": [
-   "ASR",
-   "CARESQ",
-   "CZ",
-   "DSW",
-   "MENZIS",
-   "ONVZ",
-   "SALLAND",
-   "VGZ",
-   "ZK",
-   "ZZ"
-  ],
-  "pijplijn": [],
-  "spc_bron": "RVO",
-  "spc_einde": "2024-04-01",
-  "spc_klasse": "verlopen",
   "studies": [],
   "verlenging": "Extension Granted"
  },
@@ -517,41 +151,15 @@
   "studies": [],
   "verlenging": "Extension Granted"
  },
- "B02BX04": {
+ "B02BX08": {
   "eval": 0,
   "kopie": [],
-  "naam": "Romiplostim",
+  "naam": "Avatrombopag",
   "nl": [],
   "pijplijn": [],
   "spc_bron": "RVO",
-  "spc_einde": "2024-08-05",
-  "spc_klasse": "verlopen",
-  "studies": [],
-  "verlenging": "Extension Granted"
- },
- "B02BX05": {
-  "eval": 0,
-  "kopie": [
-   "Eltrombopag Accord (Authorised)",
-   "Eltrombopag Viatris (Authorised)"
-  ],
-  "naam": "Eltrombopag",
-  "nl": [
-   "ASR",
-   "CARESQ",
-   "CZ",
-   "DSW",
-   "MENZIS",
-   "ONVZ",
-   "SALLAND",
-   "VGZ",
-   "ZK",
-   "ZZ"
-  ],
-  "pijplijn": [],
-  "spc_bron": "RVO",
-  "spc_einde": "2025-09-14",
-  "spc_klasse": "verlopen",
+  "spc_einde": "2028-07-14",
+  "spc_klasse": "actief",
   "studies": [],
   "verlenging": "Extension Granted"
  },
@@ -567,26 +175,27 @@
   "studies": [],
   "verlenging": ""
  },
- "C01DA14": {
+ "B06AC07": {
   "eval": 0,
   "kopie": [],
-  "naam": "Isosorbidemononitraat",
-  "nl": [
-   "ASR",
-   "CARESQ",
-   "CZ",
-   "DSW",
-   "MENZIS",
-   "ONVZ",
-   "SALLAND",
-   "VGZ",
-   "ZK",
-   "ZZ"
-  ],
+  "naam": "Garadacimab",
+  "nl": [],
   "pijplijn": [],
-  "spc_bron": "",
-  "spc_einde": "",
-  "spc_klasse": "",
+  "spc_bron": "RVO",
+  "spc_einde": "2037-07-19",
+  "spc_klasse": "actief",
+  "studies": [],
+  "verlenging": ""
+ },
+ "C01EB24": {
+  "eval": 0,
+  "kopie": [],
+  "naam": "Mavacamten",
+  "nl": [],
+  "pijplijn": [],
+  "spc_bron": "RVO",
+  "spc_einde": "2038-06-26",
+  "spc_klasse": "actief",
   "studies": [],
   "verlenging": ""
  },
@@ -605,89 +214,15 @@
   "studies": [],
   "verlenging": "Extension Granted"
  },
- "C07AB02": {
+ "C02KX54": {
   "eval": 0,
   "kopie": [],
-  "naam": "Metoprolol",
-  "nl": [
-   "ASR",
-   "CARESQ",
-   "CZ",
-   "DSW",
-   "MENZIS",
-   "ONVZ",
-   "SALLAND",
-   "VGZ",
-   "ZK",
-   "ZZ"
-  ],
+  "naam": "Macitentan met tadalafil",
+  "nl": [],
   "pijplijn": [],
   "spc_bron": "",
   "spc_einde": "",
   "spc_klasse": "",
-  "studies": [],
-  "verlenging": ""
- },
- "C08CA01": {
-  "eval": 0,
-  "kopie": [],
-  "naam": "Amlodipine",
-  "nl": [
-   "ASR",
-   "CARESQ",
-   "CZ",
-   "DSW",
-   "MENZIS",
-   "ONVZ",
-   "SALLAND",
-   "VGZ",
-   "ZK",
-   "ZZ"
-  ],
-  "pijplijn": [],
-  "spc_bron": "",
-  "spc_einde": "",
-  "spc_klasse": "",
-  "studies": [],
-  "verlenging": ""
- },
- "C08CA05": {
-  "eval": 0,
-  "kopie": [],
-  "naam": "Nifedipine",
-  "nl": [
-   "DSW",
-   "MENZIS",
-   "ONVZ",
-   "ZK"
-  ],
-  "pijplijn": [],
-  "spc_bron": "",
-  "spc_einde": "",
-  "spc_klasse": "",
-  "studies": [],
-  "verlenging": ""
- },
- "C08CA12": {
-  "eval": 0,
-  "kopie": [],
-  "naam": "Barnidipine",
-  "nl": [
-   "ASR",
-   "CARESQ",
-   "CZ",
-   "DSW",
-   "MENZIS",
-   "ONVZ",
-   "SALLAND",
-   "VGZ",
-   "ZK",
-   "ZZ"
-  ],
-  "pijplijn": [],
-  "spc_bron": "Horizonscan",
-  "spc_einde": "",
-  "spc_klasse": "verlopen",
   "studies": [],
   "verlenging": ""
  },
@@ -703,74 +238,17 @@
   "studies": [],
   "verlenging": ""
  },
- "C10AA01": {
+ "C10AX12": {
   "eval": 0,
   "kopie": [],
-  "naam": "Simvastatine",
-  "nl": [
-   "ASR",
-   "CARESQ",
-   "CZ",
-   "DSW",
-   "MENZIS",
-   "ONVZ",
-   "SALLAND",
-   "VGZ",
-   "ZK",
-   "ZZ"
-  ],
+  "naam": "Lomitapide",
+  "nl": [],
   "pijplijn": [],
   "spc_bron": "RVO",
-  "spc_einde": "2003-05-05",
-  "spc_klasse": "verlopen",
+  "spc_einde": "2029-02-04",
+  "spc_klasse": "actief",
   "studies": [],
-  "verlenging": ""
- },
- "C10AA05": {
-  "eval": 0,
-  "kopie": [],
-  "naam": "Atorvastatine",
-  "nl": [
-   "ASR",
-   "CARESQ",
-   "CZ",
-   "DSW",
-   "MENZIS",
-   "ONVZ",
-   "SALLAND",
-   "VGZ",
-   "ZK",
-   "ZZ"
-  ],
-  "pijplijn": [],
-  "spc_bron": "",
-  "spc_einde": "",
-  "spc_klasse": "",
-  "studies": [],
-  "verlenging": ""
- },
- "C10AA07": {
-  "eval": 0,
-  "kopie": [],
-  "naam": "Rosuvastatine",
-  "nl": [
-   "ASR",
-   "CARESQ",
-   "CZ",
-   "DSW",
-   "MENZIS",
-   "ONVZ",
-   "SALLAND",
-   "VGZ",
-   "ZK",
-   "ZZ"
-  ],
-  "pijplijn": [],
-  "spc_bron": "",
-  "spc_einde": "",
-  "spc_klasse": "",
-  "studies": [],
-  "verlenging": ""
+  "verlenging": "Extension Granted"
  },
  "C10AX13": {
   "eval": 0,
@@ -810,52 +288,6 @@
   "studies": [],
   "verlenging": ""
  },
- "D07AB09": {
-  "eval": 0,
-  "kopie": [],
-  "naam": "Triamcinolon",
-  "nl": [
-   "ASR",
-   "CARESQ",
-   "CZ",
-   "DSW",
-   "MENZIS",
-   "ONVZ",
-   "SALLAND",
-   "VGZ",
-   "ZK",
-   "ZZ"
-  ],
-  "pijplijn": [],
-  "spc_bron": "",
-  "spc_einde": "",
-  "spc_klasse": "",
-  "studies": [],
-  "verlenging": ""
- },
- "G03BA03": {
-  "eval": 0,
-  "kopie": [],
-  "naam": "Testosteron",
-  "nl": [
-   "ASR",
-   "CARESQ",
-   "CZ",
-   "DSW",
-   "MENZIS",
-   "ONVZ",
-   "SALLAND",
-   "VGZ",
-   "ZK",
-   "ZZ"
-  ],
-  "pijplijn": [],
-  "spc_bron": "",
-  "spc_einde": "",
-  "spc_klasse": "",
-  "studies": [],
-  "verlenging": ""
- },
  "G04BD12": {
   "eval": 0,
   "kopie": [],
@@ -868,33 +300,23 @@
   "studies": [],
   "verlenging": ""
  },
- "H01AX01": {
+ "H02CA02": {
   "eval": 0,
   "kopie": [],
-  "naam": "Pegvisomant",
+  "naam": "Osilodrostat",
   "nl": [],
   "pijplijn": [],
   "spc_bron": "RVO",
-  "spc_einde": "2017-11-14",
-  "spc_klasse": "verlopen",
+  "spc_einde": "2035-01-12",
+  "spc_klasse": "actief",
   "studies": [],
   "verlenging": ""
  },
- "H01CB02": {
+ "H04AA01": {
   "eval": 0,
   "kopie": [],
-  "naam": "Octreotide",
-  "nl": [
-   "ASR",
-   "CARESQ",
-   "CZ",
-   "DSW",
-   "ONVZ",
-   "SALLAND",
-   "VGZ",
-   "ZK",
-   "ZZ"
-  ],
+  "naam": "Glucagon",
+  "nl": [],
   "pijplijn": [],
   "spc_bron": "",
   "spc_einde": "",
@@ -902,49 +324,39 @@
   "studies": [],
   "verlenging": ""
  },
- "H01CB03": {
+ "J05AF13": {
   "eval": 0,
   "kopie": [],
-  "naam": "Lanreotide",
-  "nl": [
-   "ASR",
-   "CARESQ",
-   "CZ",
-   "DSW",
-   "MENZIS",
-   "ONVZ",
-   "SALLAND",
-   "VGZ",
-   "ZK",
-   "ZZ"
-  ],
+  "naam": "Tenofoviralafenamide",
+  "nl": [],
   "pijplijn": [],
-  "spc_bron": "",
-  "spc_einde": "",
-  "spc_klasse": "",
+  "spc_bron": "RVO",
+  "spc_einde": "2027-01-19",
+  "spc_klasse": "actief",
   "studies": [],
-  "verlenging": ""
+  "verlenging": "Extension Granted"
  },
- "H02AB09": {
+ "J05AG05": {
   "eval": 0,
   "kopie": [],
-  "naam": "Hydrocortison",
-  "nl": [
-   "ASR",
-   "CARESQ",
-   "CZ",
-   "DSW",
-   "MENZIS",
-   "ONVZ",
-   "SALLAND",
-   "VGZ",
-   "ZK",
-   "ZZ"
-  ],
+  "naam": "Rilpivirine",
+  "nl": [],
   "pijplijn": [],
-  "spc_bron": "",
-  "spc_einde": "",
-  "spc_klasse": "",
+  "spc_bron": "RVO",
+  "spc_einde": "2027-05-27",
+  "spc_klasse": "actief",
+  "studies": [],
+  "verlenging": "Extension Granted"
+ },
+ "J05AG06": {
+  "eval": 0,
+  "kopie": [],
+  "naam": "Doravirine",
+  "nl": [],
+  "pijplijn": [],
+  "spc_bron": "RVO",
+  "spc_einde": "2033-11-25",
+  "spc_klasse": "actief",
   "studies": [],
   "verlenging": ""
  },
@@ -960,10 +372,22 @@
   "studies": [],
   "verlenging": "Extension Granted"
  },
- "J05AR18": {
+ "J05AJ04": {
   "eval": 0,
   "kopie": [],
-  "naam": "Emtricitabine tenofovir alafenamide elvitegravir cobicista",
+  "naam": "Cabotegravir",
+  "nl": [],
+  "pijplijn": [],
+  "spc_bron": "RVO",
+  "spc_einde": "2031-04-27",
+  "spc_klasse": "actief",
+  "studies": [],
+  "verlenging": ""
+ },
+ "J05AP57": {
+  "eval": 0,
+  "kopie": [],
+  "naam": "Glecaprevir met pibrentasvir",
   "nl": [],
   "pijplijn": [],
   "spc_bron": "",
@@ -984,10 +408,10 @@
   "studies": [],
   "verlenging": ""
  },
- "J05AR22": {
+ "J05AR21": {
   "eval": 0,
   "kopie": [],
-  "naam": "Emtricitabine tenofoviralafenamide darunavir cobicistat",
+  "naam": "Dolutegravir met rilpivirine",
   "nl": [],
   "pijplijn": [],
   "spc_bron": "",
@@ -1020,66 +444,27 @@
   "studies": [],
   "verlenging": ""
  },
- "J06BA01": {
+ "J05AX18": {
   "eval": 0,
   "kopie": [],
-  "naam": "Immunoglobuline normaal extravasculair",
+  "naam": "Letermovir",
   "nl": [],
   "pijplijn": [],
-  "spc_bron": "",
-  "spc_einde": "",
-  "spc_klasse": "",
+  "spc_bron": "RVO",
+  "spc_einde": "2029-04-16",
+  "spc_klasse": "actief",
   "studies": [],
   "verlenging": ""
  },
- "J06BA02": {
+ "J05AX28": {
   "eval": 0,
   "kopie": [],
-  "naam": "Immunoglobuline normaal intravasculair",
+  "naam": "Bulevirtide",
   "nl": [],
   "pijplijn": [],
-  "spc_bron": "",
-  "spc_einde": "",
-  "spc_klasse": "",
-  "studies": [],
-  "verlenging": ""
- },
- "L01BB03": {
-  "eval": 0,
-  "kopie": [],
-  "naam": "Tioguanine",
-  "nl": [],
-  "pijplijn": [],
-  "spc_bron": "",
-  "spc_einde": "",
-  "spc_klasse": "",
-  "studies": [],
-  "verlenging": ""
- },
- "L01EX09": {
-  "eval": 0,
-  "kopie": [
-   "Nintedanib Accord (Authorised)",
-   "Nintedanib Viatris (Authorised)"
-  ],
-  "naam": "Nintedanib",
-  "nl": [
-   "ASR",
-   "CARESQ",
-   "CZ",
-   "DSW",
-   "MENZIS",
-   "SALLAND",
-   "VGZ",
-   "ZK",
-   "ZZ"
-  ],
-  "pijplijn": [
-   "Nintedanib Accord (Boehringer Ingelheim)"
-  ],
-  "spc_bron": "Horizonscan",
-  "spc_einde": "2026-04-08",
-  "spc_klasse": "verlopen",
+  "spc_bron": "RVO",
+  "spc_einde": "2034-01-25",
+  "spc_klasse": "actief",
   "studies": [],
   "verlenging": ""
  },
@@ -1087,18 +472,6 @@
   "eval": 0,
   "kopie": [],
   "naam": "Leuproreline",
-  "nl": [],
-  "pijplijn": [],
-  "spc_bron": "",
-  "spc_einde": "",
-  "spc_klasse": "",
-  "studies": [],
-  "verlenging": ""
- },
- "L02AE03": {
-  "eval": 0,
-  "kopie": [],
-  "naam": "Gosereline",
   "nl": [],
   "pijplijn": [],
   "spc_bron": "",
@@ -1119,31 +492,34 @@
   "studies": [],
   "verlenging": ""
  },
- "L04AA06": {
+ "L04AE02": {
   "eval": 0,
   "kopie": [],
-  "naam": "Mycofenolzuur",
-  "nl": [
-   "ASR",
-   "CARESQ",
-   "DSW",
-   "MENZIS",
-   "ONVZ",
-   "SALLAND",
-   "VGZ",
-   "ZZ"
-  ],
+  "naam": "Ozanimod",
+  "nl": [],
   "pijplijn": [],
   "spc_bron": "RVO",
-  "spc_einde": "2017-10-23",
-  "spc_klasse": "verlopen",
+  "spc_einde": "2034-05-13",
+  "spc_klasse": "actief",
   "studies": [],
   "verlenging": ""
  },
- "L04AA40": {
-  "eval": 1,
+ "L04AE03": {
+  "eval": 0,
   "kopie": [],
-  "naam": "Cladribine",
+  "naam": "Siponimod",
+  "nl": [],
+  "pijplijn": [],
+  "spc_bron": "RVO",
+  "spc_einde": "2034-12-20",
+  "spc_klasse": "actief",
+  "studies": [],
+  "verlenging": ""
+ },
+ "L04AE04": {
+  "eval": 0,
+  "kopie": [],
+  "naam": "Ponesimod",
   "nl": [],
   "pijplijn": [],
   "spc_bron": "",
@@ -1152,142 +528,41 @@
   "studies": [],
   "verlenging": ""
  },
- "L04AD02": {
-  "eval": 0,
-  "kopie": [
-   "Tacforius (Authorised)"
-  ],
-  "naam": "Tacrolimus",
-  "nl": [],
-  "pijplijn": [],
-  "spc_bron": "Horizonscan",
-  "spc_einde": "",
-  "spc_klasse": "verlopen",
-  "studies": [],
-  "verlenging": ""
- },
- "L04AG12": {
+ "L04AF02": {
   "eval": 0,
   "kopie": [],
-  "naam": "Ofatumumab",
+  "naam": "Baricitinib",
   "nl": [],
   "pijplijn": [],
   "spc_bron": "RVO",
-  "spc_einde": "",
-  "spc_klasse": "verlopen",
+  "spc_einde": "2032-02-14",
+  "spc_klasse": "actief",
   "studies": [],
   "verlenging": ""
  },
- "L04AX03": {
+ "L04AJ03": {
   "eval": 0,
   "kopie": [],
-  "naam": "Methotrexaat",
-  "nl": [
-   "ASR",
-   "CARESQ",
-   "CZ",
-   "DSW",
-   "MENZIS",
-   "ONVZ",
-   "SALLAND",
-   "VGZ",
-   "ZK",
-   "ZZ"
-  ],
+  "naam": "Pegcetacoplan",
+  "nl": [],
   "pijplijn": [],
-  "spc_bron": "",
-  "spc_einde": "",
-  "spc_klasse": "",
-  "studies": [],
-  "verlenging": ""
- },
- "L04AX07": {
-  "eval": 0,
-  "kopie": [],
-  "naam": "Dimethylfumaraat",
-  "nl": [
-   "ASR",
-   "CARESQ",
-   "CZ",
-   "DSW",
-   "MENZIS",
-   "ONVZ",
-   "SALLAND",
-   "VGZ",
-   "ZK",
-   "ZZ"
-  ],
-  "pijplijn": [],
-  "spc_bron": "Horizonscan",
-  "spc_einde": "",
-  "spc_klasse": "verlopen",
-  "studies": [],
-  "verlenging": ""
- },
- "M05BX04": {
-  "eval": 2,
-  "kopie": [
-   "Acvybra (Authorised)",
-   "Bildyos (Authorised)",
-   "Bilprevda (Authorised)",
-   "Bomyntra (Authorised)",
-   "Conexxence (Authorised)",
-   "Degevma (Authorised)",
-   "Denbrayce (Authorised)",
-   "Denosumab Ascend (Authorised)",
-   "Enwylma (Authorised)",
-   "Evfraxy (Authorised)",
-   "Izamby (Authorised)",
-   "Jubbonti (Authorised)",
-   "Jubereq (Authorised)",
-   "Junod (Authorised)",
-   "Kefdensis (Authorised)",
-   "Obodence (Authorised)",
-   "Osenvelt (Authorised)",
-   "Osqay (Authorised)",
-   "Osvyrti (Authorised)",
-   "Ponlimsi (Authorised)",
-   "Rolcya (Authorised)",
-   "Stoboclo (Authorised)",
-   "Vevzuo (Authorised)",
-   "Wyost (Authorised)",
-   "Xbonzy (Authorised)",
-   "Xbryk (Authorised)",
-   "Yaxwer (Authorised)",
-   "Zadenvi (Authorised)",
-   "Zvogra (Authorised)"
-  ],
-  "naam": "Denosumab",
-  "nl": [
-   "ASR",
-   "CARESQ",
-   "CZ",
-   "DSW",
-   "MENZIS",
-   "ONVZ",
-   "SALLAND",
-   "VGZ",
-   "ZK",
-   "ZZ"
-  ],
-  "pijplijn": [
-   "Denosumab (Gedeon)"
-  ],
   "spc_bron": "RVO",
-  "spc_einde": "2025-11-27",
-  "spc_klasse": "verlopen",
-  "studies": [
-   "NCT03293108",
-   "NCT03974100",
-   "NCT04664959",
-   "NCT04934072",
-   "NCT05245669",
-   "NCT05299073",
-   "NCT05338086",
-   "NCT05405725",
-   "NCT05419427"
-  ],
-  "verlenging": "Extension Granted"
+  "spc_einde": "2036-12-13",
+  "spc_klasse": "actief",
+  "studies": [],
+  "verlenging": ""
+ },
+ "L04AJ05": {
+  "eval": 0,
+  "kopie": [],
+  "naam": "Avacopan",
+  "nl": [],
+  "pijplijn": [],
+  "spc_bron": "RVO",
+  "spc_einde": "2034-12-20",
+  "spc_klasse": "actief",
+  "studies": [],
+  "verlenging": ""
  },
  "M05BX06": {
   "eval": 0,
@@ -1313,77 +588,27 @@
   "studies": [],
   "verlenging": "Extension Granted"
  },
- "N02AB03": {
+ "N02CD01": {
   "eval": 0,
   "kopie": [],
-  "naam": "Fentanyl",
-  "nl": [
-   "ASR",
-   "CARESQ",
-   "CZ",
-   "DSW",
-   "MENZIS",
-   "ONVZ",
-   "SALLAND",
-   "VGZ",
-   "ZK",
-   "ZZ"
-  ],
+  "naam": "Erenumab",
+  "nl": [],
   "pijplijn": [],
-  "spc_bron": "Horizonscan",
-  "spc_einde": "",
-  "spc_klasse": "verlopen",
+  "spc_bron": "RVO",
+  "spc_einde": "2033-07-29",
+  "spc_klasse": "actief",
   "studies": [],
   "verlenging": ""
  },
- "N02BF02": {
-  "eval": 0,
-  "kopie": [
-   "Pregabalin Accord (Authorised)",
-   "Pregabalin Sandoz (Authorised)",
-   "Pregabalin Viatris (previously Pregabalin Mylan) (Authorised)",
-   "Pregabalin Zentiva (Authorised)"
-  ],
-  "naam": "Pregabaline",
-  "nl": [
-   "ASR",
-   "CARESQ",
-   "CZ",
-   "DSW",
-   "MENZIS",
-   "ONVZ",
-   "SALLAND",
-   "VGZ",
-   "ZK",
-   "ZZ"
-  ],
-  "pijplijn": [],
-  "spc_bron": "",
-  "spc_einde": "",
-  "spc_klasse": "",
-  "studies": [],
-  "verlenging": ""
- },
- "N02CC01": {
+ "N02CD02": {
   "eval": 0,
   "kopie": [],
-  "naam": "Sumatriptan",
-  "nl": [
-   "ASR",
-   "CARESQ",
-   "CZ",
-   "DSW",
-   "MENZIS",
-   "ONVZ",
-   "SALLAND",
-   "VGZ",
-   "ZK",
-   "ZZ"
-  ],
+  "naam": "Galcanezumab",
+  "nl": [],
   "pijplijn": [],
-  "spc_bron": "",
-  "spc_einde": "",
-  "spc_klasse": "",
+  "spc_bron": "RVO",
+  "spc_einde": "2033-11-15",
+  "spc_klasse": "actief",
   "studies": [],
   "verlenging": ""
  },
@@ -1399,64 +624,22 @@
   "studies": [],
   "verlenging": ""
  },
- "N03AX14": {
+ "N02CD07": {
   "eval": 0,
-  "kopie": [
-   "Levetiracetam Accord (Authorised)",
-   "Levetiracetam Actavis (Authorised)",
-   "Levetiracetam Actavis Group (Authorised)",
-   "Levetiracetam Hospira (Authorised)",
-   "Levetiracetam Sun (Authorised)",
-   "Levetiracetam Teva (Authorised)",
-   "Levetiracetam ratiopharm (Authorised)",
-   "Matever (Authorised)"
-  ],
-  "naam": "Levetiracetam",
-  "nl": [
-   "ASR",
-   "CARESQ",
-   "CZ",
-   "DSW",
-   "MENZIS",
-   "ONVZ",
-   "SALLAND",
-   "VGZ",
-   "ZK",
-   "ZZ"
-  ],
+  "kopie": [],
+  "naam": "Atogepant",
+  "nl": [],
   "pijplijn": [],
   "spc_bron": "RVO",
-  "spc_einde": "2010-05-13",
-  "spc_klasse": "verlopen",
+  "spc_einde": "2036-11-09",
+  "spc_klasse": "actief",
   "studies": [],
   "verlenging": ""
  },
- "N04BA02": {
+ "N03AX24": {
   "eval": 0,
   "kopie": [],
-  "naam": "Levodopa met decarboxylaseremmer",
-  "nl": [
-   "ASR",
-   "CARESQ",
-   "CZ",
-   "DSW",
-   "MENZIS",
-   "ONVZ",
-   "SALLAND",
-   "VGZ",
-   "ZZ"
-  ],
-  "pijplijn": [],
-  "spc_bron": "Horizonscan",
-  "spc_einde": "",
-  "spc_klasse": "verlopen",
-  "studies": [],
-  "verlenging": ""
- },
- "N04BA07": {
-  "eval": 0,
-  "kopie": [],
-  "naam": "Foslevodopa met decarboxylaseremmer",
+  "naam": "Cannabidiol",
   "nl": [],
   "pijplijn": [],
   "spc_bron": "",
@@ -1465,50 +648,23 @@
   "studies": [],
   "verlenging": ""
  },
- "N05AH04": {
+ "N03AX25": {
   "eval": 0,
   "kopie": [],
-  "naam": "Quetiapine",
-  "nl": [
-   "ASR",
-   "CARESQ",
-   "CZ",
-   "DSW",
-   "MENZIS",
-   "ONVZ",
-   "SALLAND",
-   "VGZ",
-   "ZK",
-   "ZZ"
-  ],
+  "naam": "Cenobamaat",
+  "nl": [],
   "pijplijn": [],
   "spc_bron": "RVO",
-  "spc_einde": "2012-03-23",
-  "spc_klasse": "verlopen",
+  "spc_einde": "2031-04-20",
+  "spc_klasse": "actief",
   "studies": [],
   "verlenging": ""
  },
- "N05AX12": {
+ "N03AX26": {
   "eval": 0,
-  "kopie": [
-   "Aripiprazole Accord (Authorised)",
-   "Aripiprazole Mylan Pharma (previously Aripiprazole Pharmathen) (Authorised)",
-   "Aripiprazole Sandoz (Authorised)",
-   "Aripiprazole Zentiva (Authorised)"
-  ],
-  "naam": "Aripiprazol",
-  "nl": [
-   "ASR",
-   "CARESQ",
-   "CZ",
-   "DSW",
-   "MENZIS",
-   "ONVZ",
-   "SALLAND",
-   "VGZ",
-   "ZK",
-   "ZZ"
-  ],
+  "kopie": [],
+  "naam": "Fenfluramine",
+  "nl": [],
   "pijplijn": [],
   "spc_bron": "",
   "spc_einde": "",
@@ -1516,68 +672,17 @@
   "studies": [],
   "verlenging": ""
  },
- "N05AX13": {
-  "eval": 0,
-  "kopie": [
-   "Niapelf (Authorised)"
-  ],
-  "naam": "Paliperidon",
-  "nl": [
-   "ASR",
-   "CARESQ",
-   "CZ",
-   "DSW",
-   "MENZIS",
-   "ONVZ",
-   "SALLAND",
-   "VGZ",
-   "ZK",
-   "ZZ"
-  ],
-  "pijplijn": [],
-  "spc_bron": "",
-  "spc_einde": "",
-  "spc_klasse": "",
-  "studies": [],
-  "verlenging": ""
- },
- "N06BA02": {
+ "N06AX26": {
   "eval": 0,
   "kopie": [],
-  "naam": "Dexamfetamine",
-  "nl": [
-   "DSW",
-   "MENZIS"
-  ],
+  "naam": "Vortioxetine",
+  "nl": [],
   "pijplijn": [],
-  "spc_bron": "Horizonscan",
-  "spc_einde": "",
-  "spc_klasse": "verlopen",
+  "spc_bron": "RVO",
+  "spc_einde": "2028-04-01",
+  "spc_klasse": "actief",
   "studies": [],
-  "verlenging": ""
- },
- "N06BA04": {
-  "eval": 0,
-  "kopie": [],
-  "naam": "Methylfenidaat",
-  "nl": [
-   "ASR",
-   "CARESQ",
-   "CZ",
-   "DSW",
-   "MENZIS",
-   "ONVZ",
-   "SALLAND",
-   "VGZ",
-   "ZK",
-   "ZZ"
-  ],
-  "pijplijn": [],
-  "spc_bron": "Horizonscan",
-  "spc_einde": "",
-  "spc_klasse": "verlopen",
-  "studies": [],
-  "verlenging": ""
+  "verlenging": "Extension Granted"
  },
  "N06BA12": {
   "eval": 0,
@@ -1619,179 +724,15 @@
   "studies": [],
   "verlenging": ""
  },
- "R01AD08": {
+ "R03BB07": {
   "eval": 0,
   "kopie": [],
-  "naam": "Fluticason",
-  "nl": [
-   "ASR",
-   "CARESQ",
-   "CZ",
-   "DSW",
-   "MENZIS",
-   "ONVZ",
-   "SALLAND",
-   "VGZ",
-   "ZK",
-   "ZZ"
-  ],
-  "pijplijn": [],
-  "spc_bron": "",
-  "spc_einde": "",
-  "spc_klasse": "",
-  "studies": [],
-  "verlenging": ""
- },
- "R01AD58": {
-  "eval": 0,
-  "kopie": [],
-  "naam": "Fluticason combinatiepreparaten",
-  "nl": [
-   "ASR",
-   "CARESQ",
-   "CZ",
-   "DSW",
-   "MENZIS",
-   "ONVZ",
-   "SALLAND",
-   "VGZ",
-   "ZK",
-   "ZZ"
-  ],
-  "pijplijn": [],
-  "spc_bron": "",
-  "spc_einde": "",
-  "spc_klasse": "",
-  "studies": [],
-  "verlenging": ""
- },
- "R03AC02": {
-  "eval": 0,
-  "kopie": [],
-  "naam": "Salbutamol",
-  "nl": [
-   "CZ",
-   "DSW",
-   "MENZIS",
-   "ZK"
-  ],
-  "pijplijn": [],
-  "spc_bron": "",
-  "spc_einde": "",
-  "spc_klasse": "",
-  "studies": [],
-  "verlenging": ""
- },
- "R03AK06": {
-  "eval": 0,
-  "kopie": [],
-  "naam": "Salmeterol met fluticason",
-  "nl": [
-   "ASR",
-   "CARESQ",
-   "CZ",
-   "DSW",
-   "MENZIS",
-   "ONVZ",
-   "SALLAND",
-   "VGZ",
-   "ZK",
-   "ZZ"
-  ],
-  "pijplijn": [],
-  "spc_bron": "RVO",
-  "spc_einde": "2013-09-06",
-  "spc_klasse": "verlopen",
-  "studies": [],
-  "verlenging": ""
- },
- "R03AK07": {
-  "eval": 0,
-  "kopie": [],
-  "naam": "Formoterol met budesonide",
-  "nl": [
-   "ASR",
-   "CARESQ",
-   "DSW",
-   "ONVZ",
-   "SALLAND",
-   "VGZ",
-   "ZZ"
-  ],
-  "pijplijn": [],
-  "spc_bron": "RVO",
-  "spc_einde": "",
-  "spc_klasse": "verlopen",
-  "studies": [],
-  "verlenging": ""
- },
- "R03AK08": {
-  "eval": 0,
-  "kopie": [],
-  "naam": "Formoterol met beclometason",
-  "nl": [
-   "ASR",
-   "CARESQ",
-   "CZ",
-   "DSW",
-   "MENZIS",
-   "ONVZ",
-   "SALLAND",
-   "VGZ",
-   "ZK",
-   "ZZ"
-  ],
-  "pijplijn": [],
-  "spc_bron": "RVO",
-  "spc_einde": "",
-  "spc_klasse": "verlopen",
-  "studies": [],
-  "verlenging": ""
- },
- "R03AL06": {
-  "eval": 0,
-  "kopie": [],
-  "naam": "Olodaterol met tiotropiumbromide",
+  "naam": "Umeclidiniumbromide",
   "nl": [],
   "pijplijn": [],
-  "spc_bron": "",
-  "spc_einde": "",
-  "spc_klasse": "",
-  "studies": [],
-  "verlenging": ""
- },
- "R03AL09": {
-  "eval": 0,
-  "kopie": [],
-  "naam": "Formoterol met glycopyrroniumbromide en beclometason",
-  "nl": [],
-  "pijplijn": [],
-  "spc_bron": "Horizonscan",
-  "spc_einde": "",
-  "spc_klasse": "verlopen",
-  "studies": [],
-  "verlenging": ""
- },
- "R03BB04": {
-  "eval": 0,
-  "kopie": [],
-  "naam": "Tiotropium",
-  "nl": [
-   "ASR",
-   "CARESQ",
-   "CZ",
-   "DSW",
-   "MENZIS",
-   "ONVZ",
-   "SALLAND",
-   "VGZ",
-   "ZK",
-   "ZZ"
-  ],
-  "pijplijn": [],
-  "spc_bron": "Horizonscan",
-  "spc_einde": "",
-  "spc_klasse": "verlopen",
+  "spc_bron": "RVO",
+  "spc_einde": "2029-04-29",
+  "spc_klasse": "actief",
   "studies": [],
   "verlenging": ""
  },
@@ -1807,6 +748,18 @@
   "studies": [],
   "verlenging": ""
  },
+ "R03DX11": {
+  "eval": 0,
+  "kopie": [],
+  "naam": "Tezepelumab",
+  "nl": [],
+  "pijplijn": [],
+  "spc_bron": "RVO",
+  "spc_einde": "2033-09-08",
+  "spc_klasse": "actief",
+  "studies": [],
+  "verlenging": ""
+ },
  "R07AX02": {
   "eval": 0,
   "kopie": [],
@@ -1818,6 +771,18 @@
   "spc_klasse": "actief",
   "studies": [],
   "verlenging": "Extension Granted"
+ },
+ "R07AX31": {
+  "eval": 0,
+  "kopie": [],
+  "naam": "Ivacaftor met tezacaftor",
+  "nl": [],
+  "pijplijn": [],
+  "spc_bron": "",
+  "spc_einde": "",
+  "spc_klasse": "",
+  "studies": [],
+  "verlenging": ""
  },
  "R07AX32": {
   "eval": 0,
@@ -1831,45 +796,10 @@
   "studies": [],
   "verlenging": ""
  },
- "S01ED51": {
+ "S01FA01": {
   "eval": 0,
   "kopie": [],
-  "naam": "Timolol combinatiepreparaten",
-  "nl": [
-   "ASR",
-   "CARESQ",
-   "CZ",
-   "DSW",
-   "MENZIS",
-   "ONVZ",
-   "SALLAND",
-   "VGZ",
-   "ZK",
-   "ZZ"
-  ],
-  "pijplijn": [],
-  "spc_bron": "",
-  "spc_einde": "",
-  "spc_klasse": "",
-  "studies": [],
-  "verlenging": ""
- },
- "S01XA20": {
-  "eval": 0,
-  "kopie": [],
-  "naam": "Kunsttranen en andere indifferente preparaten",
-  "nl": [],
-  "pijplijn": [],
-  "spc_bron": "",
-  "spc_einde": "",
-  "spc_klasse": "",
-  "studies": [],
-  "verlenging": ""
- },
- "V01AA02": {
-  "eval": 0,
-  "kopie": [],
-  "naam": "Graspollenallergeen",
+  "naam": "Atropine",
   "nl": [],
   "pijplijn": [],
   "spc_bron": "",

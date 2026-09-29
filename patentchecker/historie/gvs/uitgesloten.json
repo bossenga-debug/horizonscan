@@ -1,0 +1,770 @@
+{
+ "A03AB02": {
+  "naam": "Glycopyrroniumbromide",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "A04AA55": {
+  "naam": "Palonosetron combinatiepreparaten",
+  "reden": "productgroep",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "A05AX04": {
+  "naam": "Maralixibatchloride",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "A07AA11": {
+  "naam": "Rifaximine",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "A07EB01": {
+  "naam": "Cromoglicinezuur",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "A08AA62": {
+  "naam": "Bupropion met naltrexon",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": "2025-03-26"
+ },
+ "A10AB06": {
+  "naam": "Insuline glulisine",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": "2014-09-27"
+ },
+ "A10AC01": {
+  "naam": "Insuline (humaan)",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "A10AD05": {
+  "naam": "Insuline aspart",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": "2009-09-07"
+ },
+ "A10AD06": {
+  "naam": "Insuline degludec met insuline aspart",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": "2023-01-21"
+ },
+ "A10AE05": {
+  "naam": "Insuline detemir",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": "2014-06-01"
+ },
+ "A10AE06": {
+  "naam": "Insuline degludec",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": "2023-01-20"
+ },
+ "A10AE56": {
+  "naam": "Insuline degludec met liraglutide",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": "2024-09-18"
+ },
+ "A10BH05": {
+  "naam": "Linagliptine",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": "2021-08-23"
+ },
+ "A10BJ05": {
+  "naam": "Dulaglutide",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": "2024-11-21"
+ },
+ "A12BA01": {
+  "naam": "Kaliumchloride",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "A12BA02": {
+  "naam": "Kaliumcitraat",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "A12CC03": {
+  "naam": "Magnesiumgluconaat",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "A16AA04": {
+  "naam": "Mercaptamine",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": "2023-09-05"
+ },
+ "B01AB04": {
+  "naam": "Dalteparine",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "B01AB06": {
+  "naam": "Nadroparine",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "B01AC07": {
+  "naam": "Dipyridamol",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": "2012-07-08"
+ },
+ "B01AC08": {
+  "naam": "Carbasalaatcalcium",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "B02BX04": {
+  "naam": "Romiplostim",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": "2024-08-05"
+ },
+ "B06AC01": {
+  "naam": "C1-esteraseremmer uit plasma",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "C02AC02": {
+  "naam": "Guanfacine",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": "2025-09-17"
+ },
+ "C02KX05": {
+  "naam": "Riociguat",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": "2024-03-27"
+ },
+ "C03DB01": {
+  "naam": "Amiloride",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "C05AE03": {
+  "naam": "Diltiazem",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "C07AG01": {
+  "naam": "Labetalol",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "C07BB02": {
+  "naam": "Metoprolol met thiaziden",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "C10AB08": {
+  "naam": "Ciprofibraat",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "C10AX15": {
+  "naam": "Bempedoinezuur",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "D06BB10": {
+  "naam": "Imiquimod",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": "2009-11-15"
+ },
+ "D06BX01": {
+  "naam": "Metronidazol",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "D07AA02": {
+  "naam": "Hydrocortison",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": "2021-11-03"
+ },
+ "D07AC03": {
+  "naam": "Desoximetason",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "D07XC02": {
+  "naam": "Desoximetason met overige middelen",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "D10AX02": {
+  "naam": "Resorcinol",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "D11AH02": {
+  "naam": "Pimecrolimus",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "D11AX22": {
+  "naam": "Ivermectine",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "G03CA04": {
+  "naam": "Estriol",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "G03DA04": {
+  "naam": "Progesteron",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "G03DB01": {
+  "naam": "Dydrogesteron",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "G03FA14": {
+  "naam": "Oestrogeen met dydrogesteron",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "G04BX15": {
+  "naam": "Pentosanpolysulfaatnatrium",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "H01AX01": {
+  "naam": "Pegvisomant",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": "2017-11-14"
+ },
+ "H01CB05": {
+  "naam": "Pasireotide",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": "2026-07-29"
+ },
+ "H01CC54": {
+  "naam": "Relugolix met estradiol en norethisteron",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "H03AA02": {
+  "naam": "Liothyronine",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "H03BB02": {
+  "naam": "Thiamazol",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "J01CE01": {
+  "naam": "Benzylpenicilline",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "J01CE05": {
+  "naam": "Feneticilline",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "J01DD02": {
+  "naam": "Ceftazidim",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "J01DD04": {
+  "naam": "Ceftriaxon",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "J01DF01": {
+  "naam": "Aztreonam",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": "2019-09-21"
+ },
+ "J01DH02": {
+  "naam": "Meropenem",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "J01EE01": {
+  "naam": "Sulfamethoxazol met trimethoprim",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "J01XA01": {
+  "naam": "Vancomycine",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "J02AC05": {
+  "naam": "Isavuconazol",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": "2025-10-15"
+ },
+ "J04AB02": {
+  "naam": "Rifampicine",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "J05AP55": {
+  "naam": "Sofosbuvir met velpatasvir",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": "2026-07-06"
+ },
+ "J05AR08": {
+  "naam": "Emtricitabine met tenofovir disoproxil en rilpivirine",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": "2021-11-27"
+ },
+ "J05AR09": {
+  "naam": "Emtricitabine met tenofovir elvitegravir en cobicistat",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "J05AR13": {
+  "naam": "Lamivudine met abacavir en dolutegravir",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": "2024-08-31"
+ },
+ "J05AR14": {
+  "naam": "Darunavir met cobicistat",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": "2024-11-19"
+ },
+ "J05AR17": {
+  "naam": "Emtricitabine met tenofovir alafenamide",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": "2026-04-21"
+ },
+ "J05AR18": {
+  "naam": "Emtricitabine tenofovir alafenamide elvitegravir cobicista",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "J05AR19": {
+  "naam": "Emtricitabine met tenofovir alafenamide en rilpivirine",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": "2026-06-21"
+ },
+ "J05AR22": {
+  "naam": "Emtricitabine tenofoviralafenamide darunavir cobicistat",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "J06BA01": {
+  "naam": "Immunoglobuline normaal extravasculair",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "J06BA02": {
+  "naam": "Immunoglobuline normaal intravasculair",
+  "reden": "productgroep",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "J06BD01": {
+  "naam": "Palivizumab",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": "2009-08-13"
+ },
+ "J07AM01": {
+  "naam": "Tetanustoxoide",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "J07BK03": {
+  "naam": "Zoster gezuiverd antigeen",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "L01BB03": {
+  "naam": "Tioguanine",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "L01BC02": {
+  "naam": "Fluorouracil",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "L02AE03": {
+  "naam": "Gosereline",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "L02AE04": {
+  "naam": "Triptoreline",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "L03AB07": {
+  "naam": "Interferon beta 1a",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": "2007-03-13"
+ },
+ "L03AB11": {
+  "naam": "Peginterferon alfa 2a",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": "2012-06-20"
+ },
+ "L03AB13": {
+  "naam": "Peginterferon beta-1a",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": "2024-07-18"
+ },
+ "L04AA40": {
+  "naam": "Cladribine",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": "2014-04-14"
+ },
+ "L04AD01": {
+  "naam": "Ciclosporine",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": "2025-03-19"
+ },
+ "L04AD02": {
+  "naam": "Tacrolimus",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": "2012-02-27"
+ },
+ "L04AG12": {
+  "naam": "Ofatumumab",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": "2020-04-19"
+ },
+ "L04AH01": {
+  "naam": "Sirolimus",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": "2015-06-04"
+ },
+ "L04AH02": {
+  "naam": "Everolimus",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": "2019-08-02"
+ },
+ "L04AK02": {
+  "naam": "Teriflunomide",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": "2023-08-26"
+ },
+ "L04AX09": {
+  "naam": "Diroximelfumaraat",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "N01BX04": {
+  "naam": "Capsaicine",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": "2019-05-15"
+ },
+ "N02AA03": {
+  "naam": "Hydromorfon",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "N03AA03": {
+  "naam": "Primidon",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "N04BA07": {
+  "naam": "Foslevodopa met decarboxylaseremmer",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "N04BB01": {
+  "naam": "Amantadine",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "N05AN01": {
+  "naam": "Lithiumzouten",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "N06AA04": {
+  "naam": "Clomipramine",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "N06BX13": {
+  "naam": "Idebenon",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": "2025-09-08"
+ },
+ "N07AA02": {
+  "naam": "Pyridostigmine",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "N07XX11": {
+  "naam": "Pitolisant",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": "2026-03-31"
+ },
+ "R03AC12": {
+  "naam": "Salmeterol",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "R03AK10": {
+  "naam": "Vilanterol met fluticasonfuroaat",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "R03AK11": {
+  "naam": "Formoterol met fluticason",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "R03AL01": {
+  "naam": "Fenoterol met ipratropiumbromide",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "R03AL03": {
+  "naam": "Vilanterol met umeclidiniumbromide",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "R03AL04": {
+  "naam": "Indacaterol met glycopyrroniumbromide",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "R03AL05": {
+  "naam": "Formoterol met aclidiniumbromide",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "R03AL06": {
+  "naam": "Olodaterol met tiotropiumbromide",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "R03AL07": {
+  "naam": "Formoterol met glycopyrroniumbromide",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "R03AL08": {
+  "naam": "Vilanterol met umeclidiniumbromide en fluticasonfuroaat",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "R03AL09": {
+  "naam": "Formoterol met glycopyrroniumbromide en beclometason",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "R03AL11": {
+  "naam": "Formoterol met glycopyrroniumbromide en budesonide",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "R03DX05": {
+  "naam": "Omalizumab",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": "2015-10-25"
+ },
+ "R05CB13": {
+  "naam": "Deoxyribonuclease",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "R07AX30": {
+  "naam": "Ivacaftor met lumacaftor",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": "2025-11-19"
+ },
+ "S01BC10": {
+  "naam": "Nepafenac",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": "2017-12-11"
+ },
+ "S01BC11": {
+  "naam": "Broomfenac",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "S01EA03": {
+  "naam": "Apraclonidine",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "S01EE05": {
+  "naam": "Tafluprost",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": "2022-12-21"
+ },
+ "S01GX02": {
+  "naam": "Levocabastine",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "S01XA18": {
+  "naam": "Ciclosporine",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": "2025-03-19"
+ },
+ "S01XA20": {
+  "naam": "Kunsttranen en andere indifferente preparaten",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "S01XA21": {
+  "naam": "Mercaptamine",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": "2023-09-05"
+ },
+ "S02CA06": {
+  "naam": "Dexamethason met antimicrobiele middelen",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "V01AA02": {
+  "naam": "Graspollenallergeen",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "V01AA03": {
+  "naam": "Huisstofmijtenallergeen",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "V01AA05": {
+  "naam": "Boompollenallergeen",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ },
+ "V01AA07": {
+  "naam": "Insectenallergeen",
+  "reden": "bescherming verlopen",
+  "sinds": "2026-09-29",
+  "toetreding": ""
+ }
+}

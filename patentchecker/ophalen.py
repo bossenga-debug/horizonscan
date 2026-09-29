@@ -39,6 +39,7 @@ from urllib.parse import urlencode
 
 import requests
 
+import bouw_site           # voor dezelfde beoordeling van 'nog beschermd'
 import middelen
 import rvo
 
@@ -281,6 +282,107 @@ def lijst_middelen(set_):
     return uit
 
 
+def middel_info(atc, gip, inns, ema):
+    """Naam, INN, merken en de eerste EU-vergunning van één ATC-code."""
+    naam = gip[atc]['naam']
+    inn = middelen.inn_voor(atc, naam, inns)
+    eigen = [r for r in ema if middelen.zelfde_stof(
+        r['International non-proprietary name (INN) / common name'], inn)]
+    orig = [r for r in eigen if r['Biosimilar'] != 'Yes' and r['Generic'] != 'Yes'
+            and r['Marketing authorisation date']]
+    vergunning = sorted(bouw_site.ema_datum(r['Marketing authorisation date']) for r in orig)
+    return {'naam': naam, 'inn': inn,
+            'merken': sorted({r['Name of medicine'] for r in orig}),
+            'vergunning': vergunning[0] if vergunning else ''}
+
+
+def vul_aan(sessie, set_, alleen_kijken):
+    """Loopt de kandidaten boven de drempel af en houdt over wat nog bescherming heeft.
+
+    Preferent aangewezen middelen en middelen die eerder al uit patent bleken,
+    slaan we over: daar valt niets meer te volgen en het scheelt elke maand
+    honderden verzoeken aan het octrooiregister. Wie er nieuw bij komt wordt één
+    keer opgezocht; blijkt de bescherming verlopen, dan wordt dat onthouden in
+    historie/<set>/uitgesloten.json en schuift de lijst aan."""
+    gip, _ = middelen.lees_gip(os.path.join(BRON, set_['gip']))
+    jaar = sorted({j for o in gip.values() for j in o['kosten']})[-1]
+    ema = middelen.lees_ema()
+    inns = sorted({(r['International non-proprietary name (INN) / common name'] or '').strip()
+                   for r in ema} - {''})
+    stoffen = {middelen.sleutel(c)[:8] for naam in [o['naam'] for o in gip.values()] + inns
+               for c in middelen.componenten(naam) if len(c) > 5}
+    stoffen = {s for s in stoffen if len(s) == 8}
+    pdf, _fout = bouw_site.lees_hs_overzicht()
+
+    rvo_data = lees_bron(f"rvo_{set_['naam']}.json")
+    ctgov_data = lees_bron(f"ctgov_{set_['naam']}.json")
+    uitgesloten = middelen.lees_uitsluitingen(set_)
+    preferent = middelen.preferente_atc()
+    reg = rvo.Register()
+
+    gekozen, nieuw, weg, fout = [], 0, 0, 0
+    try:
+      for atc in middelen.kandidaten(gip, jaar, overslaan=preferent | set(uitgesloten),
+                                     drempel=set_['drempel']):
+        info = middel_info(atc, gip, inns, ema)
+        groep = middelen.groep_van(atc, info['naam'])
+        if atc not in rvo_data and not groep:
+            delen = middelen.componenten(info['inn'])
+            termen = (delen if len(delen) > 1 else [info['inn']]) + middelen.RVO_EXTRA.get(atc, [])
+            try:
+                rvo_data[atc] = zoek_certificaten(reg, termen)
+                ctgov_data[atc] = zoek_studies(sessie, info['inn'], info['merken'])
+            except Exception as e:
+                # Eén middel dat niet op te vragen is, mag de hele ronde niet
+                # stilleggen: overslaan en de volgende keer opnieuw proberen.
+                print(f'  {atc}: {e}  [overgeslagen]')
+                rvo_data.pop(atc, None)
+                fout += 1
+                continue
+            nieuw += 1
+        b = bouw_site.bescherming(atc, info['naam'], info['inn'], info['merken'],
+                                  rvo_data.get(atc, []),
+                                  bouw_site.plus_jaren(info['vergunning'], 10) if info['vergunning'] else '',
+                                  pdf, groep, stoffen)
+        if not groep and bouw_site.nog_beschermd(b['toetreding']):
+            gekozen.append(atc)
+            print(f"  {len(gekozen):3d}. {atc:8s} {info['naam'][:34]:34s} "
+                  f"€ {gip[atc]['kosten'].get(jaar, 0) / 1e6:5.1f} mln  tot {b['toetreding']}")
+        else:
+            weg += 1
+            uitgesloten[atc] = {'naam': info['naam'], 'sinds': datetime.date.today().isoformat(),
+                                'reden': 'productgroep' if groep else 'bescherming verlopen',
+                                'toetreding': b['toetreding']}
+    finally:
+        # Ook bij een onderbreking bewaren wat er is opgehaald; het register
+        # bevragen kost te veel tijd om weg te gooien.
+        if not alleen_kijken:
+            middelen.schrijf_uitsluitingen(set_, uitgesloten)
+            schrijf_als_gewijzigd(os.path.join(BRON, f"rvo_{set_['naam']}.json"),
+                                  json.dumps(rvo_data, ensure_ascii=False, indent=1, sort_keys=True))
+            schrijf_als_gewijzigd(os.path.join(BRON, f"ctgov_{set_['naam']}.json"),
+                                  json.dumps(ctgov_data, ensure_ascii=False, indent=1, sort_keys=True))
+    print(f'  {len(gekozen)} middelen met bescherming, {nieuw} nieuw opgezocht, '
+          f'{weg} afgevallen{f", {fout} overgeslagen door een fout" if fout else ""}; '
+          f'{len(uitgesloten)} staan blijvend buiten de lijst')
+    # Wegschrijven gebeurde al in het finally-blok hierboven.
+    return not alleen_kijken and bool(nieuw or weg)
+
+
+def lees_bron(naam):
+    pad = os.path.join(BRON, naam)
+    return json.load(open(pad, encoding='utf-8')) if os.path.exists(pad) else {}
+
+
+def zoek_certificaten(reg, termen):
+    gezien = {}
+    for term in termen:
+        for rec in reg.zoek(term):
+            gezien.setdefault(rec['id'], rec)
+        time.sleep(rvo.PAUZE)
+    return list(gezien.values())
+
+
 def register(lijst, set_, alleen_kijken):
     reg = rvo.Register()
     uit = {}
@@ -307,40 +409,52 @@ def ctgov(sessie, lijst, set_, alleen_kijken):
     genoeg; ze moeten bij elkaar staan (zie biosimilar_van)."""
     uit = {}
     for atc, inn, merken, _ in lijst:
-        naam = biosimilar_van(middelen.componenten(inn) + merken)
-        studies, token = [], None
-        for _ in range(5):
-            p = {'query.intr': middelen.componenten(inn)[0], 'query.term': 'biosimilar', 'pageSize': 100,
-                 'fields': 'NCTId,BriefTitle,OfficialTitle,LeadSponsorName,Phase,'
-                           'OverallStatus,StartDate,PrimaryCompletionDate'}
-            if token:
-                p['pageToken'] = token
-            r = sessie.get(CTGOV, params=p, headers=KOP, timeout=60)
-            r.raise_for_status()
-            j = r.json()
-            for s in j.get('studies', []):
-                ps = s['protocolSection']
-                idm = ps['identificationModule']
-                titel = idm.get('briefTitle', '') + ' | ' + idm.get('officialTitle', '')
-                if not naam.search(titel):
-                    continue
-                studies.append({
-                    'nct': idm['nctId'],
-                    'titel': idm.get('briefTitle', ''),
-                    'sponsor': ps.get('sponsorCollaboratorsModule', {}).get('leadSponsor', {}).get('name', ''),
-                    'fase': '/'.join(ps.get('designModule', {}).get('phases', []) or []),
-                    'status': ps.get('statusModule', {}).get('overallStatus', ''),
-                    'start': ps.get('statusModule', {}).get('startDateStruct', {}).get('date', ''),
-                })
-            token = j.get('nextPageToken')
-            if not token:
-                break
-            time.sleep(0.3)
-        uit[atc] = sorted(studies, key=lambda s: s['start'], reverse=True)
-        if studies:
-            print(f'  {atc:8s} {inn[:30]:30s} {len(studies):2d} biosimilarstudies')
+        uit[atc] = zoek_studies(sessie, inn, merken)
+        if uit[atc]:
+            print(f'  {atc:8s} {inn[:30]:30s} {len(uit[atc]):2d} biosimilarstudies')
     data = json.dumps(uit, ensure_ascii=False, indent=1, sort_keys=True)
     return schrijf_als_gewijzigd(os.path.join(BRON, f"ctgov_{set_['naam']}.json"), data, alleen_kijken)
+
+
+def zoek_studies(sessie, inn, merken):
+    """Biosimilarstudies van één stof, met het filter uit biosimilar_van().
+
+    De zoekterm wordt eerst ontdaan van alles wat geen letter is: een GIP-naam als
+    "Bromocriptine (tabl. 2 5 mg" maakt van de haak een onafgesloten groep in de
+    zoektaal van ClinicalTrials.gov, en dat geeft HTTP 400."""
+    term = ' '.join(re.sub(r'[^A-Za-z ]+', ' ', middelen.componenten(inn)[0]).split())
+    if len(term) < 4:
+        return []
+    naam = biosimilar_van(middelen.componenten(inn) + merken)
+    studies, token = [], None
+    for _ in range(5):
+        p = {'query.intr': term, 'query.term': 'biosimilar', 'pageSize': 100,
+             'fields': 'NCTId,BriefTitle,OfficialTitle,LeadSponsorName,Phase,'
+                       'OverallStatus,StartDate,PrimaryCompletionDate'}
+        if token:
+            p['pageToken'] = token
+        r = sessie.get(CTGOV, params=p, headers=KOP, timeout=60)
+        r.raise_for_status()
+        j = r.json()
+        for s in j.get('studies', []):
+            ps = s['protocolSection']
+            idm = ps['identificationModule']
+            titel = idm.get('briefTitle', '') + ' | ' + idm.get('officialTitle', '')
+            if not naam.search(titel):
+                continue
+            studies.append({
+                'nct': idm['nctId'],
+                'titel': idm.get('briefTitle', ''),
+                'sponsor': ps.get('sponsorCollaboratorsModule', {}).get('leadSponsor', {}).get('name', ''),
+                'fase': '/'.join(ps.get('designModule', {}).get('phases', []) or []),
+                'status': ps.get('statusModule', {}).get('overallStatus', ''),
+                'start': ps.get('statusModule', {}).get('startDateStruct', {}).get('date', ''),
+            })
+        token = j.get('nextPageToken')
+        if not token:
+            break
+        time.sleep(0.3)
+    return sorted(studies, key=lambda s: s['start'], reverse=True)
 
 
 def biosimilar_van(namen):
@@ -388,6 +502,16 @@ def main():
         print('\n--check: het register en ClinicalTrials.gov zijn overgeslagen.')
     elif '--zonder-register' not in sys.argv:
         for s in sets:
+            if s.get('aanvullen'):
+                print(f"\nOctrooiregister RVO, set {s['naam']}: middelen boven "
+                      f"€ {s['drempel'] / 1e6:.0f} mln die nog bescherming hebben")
+                try:
+                    gewijzigd |= vul_aan(sessie, s, alleen_kijken)
+                except Exception as e:
+                    if streng:
+                        sys.exit(f'Aanvullen set {s["naam"]}: {e}\nEr is niets gepubliceerd.')
+                    print(f'  mislukt: {e}  [vorige versie blijft staan]')
+                continue
             lijst = lijst_middelen(s)
             print(f"\nOctrooiregister RVO, set {s['naam']} ({len(lijst)} middelen):")
             try:

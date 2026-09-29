@@ -5,7 +5,7 @@ Twee zelfstandige pagina's op dezelfde code en hetzelfde sjabloon:
 | Set | Pagina | Selectie | Bron van de kosten |
 |---|---|---|---|
 | `addon` | `patentchecker.html` → `/patentchecker/` | boven € 10 mln per jaar (69 middelen) | GIP add-on Zvw |
-| `gvs` | `patentchecker_gvs.html` → `/patentchecker/gvs.html` | de 100 duurste van het laatste jaar | GIP farmacie Zvw |
+| `gvs` | `patentchecker_gvs.html` → `/patentchecker/gvs.html` | boven € 1 mln in het laatste jaar, en alleen wat nog bescherming heeft | GIP farmacie Zvw |
 
 De sets staan in `SETS` in `middelen.py`; `--set addon`, `--set gvs` of allebei
 (de standaard). Beide pagina's laten per middel zien:
@@ -62,6 +62,26 @@ gebruik dat bij proberen, anders krijgt het logboek een extra datum.
 | Farmatec add-on GS-lijst | handelsvergunningen in NL (set addon) | tel `RegistratieNummer`, niet `Fabrikant` |
 | Preferentiebeleid (eigen pagina) | concurrentie in NL (set gvs) | JSON uit de broncode van medicatieadvies.nl/preferentiebeleid |
 | GIP add-on / farmacie Zvw meerjaren | selectie en kosten | add-on markeert voorlopige jaren met `*`, farmacie niet |
+
+## Wat de GVS-set overslaat
+
+De extramurale farmacie bestaat voor het grootste deel uit oude generieken; een
+lijst op kosten alleen zou daar vol mee staan. De GVS-set slaat daarom over:
+
+- middelen die **preferent zijn aangewezen** (uit de preferentiepagina, zie
+  hieronder) — preferentiebeleid kan alleen bij meerdere leveranciers, dus daar
+  is de bescherming al voorbij;
+- middelen waarvan de **bescherming verlopen** is, dat wil zeggen dat de
+  vroegste toetreding (SPC-einde of marktbescherming) in het verleden ligt.
+
+Die tweede groep wordt onthouden in `historie/gvs/uitgesloten.json`, met naam,
+datum en reden. Dat bestand staat in git en zorgt dat het octrooiregister niet
+elke maand opnieuw wordt bevraagd over middelen waar niets meer te volgen valt;
+`ophalen.py` slaat ze over en `bouw_site.py` houdt ze uit de pagina. Blijkt bij
+een bouw een middel alsnog uit patent, dan wordt het daar toegevoegd.
+
+Haal een middel uit dat bestand als je het opnieuw wilt laten beoordelen (bijv.
+na een nieuw certificaat); de volgende run zoekt het dan weer op.
 
 ## Nederlandse concurrentie
 

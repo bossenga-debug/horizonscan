@@ -28,7 +28,9 @@ CI = '--ci' in sys.argv
 # Per set, want de GVS-set kent meer oude middelen zonder SPC.
 EISEN = {
     'addon': {'kB': 150_000, 'middelen': 40, 'met_spc': 30},
-    'gvs':   {'kB': 120_000, 'middelen': 80, 'met_spc': 30},
+    # De GVS-set is gezeefd op bescherming en schommelt daardoor in omvang;
+    # een middel valt af zodra zijn bescherming verloopt.
+    'gvs':   {'kB': 80_000, 'middelen': 30, 'met_spc': 20},
 }
 
 

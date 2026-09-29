@@ -11,9 +11,11 @@ Er zijn twee sets, met dezelfde code en hetzelfde sjabloon (zie SETS):
          van de twee laatste GIP-jaren. Twee jaren en niet één, omdat het
          laatste jaar voorlopig is: een middel dat in het ene jaar € 11 mln
          kostte en in het halfvolle laatste jaar € 9 mln, hoort er gewoon bij.
-  gvs    extramurale geneesmiddelen (GVS): de duurste TOP van het laatste jaar.
-         Hier is een vast aantal logischer dan een drempel -- het gaat om de
-         kop van een veel bredere lijst (ruim 5.000 ATC-codes).
+  gvs    extramurale geneesmiddelen (GVS): boven DREMPEL_GVS in het laatste
+         jaar, maar alleen middelen waar nog iets te volgen valt -- niet
+         preferent aangewezen en de bescherming nog niet verlopen. Zonder die
+         twee filters zou de lijst vooral uit oude generieken bestaan, want dat
+         is het grootste deel van de extramurale farmacie.
 """
 import os
 import re
@@ -23,8 +25,8 @@ import zipfile
 HIER = os.path.dirname(os.path.abspath(__file__))
 BRON = os.path.join(HIER, 'bron')
 
-DREMPEL = 10_000_000
-TOP = 100
+DREMPEL = 10_000_000      # add-on: kostendrempel per jaar
+DREMPEL_GVS = 1_000_000   # GVS: lager, want die lijst is al gezeefd op bescherming
 
 # Per set: waar de cijfers vandaan komen, hoe geselecteerd wordt en hoe de
 # pagina heet. De rest van de code is voor beide sets gelijk.
@@ -36,6 +38,8 @@ SETS = {
         'gip': 'gip_addon.csv',
         'gip_linktekst': r'GIP\s+Addon\s+Zvw\s+meerjaren',
         'selectie': 'drempel',
+        'drempel': DREMPEL,
+        'jaren': 2,                 # het laatste jaar is voorlopig, dus telt het jaar ervoor mee
         'pagina': 'patentchecker.html',
         'publicatie': 'index.html',
         'historie': 'historie',
@@ -44,14 +48,21 @@ SETS = {
     'gvs': {
         'naam': 'gvs',
         'titel': 'Patentchecker dure GVS-geneesmiddelen',
-        'kop': 'extramurale geneesmiddelen (GVS)',
+        'kop': 'nog beschermde extramurale geneesmiddelen (GVS)',
         'gip': 'gip_farmacie.csv',
         'gip_linktekst': r'GIP\s+Farmacie\s+Zvw\s+meerjaren',
-        'selectie': 'top',
+        'selectie': 'drempel',
+        'drempel': DREMPEL_GVS,
+        'jaren': 1,                 # alleen het laatste jaar; dat is hier compleet
         'pagina': 'patentchecker_gvs.html',
         'publicatie': 'gvs.html',
         'historie': os.path.join('historie', 'gvs'),
         'nl_bron': 'preferentie',   # preferentiebeleid van de zorgverzekeraars
+        # Alleen middelen waar nog iets te volgen valt: preferent aangewezen of
+        # uit patent gaat eruit, en de lijst schuift aan tot TOP. Zo wordt het
+        # octrooiregister niet elke maand bevraagd over middelen waarvan de
+        # bescherming allang verlopen is.
+        'aanvullen': True,
     },
 }
 
@@ -164,18 +175,28 @@ def lees_gip(pad):
     return uit, sorted(voorlopig)
 
 
-def selectie(gip, set_=None):
-    """De middelen van een set, duurste eerst, plus de jaren in het bestand."""
+def kandidaten(gip, jaar, overslaan=(), drempel=0):
+    """Alle ATC-codes op kosten van dat jaar, duurste eerst, zonder de overgeslagen
+    en zonder wat onder de drempel valt."""
+    gesorteerd = sorted(gip, key=lambda a: -gip[a]['kosten'].get(jaar, 0))
+    return [a for a in gesorteerd if a not in overslaan
+            and gip[a]['kosten'].get(jaar, 0) >= drempel]
+
+
+def selectie(gip, set_=None, overslaan=()):
+    """De middelen van een set, duurste eerst, plus de jaren in het bestand.
+
+    `overslaan` is voor de GVS-set: middelen die preferent zijn aangewezen of
+    waarvan de bescherming al verlopen is, doen niet mee. Daar valt niets meer
+    te volgen, en dan is het zonde om er elke maand het octrooiregister voor te
+    bevragen. De lijst schuift aan tot er weer TOP middelen in staan."""
     set_ = set_ or SETS['addon']
     jaren = sorted({j for o in gip.values() for j in o['kosten']})
-    if set_['selectie'] == 'top':
-        # Eén jaar: bij een top-N zou meetellen van het voorlaatste jaar de lijst
-        # oprekken tot meer dan TOP middelen, en dan is "top 100" niet waar meer.
-        sleutel = lambda a: -gip[a]['kosten'].get(jaren[-1], 0)
-        return sorted(gip, key=sleutel)[:TOP], jaren
-    laatste = jaren[-2:]
+    laatste = jaren[-set_.get('jaren', 2):]
+    drempel = set_.get('drempel', DREMPEL)
     sleutel = lambda a: -max(gip[a]['kosten'].get(j, 0) for j in laatste)
-    gekozen = [a for a, o in gip.items() if max(o['kosten'].get(j, 0) for j in laatste) >= DREMPEL]
+    gekozen = [a for a, o in gip.items() if a not in overslaan
+               and max(o['kosten'].get(j, 0) for j in laatste) >= drempel]
     return sorted(gekozen, key=sleutel), jaren
 
 
@@ -252,6 +273,35 @@ def inn_voor(atc, gip_naam, ema_inns):
             if len(k2) > 1 and k2 == woorden:
                 return inn
     return gip_naam.lower()
+
+
+def lees_uitsluitingen(set_):
+    """Middelen die niet meer gevolgd worden, met de reden. Staat in historie/,
+    dus hij gaat mee in git en blijft tussen runs bestaan."""
+    pad = os.path.join(HIER, set_['historie'], 'uitgesloten.json')
+    if not os.path.exists(pad):
+        return {}
+    import json
+    with open(pad, encoding='utf-8') as f:
+        return json.load(f)
+
+
+def schrijf_uitsluitingen(set_, uitgesloten):
+    import json
+    map_ = os.path.join(HIER, set_['historie'])
+    os.makedirs(map_, exist_ok=True)
+    with open(os.path.join(map_, 'uitgesloten.json'), 'w', encoding='utf-8') as f:
+        json.dump(uitgesloten, f, ensure_ascii=False, indent=1, sort_keys=True)
+
+
+def preferente_atc(bron_json=None):
+    """ATC-codes die minstens één verzekeraar preferent aanwijst."""
+    import json
+    pad = bron_json or os.path.join(BRON, 'preferentiebeleid.json')
+    if not os.path.exists(pad):
+        return set()
+    with open(pad, encoding='utf-8') as f:
+        return {a for a, o in json.load(f).get('atc', {}).items() if o.get('verzekeraars')}
 
 
 def lees_gs(pad=None):

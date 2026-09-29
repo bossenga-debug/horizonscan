@@ -233,7 +233,9 @@ def fase(m):
 
 def bouw(set_):
     gip, voorlopig = middelen.lees_gip(os.path.join(BRON, set_['gip']))
-    gekozen, jaren = middelen.selectie(gip, set_)
+    uitgesloten = middelen.lees_uitsluitingen(set_) if set_.get('aanvullen') else {}
+    overslaan = set(uitgesloten) | middelen.preferente_atc() if set_.get('aanvullen') else set()
+    gekozen, jaren = middelen.selectie(gip, set_, overslaan)
     ema = middelen.lees_ema()
     inns = sorted({(r['International non-proprietary name (INN) / common name'] or '').strip() for r in ema} - {''})
     gs, gs_versie = (middelen.lees_gs() if set_['nl_bron'] == 'farmatec' else ({}, ''))
@@ -303,39 +305,8 @@ def bouw(set_):
         rij['ema_kopie_weg'] = len([r for r in kopie if r['Medicine status'] not in ('Authorised', 'Opinion')])
         rij['ema_eval'] = [e for e in evaluatie if e['kopie'] and middelen.zelfde_stof(e['inn'], inn)]
 
-        # Octrooiregister
-        certs = rvo.get(atc, [])
-        delen = middelen.componenten(inn)
-        spc = kies_spc(certs, sorted({inn, g['naam']}, key=len, reverse=True),
-                       rij['merken'], delen, stoffen) if not rij['groep'] else None
-        # Eerst de certificaten over de stof zelf, binnen elke groep de laatste einddatum bovenaan.
-        certs = sorted(certs, key=lambda c: c.get('einde') or '', reverse=True)
-        rij['certificaten'] = sorted(certs, key=lambda c: not c.get('hoofd'))
-        rij['spc'] = dict(spc, bron='RVO') if spc else None
-
-        # Horizonscan-PDF: vergelijken, en terugvallen als RVO niets heeft
-        k = {middelen.sleutel(g['naam']), middelen.sleutel(inn)}
-        hs = next((r for r in pdf['rijen'] if middelen.sleutel(r['naam']) in k
-                   or PDF_NAAM.get(r['naam'].lower()) == atc), None)
-        rij['hs'] = None
-        if hs:
-            rij['hs'] = {'spc': hs['spc'], 'datum': hs['datums'][0] if hs['datums'] else '',
-                         'verlopen': hs['verlopen'], 'concurrentie': hs['concurrentie'],
-                         'wees': hs['wees'], 'merk': hs['merk'], 'voetnoot': hs['voetnoot']}
-            rij['hs']['vergelijking'] = vergelijk(rij['spc'], rij['hs'], pdf['stand'])
-            if (not rij['spc'] or rij['spc']['klasse'] == 'aanvraag' and not rij['spc'].get('einde')) \
-                    and not rij['groep'] and (rij['hs']['datum'] or rij['hs']['verlopen']):
-                oud = rij['spc']
-                rij['spc'] = {'bron': 'Horizonscan', 'einde': rij['hs']['datum'],
-                              'klasse': 'verlopen' if rij['hs']['verlopen'] or rij['hs']['datum'] < VANDAAG.isoformat()
-                              else 'actief', 'status': rij['hs']['spc'], 'titel': '', 'nr': '',
-                              'aanvraag_rvo': oud['nr'] if oud else ''}
-
-        # Toetreding: de laatste van SPC-einde en marktbescherming
-        grenzen = [d for d in ((rij['spc'] or {}).get('einde'), rij['marktbescherming']) if d]
-        rij['toetreding'] = max(grenzen) if grenzen else ''
-        rij['toetreding_door'] = ('spc' if rij['spc'] and rij['toetreding'] == rij['spc'].get('einde')
-                                  else 'markt' if rij['toetreding'] else '')
+        rij.update(bescherming(atc, g['naam'], inn, rij['merken'], rvo.get(atc, []),
+                                rij['marktbescherming'], pdf, rij['groep'], stoffen))
 
         rij['pijplijn'] = [p for p in pijplijn if hs_stof_past(p['stof'], inn)]
         rij['studies'] = ctgov.get(atc, [])
@@ -343,13 +314,32 @@ def bouw(set_):
         rij['fase'] = fase(rij)
         uit.append(rij)
 
+    if set_.get('aanvullen'):
+        # Wat bij deze bouw alsnog uit patent blijkt, gaat er nu uit en wordt
+        # onthouden; de volgende ophaalronde vult de lijst weer aan.
+        blijft = []
+        for rij in uit:
+            if not rij['groep'] and nog_beschermd(rij['toetreding']):
+                blijft.append(rij)
+                continue
+            uitgesloten[rij['atc']] = {
+                'naam': rij['naam'], 'sinds': VANDAAG.isoformat(),
+                'reden': 'productgroep' if rij['groep'] else 'bescherming verlopen',
+                'toetreding': rij['toetreding']}
+        if len(blijft) != len(uit):
+            print(f'  {len(uit) - len(blijft)} middelen uit de lijst: bescherming verlopen '
+                  f'of productgroep (onthouden in {set_["historie"]}/uitgesloten.json)')
+        middelen.schrijf_uitsluitingen(set_, uitgesloten)
+        uit = blijft
+
     bronnen = {
         'gip_jaren': jaren, 'voorlopig': voorlopig, 'gs': gs_versie, 'eval': eval_peil,
+        'uitgesloten': len(uitgesloten), 'preferent_over': len(middelen.preferente_atc()) if set_.get('aanvullen') else 0,
         'pref': (pref or {}).get('gegenereerd', ''),
         'pdf_stand': pdf['stand'], 'pdf_url': pdf_url,
         'pdf_voetnoten': list(dict.fromkeys(pdf['voetnoten'])), 'pdf_fout': pdf_fout,
     }
-    return uit, bronnen
+    return uit, bronnen, uitgesloten
 
 
 def lees_hs_overzicht():
@@ -385,6 +375,48 @@ def lees_hs_overzicht():
         json.dump(pdf, open(pad_hist, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
         print(f'Horizonscan-overzicht stand {pdf["stand"]} bewaard in historie/{naam}')
     return pdf, ''
+
+
+def bescherming(atc, naam, inn, merken, certs, marktbescherming, pdf, groep, stoffen):
+    """Het bepalende certificaat, de Horizonscan-vergelijking en de vroegste
+    toetreding. Apart, want ophalen.py gebruikt dezelfde beoordeling om te
+    bepalen welke middelen nog gevolgd hoeven te worden."""
+    delen = middelen.componenten(inn)
+    spc = kies_spc(certs, sorted({inn, naam}, key=len, reverse=True),
+                   merken, delen, stoffen) if not groep else None
+    # Eerst de certificaten over de stof zelf, binnen elke groep de laatste einddatum bovenaan.
+    certs = sorted(certs, key=lambda c: c.get('einde') or '', reverse=True)
+    uit = {'certificaten': sorted(certs, key=lambda c: not c.get('hoofd')),
+           'spc': dict(spc, bron='RVO') if spc else None, 'hs': None}
+
+    # Horizonscan-PDF: vergelijken, en terugvallen als RVO niets heeft
+    k = {middelen.sleutel(naam), middelen.sleutel(inn)}
+    hs = next((r for r in pdf['rijen'] if middelen.sleutel(r['naam']) in k
+               or PDF_NAAM.get(r['naam'].lower()) == atc), None)
+    if hs:
+        uit['hs'] = {'spc': hs['spc'], 'datum': hs['datums'][0] if hs['datums'] else '',
+                     'verlopen': hs['verlopen'], 'concurrentie': hs['concurrentie'],
+                     'wees': hs['wees'], 'merk': hs['merk'], 'voetnoot': hs['voetnoot']}
+        uit['hs']['vergelijking'] = vergelijk(uit['spc'], uit['hs'], pdf['stand'])
+        if (not uit['spc'] or uit['spc']['klasse'] == 'aanvraag' and not uit['spc'].get('einde')) \
+                and not groep and (uit['hs']['datum'] or uit['hs']['verlopen']):
+            oud = uit['spc']
+            uit['spc'] = {'bron': 'Horizonscan', 'einde': uit['hs']['datum'],
+                          'klasse': 'verlopen' if uit['hs']['verlopen'] or uit['hs']['datum'] < VANDAAG.isoformat()
+                          else 'actief', 'status': uit['hs']['spc'], 'titel': '', 'nr': '',
+                          'aanvraag_rvo': oud['nr'] if oud else ''}
+
+    # Toetreding: de laatste van SPC-einde en marktbescherming
+    grenzen = [d for d in ((uit['spc'] or {}).get('einde'), marktbescherming) if d]
+    uit['toetreding'] = max(grenzen) if grenzen else ''
+    uit['toetreding_door'] = ('spc' if uit['spc'] and uit['toetreding'] == uit['spc'].get('einde')
+                              else 'markt' if uit['toetreding'] else '')
+    return uit
+
+
+def nog_beschermd(toetreding):
+    """Is er nog iets te volgen? Alleen als de vroegste toetreding in de toekomst ligt."""
+    return bool(toetreding) and toetreding > VANDAAG.isoformat()
 
 
 def nl_blok(set_, atc, gs, pref):
@@ -440,7 +472,7 @@ def momentopname(rij):
     }
 
 
-def mutaties(oud, nieuw):
+def mutaties(oud, nieuw, uitgesloten=None):
     """Verschillen tussen twee momentopnamen, in leesbare zinnen."""
     uit = []
     for atc in nieuw:
@@ -471,11 +503,13 @@ def mutaties(oud, nieuw):
     if stand_nieuw and stand_oud and stand_nieuw != stand_oud:
         uit.append(('', 'bron', f'Nieuw Horizonscan-overzicht patentverloop: stand {stand_oud} → {stand_nieuw}'))
     for atc in sorted(k for k in set(oud) - set(nieuw) if not k.startswith('_')):
-        uit.append((atc, 'weg', 'Uit het overzicht (kosten onder de drempel)'))
+        reden = (uitgesloten or {}).get(atc, {}).get('reden')
+        uit.append((atc, 'weg', f'Uit het overzicht: {reden}' if reden
+                    else 'Uit het overzicht (kosten onder de drempel)'))
     return uit
 
 
-def werk_historie(rijen, bronnen, set_, vastleggen):
+def werk_historie(rijen, bronnen, set_, vastleggen, uitgesloten=None):
     historie = os.path.join(HIER, set_['historie'])
     os.makedirs(historie, exist_ok=True)
     pad_moment = os.path.join(historie, 'momentopname.json')
@@ -486,7 +520,7 @@ def werk_historie(rijen, bronnen, set_, vastleggen):
     nieuw['_bronnen'] = {'pdf_stand': bronnen['pdf_stand']}
     if os.path.exists(pad_moment):
         oud = json.load(open(pad_moment, encoding='utf-8'))
-        verschil = mutaties(oud, nieuw)
+        verschil = mutaties(oud, nieuw, uitgesloten)
     else:
         oud, verschil = None, []
     if vastleggen:
@@ -504,12 +538,12 @@ def werk_historie(rijen, bronnen, set_, vastleggen):
 
 
 def bouw_set(set_, sjabloon):
-    rijen, bronnen = bouw(set_)
-    log = werk_historie(rijen, bronnen, set_, '--geen-historie' not in sys.argv)
+    rijen, bronnen, uitgesloten = bouw(set_)
+    log = werk_historie(rijen, bronnen, set_, '--geen-historie' not in sys.argv, uitgesloten)
     ander = middelen.SETS['gvs' if set_['naam'] == 'addon' else 'addon']
 
-    data = {'bijgewerkt': VANDAAG.isoformat(), 'drempel': middelen.DREMPEL,
-            'top': middelen.TOP, 'binnenkort': BINNENKORT_MAANDEN,
+    data = {'bijgewerkt': VANDAAG.isoformat(), 'drempel': set_.get('drempel', middelen.DREMPEL),
+            'binnenkort': BINNENKORT_MAANDEN,
             'set': {'naam': set_['naam'], 'titel': set_['titel'], 'kop': set_['kop'],
                     'selectie': set_['selectie'],
                     'ander': {'naam': ander['naam'], 'kop': ander['kop'],
