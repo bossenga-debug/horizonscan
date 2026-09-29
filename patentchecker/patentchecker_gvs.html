@@ -449,7 +449,9 @@ const KOLOMMEN = [
   {k:"ema",t:"EMA: geregistreerd / in beoordeling",s:m=>-(m.ema_kopie.length*100+m.ema_eval.length)},
   {k:"pijp",t:"Pijplijn",s:m=>-(m.pijplijn.length+m.studies.length)},
   {k:"nl",t:NL_KOP,s:m=>-m.nl.n,num:true},
-];
+/* In de GVS-set zijn preferente middelen er juist uit gefilterd, dus die kolom
+   zou op elke regel "nee" zeggen. Weglaten dan. */
+].filter(k=>!(k.k==="nl" && PREF));
 function spcCel(m){
   if(m.groep) return `<span class="nul">n.v.t.</span>`;
   const s = m.spc;
@@ -624,7 +626,7 @@ function open(atc, nietInHash){
   let h = "";
   if(m.groep) h += `<div class="groep"><p style="font-size:13.5px">${esc(m.groep)}</p></div>`;
 
-  h += `<div class="groep"><h4>Kosten en gebruik (Zvw, add-on)</h4><dl>`+
+  h += `<div class="groep"><h4>Kosten en gebruik (Zvw, ${PREF?"extramuraal/GVS":"add-on"})</h4><dl>`+
     B.gip_jaren.slice(-3).map(j=>rij(j+(B.voorlopig.includes(j)?"*":""),`${eurKort(m.kosten[j])} · ${nl.format(m.gebruikers[j]||0)} gebruikers`)).join("")+`</dl></div>`;
 
   if(!m.groep){
@@ -676,7 +678,7 @@ function open(atc, nietInHash){
       <span class="klein">${esc(s.fase.replace(/PHASE/g,"fase "))} · ${esc(s.status.toLowerCase().replace(/_/g," "))}${s.start?" · start "+esc(s.start):""}</span>
       <span class="klein">${esc(s.titel)}</span></li>`).join("")+`</ul></div>`;
 
-  if(PREF){
+  if(PREF && m.nl.n){
     h += `<div class="groep"><h4>Preferentiebeleid in Nederland</h4>`+
       (m.nl.n?`<dl>`+
         rij("Aangewezen door", `${meervoud(m.nl.n,"verzekeraarsgroep","verzekeraarsgroepen")} van 10 <span class="klein">${esc(m.nl.verzekeraars.join(", "))}</span>`)+
@@ -684,9 +686,8 @@ function open(atc, nietInHash){
         rij("Clusters", `${meervoud(m.nl.clusters,"sterkte of vorm","sterktes of vormen")}`)+`</dl>
         <p class="klein">Preferentiebeleid kan alleen bij een stof met meerdere leveranciers; aangewezen betekent dus
         dat er generieken op de Nederlandse markt zijn. Bron: de preferentiepagina van deze site (${esc(B.pref||"—")}).</p>`:
-        `<p class="klein">Niet preferent aangewezen door een van de tien verzekeraarsgroepen — meestal omdat er nog geen
-         generiek is, soms omdat de verzekeraars dit middel er (nog) niet in betrekken.</p>`)+`</div>`;
-  } else {
+        ``)+`</div>`;
+  } else if(!PREF) {
   const reg = Object.entries(m.nl.reg);
   h += `<div class="groep"><h4>Nederlandse add-on-lijst (Farmatec ${esc(B.gs)})</h4>`+
     (reg.length?`<ul class="lijst">${reg.map(([r,f])=>`<li>${esc(r)} <span class="klein">${esc(f)}</span></li>`).join("")}</ul>
@@ -762,8 +763,8 @@ function init(){
     `<b>EMA-lijst aanvragen in beoordeling</b> (${esc(B.eval||"—")}): biosimilars en generieken vóór registratie.`,
     `<b>Horizonscan Geneesmiddelen</b>: biosimilars en generieken in de pijplijn, en het overzicht patentverloop (stand ${esc(B.pdf_stand||"—")}) ter vergelijking.`,
     `<b>ClinicalTrials.gov</b>: studies met een biosimilar van het middel in de titel.`,
-    PREF ? `<b>Preferentiebeleid</b> (${esc(B.pref||"—")}): welke verzekeraars het middel preferent aanwijzen — `+
-            `het teken dat er generieken op de Nederlandse markt zijn. Van de preferentiepagina van deze site.`
+    PREF ? `<b>Preferentiebeleid</b> (${esc(B.pref||"—")}): gebruikt als filter — een middel dat preferent is `+
+            `aangewezen heeft al generieken en valt af. Van de preferentiepagina van deze site.`
          : `<b>Farmatec add-on GS-lijst</b> (${esc(B.gs||"—")}): handelsvergunningen in Nederland.`,
     `<b>GIP-databank</b> (Zorginstituut): Zvw-vergoeding en gebruikers, ${B.gip_jaren[0]}–${JAAR}; * = voorlopig.`,
   ].map(x=>`<li>${x}</li>`).join("");
