@@ -138,6 +138,23 @@ melding op het tabblad Vergelijking. Pas dan `hs_pdf.py` aan. Testen kan los:
 Een naam in de PDF die niet koppelt (een typefout zoals "Ocrilizumab"), zet je
 in `PDF_NAAM` in `bouw_site.py`.
 
+## Vervolgoctrooien
+
+Een SPC gaat altijd over de werkzame stof. Dat die vrij is, betekent niet dat
+elke variant vrij is: bij trastuzumab is het certificaat op de combinatie met
+hyaluronidase gewéigerd (art. 10), maar het formuleringsoctrooi van Roche op de
+subcutane vorm loopt in Nederland nog tot 27 juli 2030.
+
+`VERVOLGOCTROOIEN` in `middelen.py` is daarom een handmatig lijstje: per ATC-code
+alleen het EP-nummer en een korte omschrijving. Status, houder en einddatum haalt
+`ophalen.py` elke run vers uit het octrooiregister (`rvo.Register.octrooi`), zodat
+er geen datum in de code veroudert; wat verlopen of vernietigd is, verdwijnt
+vanzelf van de pagina. In de tabel staat het als merkje onder de SPC-datum, in het
+detailpaneel als eigen blok. Het verandert de hoofddatum niet.
+
+Uitbreiden: EP-nummer opzoeken in het register, en toevoegen onder de ATC-code.
+De lijst is niet uitputtend en dat staat ook op de pagina.
+
 ## Combinatiepreparaten
 
 GIP schrijft "Ivacaftor met tezacaftor en elexacaftor", EMA

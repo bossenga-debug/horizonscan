@@ -242,6 +242,7 @@ def bouw(set_):
     pref = lees_json('preferentiebeleid.json', None) if set_['nl_bron'] == 'preferentie' else None
     evaluatie, eval_peil = lees_evaluatie()
     pijplijn = lees_hs_pijplijn()
+    vervolg = lees_json('vervolgoctrooien.json', {})
     rvo = lees_json(f"rvo_{set_['naam']}.json", {})
     ctgov = lees_json(f"ctgov_{set_['naam']}.json", {})
 
@@ -307,6 +308,13 @@ def bouw(set_):
 
         rij.update(bescherming(atc, g['naam'], inn, rij['merken'], rvo.get(atc, []),
                                 rij['marktbescherming'], pdf, rij['groep'], stoffen))
+
+        # Vervolgoctrooien: alleen wat nog loopt. Een octrooi dat verlopen of
+        # vernietigd is, zegt niets meer over de markt.
+        rij['vervolg'] = [dict(o, **vervolg[o['ep']]) for o in middelen.VERVOLGOCTROOIEN.get(atc, [])
+                          if o['ep'] in vervolg
+                          and 'force' in vervolg[o['ep']]['status'].lower()
+                          and (vervolg[o['ep']]['einde'] or '9') > VANDAAG.isoformat()]
 
         rij['pijplijn'] = [p for p in pijplijn if hs_stof_past(p['stof'], inn)]
         rij['studies'] = ctgov.get(atc, [])

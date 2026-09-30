@@ -97,6 +97,45 @@ INN = {
     'L02BX03': 'abiraterone',
 }
 
+# Vervolgoctrooien: octrooien die níét de stof zelf beschermen, maar een
+# bepaalde vorm of toepassing ervan. Een SPC gaat altijd over de werkzame stof;
+# dat de stof vrij is betekent dus niet dat elke variant vrij is. Het bekendste
+# voorbeeld is de subcutane vorm van trastuzumab: het certificaat op de
+# combinatie met hyaluronidase is geweigerd, maar het formuleringsoctrooi van
+# Roche loopt nog tot 2030.
+#
+# Deze lijst wordt met de hand bijgehouden -- er is geen bron die dit per middel
+# geeft. Alleen het EP-nummer en een korte omschrijving staan hier; status,
+# houder en einddatum komen elke run vers uit het octrooiregister, zodat er geen
+# datum in de code veroudert. Een octrooi dat verlopen of vernietigd is,
+# verdwijnt vanzelf van de pagina.
+VERVOLGOCTROOIEN = {
+    'L01FD01': [                       # trastuzumab
+        {'ep': 'EP2459167', 'wat': 'subcutane formulering (Herceptin SC)'},
+        {'ep': 'EP2687202', 'wat': 'subcutane formulering (Herceptin SC), afsplitsing'},
+        {'ep': 'EP2797622', 'wat': 'hyaluronidase-varianten: de enzymtechnologie achter de '
+                                   'subcutane vorm, niet het antilichaam zelf'},
+    ],
+    'L01FA01': [                       # rituximab
+        {'ep': 'EP2797622', 'wat': 'hyaluronidase-varianten: de enzymtechnologie achter de '
+                                   'subcutane vorm (MabThera SC), niet het antilichaam zelf'},
+    ],
+    'L01FC01': [                       # daratumumab
+        {'ep': 'EP2797622', 'wat': 'hyaluronidase-varianten: de enzymtechnologie achter de '
+                                   'subcutane vorm (Darzalex SC), niet het antilichaam zelf'},
+    ],
+    'L01FD02': [                       # pertuzumab
+        {'ep': 'EP2797622', 'wat': 'hyaluronidase-varianten: de enzymtechnologie achter de '
+                                   'subcutane combinatie met trastuzumab (Phesgo)'},
+    ],
+}
+
+
+def vervolg_eps():
+    """Alle EP-nummers uit VERVOLGOCTROOIEN, zonder dubbelen."""
+    return sorted({o['ep'] for lijst in VERVOLGOCTROOIEN.values() for o in lijst})
+
+
 # Extra zoektermen voor het octrooiregister. Het register zoekt in de titel van
 # het certificaat, en die is soms een merknaam of een chemische naam in plaats
 # van de INN. Wat hier niet staat en toch niet gevonden wordt, valt terug op de

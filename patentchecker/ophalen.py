@@ -282,6 +282,30 @@ def lijst_middelen(set_):
     return uit
 
 
+def vervolgoctrooien(reg, alleen_kijken):
+    """Status en einddatum van de vervolgoctrooien uit middelen.VERVOLGOCTROOIEN.
+
+    Een handvol nummers, dus dit kost niets; en zo staat er nergens een datum in
+    de code die stilletjes veroudert."""
+    uit = {}
+    for ep in middelen.vervolg_eps():
+        try:
+            gevonden = reg.octrooi(ep)
+        except Exception as e:
+            print(f'  {ep}: {e}  [overgeslagen]')
+            continue
+        if not gevonden:
+            print(f'  {ep}: niet gevonden in het register  [overgeslagen]')
+            continue
+        uit[ep] = gevonden
+        print(f"  {ep}  {gevonden['status'][:34]:34} tot {gevonden['einde'] or '—'}  "
+              f"{gevonden['houder'][:28]}")
+    if alleen_kijken or not uit:
+        return False
+    return schrijf_als_gewijzigd(os.path.join(BRON, 'vervolgoctrooien.json'),
+                                 json.dumps(uit, ensure_ascii=False, indent=1, sort_keys=True))
+
+
 def middel_info(atc, gip, inns, ema):
     """Naam, INN, merken en de eerste EU-vergunning van één ATC-code."""
     naam = gip[atc]['naam']
@@ -501,6 +525,11 @@ def main():
         # gaat dus alleen over de algemene bronnen.
         print('\n--check: het register en ClinicalTrials.gov zijn overgeslagen.')
     elif '--zonder-register' not in sys.argv:
+        print('\nVervolgoctrooien (handmatige lijst, status uit het register):')
+        try:
+            gewijzigd |= vervolgoctrooien(rvo.Register(), alleen_kijken)
+        except Exception as e:
+            print(f'  mislukt: {e}  [vorige versie blijft staan]')
         for s in sets:
             if s.get('aanvullen'):
                 print(f"\nOctrooiregister RVO, set {s['naam']}: middelen boven "

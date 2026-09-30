@@ -71,6 +71,25 @@ class Register:
             uit.append(rec)
         return uit
 
+    def octrooi(self, nummer):
+        """Eén octrooi op nummer: status, houder en einddatum. Gebruikt voor de
+        vervolgoctrooien; dat zijn gewone octrooien, geen certificaten."""
+        r = self.s.post(BASIS + '/search', timeout=60,
+                        data={'_csrf': self.csrf, 'number': nummer, 'advancedSearch': 'true'})
+        r.raise_for_status()
+        j = r.json()
+        for i, p in enumerate(j['patents']['content']):
+            if (p.get('publicationNumber') or '').upper() != nummer.upper():
+                continue
+            time.sleep(PAUZE)
+            det = self.detail(p['id'], i, j['queryExecuted'])
+            return {'nr': p['publicationNumber'], 'soort': p.get('rightType', ''),
+                    'titel': ' '.join(html.unescape(p.get('title') or '').split()),
+                    'houder': ' '.join(html.unescape(p.get('applicantHolder') or '').split()),
+                    'status': ' '.join((p.get('status') or '').split()),
+                    'einde': det.get('einde', '')}
+        return None
+
     def detail(self, id_, positie, query):
         url = f'{BASIS}/search/details/{id_}/0/{positie}/1/10/0/1/0/null_en_null/{query}'
         t = self.s.get(url, timeout=60).text

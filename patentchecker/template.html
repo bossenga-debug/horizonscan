@@ -302,8 +302,12 @@ dialog::backdrop{background:rgba(0,0,0,.4)}
   <ul>
     <li>Het register zoekt op de titel van het certificaat. Staat het SPC onder een chemische naam, dan valt
       de pagina terug op de datum uit het Horizonscan-overzicht (gemarkeerd met <span class="bron hs">HS</span>).</li>
-    <li>Vervolgoctrooien staan niet in het SPC-register. Het Horizonscan-overzicht noemt er een paar in
-      voetnoten; die staan bij het middel.</li>
+    <li><b>Vervolgoctrooien</b> staan niet in het SPC-register: een octrooi op een toedieningsvorm,
+      dosering of indicatie beschermt niet de stof maar een variant ervan. Het Horizonscan-overzicht noemt er een
+      paar in voetnoten, en daarnaast houdt deze pagina een eigen lijstje bij — nu de subcutane vorm van
+      trastuzumab (tot 2030) en de hyaluronidase-technologie achter de subcutane varianten van onder meer
+      rituximab en daratumumab (tot eind 2032). Die datums staan bij het middel en veranderen de hoofddatum niet.
+      Het lijstje is met de hand samengesteld en dus niet uitputtend.</li>
     <li>De kosten zijn de Zvw-vergoeding uit het GIP (add-on). Het laatste jaar is voorlopig en nog niet
       volledig gedeclareerd.</li>
     <li>Het wijzigingenlogboek begint bij de eerste run van deze pagina; eerdere wijzigingen zijn niet bekend.</li>
@@ -460,8 +464,18 @@ function spcCel(m){
   if(!s.einde) return s.klasse==="aanvraag" ? `<span class="klein">aanvraag loopt</span>` :
     `verlopen${bron}<br><span class="klein">${s.einde_register?"ongeldig (basisoctrooi vervallen)":"datum onbekend"}</span>`;
   const ext = s.verlenging_loopt ? ` <span class="klein" title="Pediatrische verlenging aangevraagd">+ verlenging?</span>` : "";
-  return `${dat(s.einde)}${bron}${ext}<br><span class="klein">${esc(relatief(s.einde))}</span>`;
+  return `${dat(s.einde)}${bron}${ext}<br><span class="klein">${esc(relatief(s.einde))}</span>${vervolgMerk(m)}`;
 }
+/* Een vervolgoctrooi beschermt niet de stof maar een vorm of toepassing ervan
+   (de subcutane variant bijvoorbeeld). Het verandert de datum hierboven niet,
+   maar zonder vermelding lijkt zo'n middel vrijer dan het is. */
+function vervolgMerk(m){
+  if(!(m.vervolg||[]).length) return "";
+  const tot = m.vervolg.map(v=>v.einde).sort().pop();
+  return `<br><span class="bron hs" title="${esc(m.vervolg.map(v=>v.ep+": "+v.wat).join("; "))}">`+
+    `${m.vervolg.length>1?"vervolgoctrooien":"vervolgoctrooi"} tot ${dat(tot)}</span>`;
+}
+
 function vglLabel(m){
   if(!m.hs) return `<span class="nul">—</span>`;
   const v = String(m.hs.vergelijking);
@@ -650,6 +664,14 @@ function open(atc, nietInHash){
         m.certificaten.map(c=>`<tr class="${c.hoofd?"":"bijzaak"}"><td>${esc(c.nr)}</td><td>${esc(c.titel)}<br><span class="klein">${esc(c.houder)}${c.basis?" · "+esc(c.basis):""}</span></td>
           <td>${esc(c.status)}</td><td class="dat">${c.einde?dat(c.einde):""}</td></tr>`).join("")+
         `</tbody></table>${m.certificaten.some(c=>!c.hoofd)?`<p class="klein">Grijs: combinaties of afgeleide stoffen, die niet meetellen voor de datum hierboven.</p>`:""}</div>`;
+    }
+    if((m.vervolg||[]).length){
+      h += `<div class="groep"><h4>Vervolgoctrooien</h4><ul class="lijst">`+
+        m.vervolg.map(v=>`<li>${espacenet(v.ep)} · ${esc(v.wat)}
+          <span class="klein">${esc(v.houder)} · ${esc(v.status)} · in Nederland tot ${datLang(v.einde)}</span></li>`).join("")+
+        `</ul><p class="klein">Deze octrooien beschermen niet de stof zelf maar een vorm of toepassing ervan, en staan
+        daarom los van de datum hierboven: de stof kan vrij zijn terwijl bijvoorbeeld de subcutane variant dat niet is.
+        Handmatig bijgehouden lijst; status en einddatum komen uit het octrooiregister.</p></div>`;
     }
     if(m.hs){
       const voet = m.hs.voetnoot ? B.pdf_voetnoten.filter(v=>v.startsWith("*".repeat(m.hs.voetnoot)+" ") && v.toLowerCase().includes(m.inn.toLowerCase())) : [];
