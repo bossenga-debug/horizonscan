@@ -132,7 +132,14 @@ def bereken(jaren, dbc_diag, dbc_zpd=None):
     if dbc_zpd is not None and zpd_naam:
         zp = dbc_zpd[dbc_zpd["ZORGPRODUCT_CD"].isin(zpd_naam)].copy()
         zp["p"] = pd.to_numeric(zp["AANTAL_PAT_PER_ZPD"], errors="coerce").fillna(0)
+        zp["t"] = pd.to_numeric(zp.get("AANTAL_SUBTRAJECT_PER_ZPD"), errors="coerce").fillna(0)
         zp["JAAR"] = zp["JAAR"].astype(int)
+    # Landelijk gemiddelde verkoopprijs per zorgproduct per jaar (gelijk over alle diagnoses;
+    # alleen vastgesteld bij voldoende volume, anders leeg).
+    prijs = {}
+    if "GEMIDDELDE_VERKOOPPRIJS" in zp.columns:
+        pr = pd.to_numeric(zp["GEMIDDELDE_VERKOOPPRIJS"], errors="coerce")
+        prijs = zp.assign(pr=pr).dropna(subset=["pr"]).groupby(["ZORGPRODUCT_CD", "JAAR"])["pr"].first().to_dict()
     zpd_diag = reeksen(zp.groupby(["BEHANDELEND_SPECIALISME_CD", "TYPERENDE_DIAGNOSE_CD", "JAAR"])["p"].sum())
     # per diagnose één vaste bron: die met de meeste patiënten over de volledige jaren
     vol = slice(0, len(jaren) - 2)
@@ -164,6 +171,7 @@ def bereken(jaren, dbc_diag, dbc_zpd=None):
         bron = getattr(c, "behandeld_bron", "") or "activiteit"
         beh = beh_zpd if bron == "zorgproduct" else beh_act
         top = zs.groupby(["ZORGPRODUCT_CD", "JAAR"])["p"].sum().unstack(fill_value=0)
+        subtr = zs.groupby(["ZORGPRODUCT_CD", "JAAR"])["t"].sum() if "t" in zs.columns else pd.Series(dtype=float)
         laatste_vol = jaren[-3]
         if not top.empty:
             top = top.sort_values(laatste_vol if laatste_vol in top.columns else top.columns[-1], ascending=False).head(15)
@@ -172,7 +180,10 @@ def bereken(jaren, dbc_diag, dbc_zpd=None):
             "ba": [int(beh_act.get(j, 0)) for j in jaren],
             "bz": [int(beh_zpd.get(j, 0)) for j in jaren],
             "zpd": [{"c": code, "o": zpd_naam[code][0], "co": zpd_naam[code][1],
-                     "p": [int(r.get(j, 0)) for j in jaren]} for code, r in top.iterrows()],
+                     "p": [int(r.get(j, 0)) for j in jaren],
+                     "t": [int(subtr.get((code, j), 0)) for j in jaren],
+                     "pr": [(round(prijs[(code, j)]) if (code, j) in prijs else None) for j in jaren]}
+                    for code, r in top.iterrows()],
             "id": c.cluster_id, "n": c.cluster, "soort": c.soort,
             "diag": [[s, d] for s, d in sleutels],
             "p": [int(sum(pat.get((s, d, j), 0) for s, d in sleutels)) for j in jaren],

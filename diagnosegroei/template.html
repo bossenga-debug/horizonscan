@@ -156,6 +156,18 @@ a.ext:hover { text-decoration: underline; }
 .uitlegknop:hover { background: var(--accent-soft); }
 .uitlegknop:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 @media (max-width: 600px) { .kopacties { align-items: flex-start; } .meta { text-align: left; } }
+#t-kzpd tr.zrow { cursor: pointer; }
+#t-kzpd tr.zrow td.name::before { content: "▸"; color: var(--accent); display: inline-block; width: 14px; margin-left: -2px; transition: transform .15s; }
+#t-kzpd tr.zrow[aria-expanded="true"] td.name::before { transform: rotate(90deg); }
+#t-kzpd tr.zrow[aria-expanded="true"] { background: var(--accent-soft); }
+#t-kzpd tr.zdet > td { background: var(--sunk); padding: 10px 12px 14px; }
+/* onder elkaar: het detail staat in het smalle rechterpaneel */
+.zdet-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
+.zdet-grid h4 { margin: 0 0 4px; font-size: 12.5px; }
+.zdet-grid svg { display: block; width: 100%; max-width: 440px; height: auto; }
+.zdet-grid table td, .zdet-grid table th { padding: 4px 6px; font-size: 12px; }
+.zdet-note { font-size: 11.5px; color: var(--muted); margin: 6px 0 0; }
+@media (prefers-reduced-motion: reduce) { #t-kzpd tr.zrow td.name::before { transition: none; } }
 footer { font-size: 12px; color: var(--muted); max-width: 90ch; }
 footer p { margin: 4px 0; }
 footer a { color: var(--accent); }
@@ -650,7 +662,7 @@ document.getElementById("tab-statistiek").addEventListener("click", () => { show
 const K = DATA.koppeling;
 const ADDON_URL = "https://medicatieadvies.nl/addon/#atc=";
 const pct0 = v => v == null || !isFinite(v) ? "—" : (v * 100).toLocaleString("nl-NL", { maximumFractionDigits: v < 0.1 ? 1 : 0 }) + "%";
-const kstate = { soort: "", verdeel: "s", id: null, atc: null };
+const kstate = { soort: "", verdeel: "s", id: null, atc: null, zpdOpen: new Set() };
 function clustersVan(d) {
   if (!K) return [];
   return K.clusters.filter(c => c.diag.some(([s, x]) => s === d.s && x === d.c));
@@ -763,16 +775,55 @@ function renderKopDetail() {
   const di = dIdx(e), da = dIdx(s.a);
   const zp = c.zpd || [];
   document.getElementById("k-zpd-note").textContent = zp.length
-    ? `Zorgproducten bij de diagnoses van dit cluster waarvan de omschrijving over toediening, begeleiding of verstrekking van geneesmiddelen gaat. Patiënten ${e}: ${fmt.format(c.bz[di])} via zorgproducten, ${fmt.format(c.ba[di])} via toedieningsactiviteiten; dit cluster gebruikt ${c.bron === "zorgproduct" ? "de zorgproducten" : "de toedieningsactiviteiten"} (kolom behandeld_bron in de koppeltabel). Een patiënt met meer van deze zorgproducten in een jaar telt per zorgproduct mee; het totaal is per diagnose begrensd op het aantal patiënten met die diagnose en is dus een bovengrens.`
+    ? `Zorgproducten bij de diagnoses van dit cluster waarvan de omschrijving over toediening, begeleiding of verstrekking van geneesmiddelen gaat. Klik op een zorgproduct voor de gemiddelde prijs per jaar. Patiënten ${e}: ${fmt.format(c.bz[di])} via zorgproducten, ${fmt.format(c.ba[di])} via toedieningsactiviteiten; dit cluster gebruikt ${c.bron === "zorgproduct" ? "de zorgproducten" : "de toedieningsactiviteiten"} (kolom behandeld_bron in de koppeltabel). Een patiënt met meer van deze zorgproducten in een jaar telt per zorgproduct mee; het totaal is per diagnose begrensd op het aantal patiënten met die diagnose en is dus een bovengrens.`
     : "Bij de diagnoses van dit cluster zijn geen zorgproducten die naar geneesmiddelen verwijzen; behandeling wordt hier alleen via toedieningsactiviteiten zichtbaar.";
   document.getElementById("t-kzpd").innerHTML = zp.length ? `<thead><tr><th>Zorgproduct</th><th>Verloop</th><th class="n">Patiënten ${e}</th><th class="n">Groei/jr</th></tr></thead><tbody>` +
-    zp.map(z => `<tr><td class="name">${esc(z.o)}<small>${z.c} · ${esc(z.co)}</small></td><td>${spark(z.p, 64, 20)}</td><td class="n">${fmt.format(z.p[di])}</td><td class="n">${chip(z.p[da] > 0 && z.p[di] > 0 ? Math.pow(z.p[di] / z.p[da], 1 / (e - s.a)) - 1 : null)}</td></tr>`).join("") + `</tbody>` : "";
+    zp.map(z => {
+      const open = kstate.zpdOpen.has(z.c);
+      return `<tr class="zrow" tabindex="0" data-zpd="${z.c}" aria-expanded="${open}" title="Klik voor de gemiddelde prijs per jaar"><td class="name">${esc(z.o)}<small>${z.c} · ${esc(z.co)}</small></td><td>${spark(z.p, 64, 20)}</td><td class="n">${fmt.format(z.p[di])}</td><td class="n">${chip(z.p[da] > 0 && z.p[di] > 0 ? Math.pow(z.p[di] / z.p[da], 1 / (e - s.a)) - 1 : null)}</td></tr>
+      <tr class="zdet"${open ? "" : " hidden"}><td colspan="4">${open ? zpdDetail(z) : ""}</td></tr>`;
+    }).join("") + `</tbody>` : "";
   // diagnoses
   const dg = c.diag.map(([sp, cd]) => DATA.diagnoses.find(x => x.s === sp && x.c === cd)).filter(Boolean);
   document.getElementById("t-kdiag").innerHTML = `<thead><tr><th>Diagnose</th><th class="n">Patiënten ${e}</th><th class="n">Groei/jr</th><th class="n">Dure gm.</th><th class="n">% beh.</th></tr></thead><tbody>` +
     dg.map(d => `<tr tabindex="0" data-s="${d.s}" data-c="${d.c}"><td class="name">${esc(d.n)}<small>${esc(spcByCode[d.s].n)} · ${d.c}</small></td>
       <td class="n">${fmt.format(d.p[di])}</td><td class="n">${chip(cagrOf(d.p))}</td>
       <td class="n">${d.b ? fmt.format(d.b[di]) : "—"}</td><td class="n">${d.b && d.p[di] ? pct0(d.b[di] / d.p[di]) : "—"}</td></tr>`).join("") + `</tbody>`;
+}
+// detail van een geneesmiddel-zorgproduct: gemiddelde verkoopprijs per jaar (landelijk, over alle
+// diagnoses) en het volume binnen dit cluster
+function zpdDetail(z) {
+  const W = 320, H = 150, L = 8, R = 8, T = 22, B = 22;
+  const n = J.length, bw = (W - L - R) / n, max = Math.max(...z.pr.filter(v => v != null), 1);
+  const y = v => T + (1 - v / max) * (H - T - B);
+  let g = `<line x1="${L}" x2="${W - R}" y1="${H - B}" y2="${H - B}" stroke="var(--line)"/>`;
+  J.forEach((yr, i) => {
+    const v = z.pr[i], x0 = L + i * bw + bw * 0.18, w = bw * 0.64;
+    if (v != null) {
+      g += `<path d="M${x0},${H - B}V${y(v) + 3}q0,-3 3,-3h${w - 6}q3,0 3,3V${H - B}Z" fill="var(--accent)" opacity="0.85"/>`;
+      g += `<text x="${x0 + w / 2}" y="${y(v) - 5}" text-anchor="middle" font-size="10.5" fill="var(--ink)" font-family="var(--f-num)">€ ${fmt.format(v)}</text>`;
+    } else {
+      g += `<text x="${x0 + w / 2}" y="${H - B - 6}" text-anchor="middle" font-size="10" fill="var(--muted)">geen</text>`;
+    }
+    g += `<text x="${x0 + w / 2}" y="${H - 6}" text-anchor="middle" font-size="10.5" fill="var(--ink-2)" font-family="var(--f-num)">${yr}</text>`;
+  });
+  const pa = z.pr[state.start], pe = z.pr[LAATST_VOL], ny = LAATST_VOL - state.start;
+  const prg = pa && pe && ny > 0 ? Math.pow(pe / pa, 1 / ny) - 1 : null;
+  const rij = (yr, i) => {
+    const pr = z.pr[i], kosten = pr != null ? z.t[i] * pr : null, st = i === VOORL ? "*" : i === LOPEND ? "**" : "";
+    const vg = i > 0 && pr != null && z.pr[i - 1] ? pr / z.pr[i - 1] - 1 : null;
+    return `<tr><td class="n">${yr}${st}</td><td class="n">${pr != null ? "€ " + fmt.format(pr) : "—"}</td><td class="n">${vg == null ? "" : fmtPct(vg).replace("-", "−")}</td>
+      <td class="n${i >= VOORL ? " prov" : ""}">${fmt.format(z.p[i])}</td><td class="n${i >= VOORL ? " prov" : ""}">${fmt.format(z.t[i])}</td><td class="n${i >= VOORL ? " prov" : ""}">${kosten == null ? "—" : eur(kosten)}</td></tr>`;
+  };
+  return `<div class="zdet-grid">
+    <div><h4>Gemiddelde verkoopprijs per jaar</h4>
+      <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Gemiddelde verkoopprijs van zorgproduct ${z.c} per jaar">${g}</svg>
+      <p class="zdet-note">Landelijk gemiddelde verkoopprijs van dit zorgproduct, over alle diagnoses. Groei ${J[state.start]}–${J[LAATST_VOL]}: <b>${fmtPct(prg)}</b> per jaar. "Geen": voor dat jaar is geen prijs vastgesteld (te weinig volume).</p></div>
+    <div><h4>In dit cluster</h4>
+      <div class="scroll"><table><thead><tr><th class="n">Jaar</th><th class="n">Prijs</th><th class="n">t.o.v. vorig</th><th class="n">Patiënten</th><th class="n">Subtrajecten</th><th class="n">Kosten</th></tr></thead>
+      <tbody>${J.map(rij).join("")}</tbody></table></div>
+      <p class="zdet-note">Kosten = subtrajecten × gemiddelde verkoopprijs: de DBC-kosten van de toediening of begeleiding, zonder het add-on geneesmiddel zelf. Jaren met * of ** zijn qua volume nog niet compleet.</p></div>
+  </div>`;
 }
 function cagrG(arr) {
   const a = gIdx(J[state.start]), b = gIdx(J[LAATST_VOL]), n = b - a;
@@ -880,11 +931,22 @@ if (K) {
   }));
   const view = document.getElementById("view-koppeling");
   view.addEventListener("click", e => {
-    const k = e.target.closest("[data-k]"); if (k) { kstate.id = k.dataset.k; kstate.atc = null; renderKop(); return; }
+    const zr = e.target.closest("tr[data-zpd]");
+    if (zr) {
+      const code = zr.dataset.zpd, c = K.clusters.find(x => x.id === kstate.id), z = c && c.zpd.find(x => x.c === code);
+      const open = !kstate.zpdOpen.has(code);
+      open ? kstate.zpdOpen.add(code) : kstate.zpdOpen.delete(code);
+      zr.setAttribute("aria-expanded", open);
+      const det = zr.nextElementSibling;
+      det.hidden = !open;
+      if (open && z) det.firstElementChild.innerHTML = zpdDetail(z);
+      return;
+    }
+    const k = e.target.closest("[data-k]"); if (k) { kstate.id = k.dataset.k; kstate.atc = null; kstate.zpdOpen.clear(); renderKop(); return; }
     const d = e.target.closest("#t-kdiag tr[data-c]");
     if (d) { showTab("overzicht"); state.spc = d.dataset.s; state.dgn = { s: d.dataset.s, c: d.dataset.c }; renderDetail(); document.getElementById("h-det").scrollIntoView({ behavior: "smooth" }); }
   });
-  view.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { const r = e.target.closest("tr[data-k], tr[data-c]"); if (r) { e.preventDefault(); r.click(); } } });
+  view.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { const r = e.target.closest("tr[data-k], tr[data-c], tr[data-zpd]"); if (r) { e.preventDefault(); r.click(); } } });
 } else {
   document.getElementById("tab-koppeling").hidden = true;
 }

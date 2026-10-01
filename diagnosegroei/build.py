@@ -109,7 +109,8 @@ def bouw():
 
     koppeling, behandeld = koppel_data.bereken(
         jaren, d[["JAAR", "BEHANDELEND_SPECIALISME_CD", "TYPERENDE_DIAGNOSE_CD", "AANTAL_PAT_PER_DIAG"]],
-        dbc[["JAAR", "BEHANDELEND_SPECIALISME_CD", "TYPERENDE_DIAGNOSE_CD", "ZORGPRODUCT_CD", "AANTAL_PAT_PER_ZPD"]])
+        dbc[["JAAR", "BEHANDELEND_SPECIALISME_CD", "TYPERENDE_DIAGNOSE_CD", "ZORGPRODUCT_CD", "AANTAL_PAT_PER_ZPD",
+             "AANTAL_SUBTRAJECT_PER_ZPD", "GEMIDDELDE_VERKOOPPRIJS"]])
     for x in diagnoses:
         b = behandeld.get((x["s"], x["c"]))
         if b:
