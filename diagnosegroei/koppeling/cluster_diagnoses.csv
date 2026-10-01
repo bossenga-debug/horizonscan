@@ -54,3 +54,13 @@ lymfoom;0313;751;kern;Hodgkin;21015 Maligne neoplasma lymfatisch weefsel
 astma;0322;1201;kern;;41110 Astma
 astma;0313;601;aanvullend;interne geneeskunde;21105 Chronische obstructieve longziekten (COPD) / astma
 astma;0316;3202;aanvullend;kindergeneeskunde, astma/BHR;
+hematologie;0313;761;kern;AML/RAEB-t;21099 Leukemie
+hematologie;0313;756;kern;ALL;21099 Leukemie
+hematologie;0313;771;kern;CML;27015 Proliferatieve maligniteiten vh beenmerg
+hematologie;0313;763;kern;myelodysplasie (MDS);27015 Proliferatieve maligniteiten vh beenmerg
+hematologie;0313;772;kern;polycytemia vera, essentiële trombocytose;
+hematologie;0313;774;kern;myelofibrose;
+hematologie;0313;779;aanvullend;overige myeloproliferatieve aandoeningen;
+hematologie;0316;6111;aanvullend;kindergeneeskunde, leukemie;400002 Kinderoncologie
+hematologie;0313;714;aanvullend;mastocytose;
+hematologie;0326;H1;aanvullend;allergologie, mastocytose;

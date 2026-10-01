@@ -10,6 +10,9 @@ Drie handmatig beheerde bestanden, puntkomma-gescheiden (opent direct in Excel):
 Gebruik:
   python3 koppeling.py              controle + melding van nieuwe kandidaat-middelen
   python3 koppeling.py --rv         haal de FKG- en DKG-lijsten (risicoverevening) opnieuw op
+  python3 koppeling.py --neem-over <cluster_id>
+                                    zet de voorgestelde middelen van één (nieuw) cluster als
+                                    concept in cluster_atc.csv
   python3 koppeling.py --voorstel   schrijf cluster_atc_voorstel.csv opnieuw uit de
                                     Farmatec-indicaties (en maak cluster_atc.csv aan
                                     als die nog niet bestaat)
@@ -48,6 +51,9 @@ ZOEK = {
     "crc":       (r"\bCRC\b|colorectaal", None),
     "rcc":       (r"\bRCC\b|niercel", None),
     "astma":     (r"astma|asthma", None),
+    "hematologie": (r"\bAML\b|\bALL\b|\bCML\b|\bCMML\b|\bMDS\b|\bMPN\b|myeloïde leukemie|myeloide leukemie|lymfatische leukemie|"
+                    r"myelofibrose|polycyt|trombocyt(h)?emie|\bET\b|mastocytose|mestcel|\bASM\b|\bSM-AHN\b|Ph\+",
+                    r"\bCLL\b|chronische lymfatische|hairy|haarcel|lymfoblastair lymfoom|stamcel harvest|Anemie"),
     "lymfoom":   (r"\bCLL\b|\bDLBCL\b|\bNHL\b|\bHL\b|klassiek HL|\bMCL\b|\bFL\b|lymfoom|Waldenstr", r"intraoculair|\bALL\b|mestcel|stamcel harvest|Anemie"),
 }
 
@@ -216,6 +222,22 @@ def voorstel(clusters):
         print("cluster_atc.csv aangemaakt als kopie van het voorstel — nakijken en status op 'nagekeken' zetten")
 
 
+def neem_over(cid):
+    """Voeg de voorstelregels van één cluster toe aan cluster_atc.csv (status concept)."""
+    vs, ca = lees("cluster_atc_voorstel.csv"), lees("cluster_atc.csv")
+    nieuw = vs[(vs["cluster_id"] == cid) & ~vs["atc"].isin(ca.loc[ca["cluster_id"] == cid, "atc"])]
+    if nieuw.empty:
+        print(f"{cid}: niets over te nemen"); return
+    ca = pd.concat([ca, nieuw.reindex(columns=ca.columns).fillna("")], ignore_index=True)
+    # gedeeld_met opnieuw uitrekenen over de hele tabel (actieve regels)
+    act = ca[ca["status"] != "uitgesloten"]
+    bij = act.groupby("atc")["cluster_id"].apply(set).to_dict()
+    ca["gedeeld_met"] = [", ".join(sorted(bij.get(a, set()) - {c})) for a, c in zip(ca["atc"], ca["cluster_id"])]
+    ca = ca.sort_values(["cluster_id", ca.columns[3]], ascending=[True, False], key=lambda s: pd.to_numeric(s, errors="coerce") if s.name == ca.columns[3] else s)
+    ca.to_csv(HIER / "cluster_atc.csv", sep=";", index=False, encoding="utf-8-sig")
+    print(f"{cid}: {len(nieuw)} middelen als concept toegevoegd aan cluster_atc.csv")
+
+
 def controle(clusters):
     fout = 0
     dgn = pd.read_csv(DATA / "04_REF_DGN.csv", dtype=str)
@@ -294,8 +316,10 @@ if __name__ == "__main__":
     cl = lees("clusters.csv")
     if "--rv" in sys.argv or not list(RV.glob("fkg_c_*.ods")):
         haal_rv()
-    if "--voorstel" in sys.argv:
+    if "--voorstel" in sys.argv or "--neem-over" in sys.argv:
         voorstel(cl)
+    if "--neem-over" in sys.argv:
+        neem_over(sys.argv[sys.argv.index("--neem-over") + 1])
     ind, dx, jaar = rv_lijsten()
     if ind is not None:
         verrijk(ind, dx, jaar)
