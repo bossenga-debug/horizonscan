@@ -19,7 +19,7 @@ import pandas as pd
 HIER = Path(__file__).parent
 DATA = HIER / "data"
 BASIS = "https://opendisdata.nza.nl/download/csv/"
-BESTANDEN = ["01_DBC.csv", "04_REF_DGN.csv", "06_REF_SPC.csv"]
+BESTANDEN = ["01_DBC.csv", "04_REF_DGN.csv", "06_REF_SPC.csv", "05_REF_ZPD.csv"]
 AANTAL_JAREN = 6  # huidig jaar + 5 jaar terug
 
 
@@ -107,11 +107,13 @@ def bouw():
             "k": [int(round(kosten_dgn.get((sc, dc, j), 0))) for j in jaren],
         })
 
-    koppeling, behandeld = koppel_data.bereken(jaren, d[["JAAR", "BEHANDELEND_SPECIALISME_CD", "TYPERENDE_DIAGNOSE_CD", "AANTAL_PAT_PER_DIAG"]])
+    koppeling, behandeld = koppel_data.bereken(
+        jaren, d[["JAAR", "BEHANDELEND_SPECIALISME_CD", "TYPERENDE_DIAGNOSE_CD", "AANTAL_PAT_PER_DIAG"]],
+        dbc[["JAAR", "BEHANDELEND_SPECIALISME_CD", "TYPERENDE_DIAGNOSE_CD", "ZORGPRODUCT_CD", "AANTAL_PAT_PER_ZPD"]])
     for x in diagnoses:
         b = behandeld.get((x["s"], x["c"]))
         if b:
-            x["b"] = b
+            x["b"], x["bb"] = b      # reeks en bron: "a" = toedieningsactiviteit, "z" = geneesmiddel-zorgproduct
 
     data = {
         "peildatum": peildatum,

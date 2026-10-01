@@ -270,6 +270,9 @@ footer a { color: var(--accent); }
         <h3 class="sub2">Voorfase: extramurale eerstelijnsmiddelen</h3>
         <p class="subnote" id="k-vf-note"></p>
         <div class="scroll"><table id="t-kvf"></table></div>
+        <h3 class="sub2">Geneesmiddel-zorgproducten</h3>
+        <p class="subnote" id="k-zpd-note"></p>
+        <div class="scroll"><table id="t-kzpd"></table></div>
         <h3 class="sub2">Diagnoses in dit cluster</h3>
         <div class="scroll"><table id="t-kdiag"></table></div>
       </section>
@@ -280,7 +283,7 @@ footer a { color: var(--accent); }
     <p><b>Hoe te lezen.</b> Een DBC telt mee in het jaar waarin hij begint en komt pas in DIS als hij gesloten en gedeclareerd is. Recente jaren lopen daardoor achter: het laatste volledige jaar krijgt nog aanleveringen na, het lopende jaar is nog grotendeels leeg. Groei wordt daarom berekend als gemiddelde jaarlijkse groei (CAGR) over de gekozen periode met volledige jaren.</p>
     <p><b>Signaal voorlopig jaar</b> vergelijkt de groei van een diagnose in het voorlopige jaar met die van het hele specialisme. De achterstand in aanlevering is binnen een specialisme ongeveer gelijk, dus een positief signaal betekent dat de diagnose harder groeit dan het specialisme. Het is een indicatie, geen definitief cijfer.</p>
     <p><b>Kosten</b> zijn een schatting: aantal subtrajecten per zorgproduct × de landelijk gemiddelde verkoopprijs van dat zorgproduct in dat jaar, opgeteld per diagnose. Zorgproducten zonder vastgestelde prijs (minder dan 1% van de subtrajecten) tellen niet mee. De prijzen zijn nominaal, dus kostengroei bevat ook de jaarlijkse prijsindexatie. Add-on geneesmiddelen worden apart gedeclareerd en zitten <em>niet</em> in de DBC-prijs.</p>
-    <p><b>Add-on koppeling.</b> Een cluster koppelt DBC-diagnoses (Open DIS) aan add-on geneesmiddelen (GIP-databank, Zorginstituut) via een handmatig beheerde koppeltabel, gecontroleerd tegen de FKG- en DKG-indeling van de risicoverevening. <em>Behandeld</em> telt patiënten met een verstrekkingsactiviteit voor dure geneesmiddelen bij die diagnoses (bijvoorbeeld 039137 biologicals per infuus); onderhuidse middelen worden zo nauwelijks geregistreerd. <em>Voorfase</em> telt gebruikers van de extramurale eerstelijnsmiddelen (GIP farmacie, per middel opgeteld). Middelen die bij meer clusters horen worden in de stand <em>verdeeld</em> toegerekend naar rato van de behandelde patiënten per cluster; dat is een schatting. Add-on cijfers met * zijn voorlopig.</p>
+    <p><b>Add-on koppeling.</b> Een cluster koppelt DBC-diagnoses (Open DIS) aan add-on geneesmiddelen (GIP-databank, Zorginstituut) via een handmatig beheerde koppeltabel, gecontroleerd tegen de FKG- en DKG-indeling van de risicoverevening. <em>Behandeld</em> telt patiënten die dure geneesmiddelen kregen bij die diagnoses, via één van twee DIS-bronnen, vast per cluster: een toedieningsactiviteit (bijvoorbeeld 039137 biologicals per infuus) of een geneesmiddel-zorgproduct (bijvoorbeeld 028999017 toediening immunotherapie via infuus/injectie, of begeleiding van orale therapie). Zorgproducten werken het best bij oncologie en hematologie, activiteiten bij auto-immuunziekten; onderhuidse middelen worden in beide nauwelijks geregistreerd. <em>Voorfase</em> telt gebruikers van de extramurale eerstelijnsmiddelen (GIP farmacie, per middel opgeteld). Middelen die bij meer clusters horen worden in de stand <em>verdeeld</em> toegerekend naar rato van de behandelde patiënten per cluster; dat is een schatting. Add-on cijfers met * zijn voorlopig.</p>
     <p>Patiënten tellen per diagnose en specialisme: één patiënt met twee diagnoses telt twee keer. Bron: <a href="https://opendisdata.nza.nl/#start" target="_blank" rel="noopener">Open DIS-data, Nederlandse Zorgautoriteit</a> (CC0).</p>
   </footer>
 </div>
@@ -485,7 +488,7 @@ function renderDetailHead() {
       <span>Groei/jr <b>${fmtPct(r.cagr)}</b></span>
       <span>${J[state.start]}→${J[LAATST_VOL]} <b>${fvSigned(r.abs)}</b></span>
       <span>Signaal ${J[VOORL]} <b>${fmtPct(r.sig)}</b></span>
-      ${d.b ? `<span>Dure geneesmiddelen ${J[LAATST_VOL]} <b>${fmt.format(d.b[LAATST_VOL])}</b> patiënten (${pct0(r.graad)})</span>` : ""}
+      ${d.b ? `<span>Dure geneesmiddelen ${J[LAATST_VOL]} <b>${fmt.format(d.b[LAATST_VOL])}</b> patiënten (${pct0(r.graad)}) <span style="color:var(--muted)">via ${d.bb === "z" ? "zorgproducten" : "toedieningsactiviteiten"}</span></span>` : ""}
       ${clustersVan(d).map(c => `<button type="button" class="linkbtn" data-kop="${c.id}">Add-on koppeling: ${esc(c.n)}</button>`).join("")}
       <button type="button" class="back" id="back">Terug naar ${esc(spcByCode[state.spc].n)}</button>`;
     document.getElementById("back").onclick = () => { state.dgn = null; renderDetail(); };
@@ -650,7 +653,7 @@ function serie(c) {
   const s = [
     { key: "p", label: "Patiënten met diagnose", color: "var(--s1)", vals: KJ.map(y => dIdx(y) >= 0 ? c.p[dIdx(y)] : null), voorl: y => dIdx(y) >= VOORL },
     { key: "a", label: v ? "Add-on gebruikers (verdeeld)" : "Add-on gebruikers (volledig)", color: "var(--s2)", vals: KJ.map(y => (v ? c.gs : c.gv)[gIdx(y)]), voorl: addonVoorl },
-    { key: "b", label: "Behandeld volgens DIS", color: "var(--s3)", vals: KJ.map(y => dIdx(y) >= 0 ? c.b[dIdx(y)] : null), voorl: y => dIdx(y) >= VOORL },
+    { key: "b", label: c.bron === "zorgproduct" ? "Behandeld volgens DIS (zorgproduct)" : "Behandeld volgens DIS (toedieningsactiviteit)", color: "var(--s3)", vals: KJ.map(y => dIdx(y) >= 0 ? c.b[dIdx(y)] : null), voorl: y => dIdx(y) >= VOORL },
   ];
   if (c.vfg) s.push({ key: "f", label: "Voorfase: extramurale gebruikers", color: "var(--s4)", vals: KJ.map(y => c.vfg[gIdx(y)]), voorl: y => K.farm_voorlopig.includes(y) });
   return s;
@@ -706,7 +709,7 @@ function renderKopDetail() {
   document.getElementById("k-basis").textContent = J[state.start];
   document.getElementById("k-bar").innerHTML = `
     <span>Diagnose ${e} <b>${fmt.format(s.pat)}</b> (${fmtPct(s.patG)}/jr)</span>
-    <span>Behandelgraad DIS <b>${pct0(s.graadA)} → ${pct0(s.graadE)}</b>${s.onvolledig ? ` <span class="flag">onvolledig</span>` : ""}</span>
+    <span>Behandelgraad DIS <b>${pct0(s.graadA)} → ${pct0(s.graadE)}</b> <span style="color:var(--muted)">via ${c.bron === "zorgproduct" ? "zorgproducten" : "toedieningsactiviteiten"}</span>${s.onvolledig ? ` <span class="flag">onvolledig</span>` : ""}</span>
     <span>Add-on ${e}${ster} <b>${eur(s.kos)}</b> (${fmtPct(s.kosG)}/jr)</span>
     <span>Per gebruiker <b>${s.geb ? eur(s.kos / s.geb) : "—"}</b></span>
     ${s.gedeeld > 0.05 ? `<span>${pct0(s.gedeeld)} van de kosten in gedeelde middelen</span>` : ""}`;
@@ -743,8 +746,15 @@ function renderKopDetail() {
     : "Voor dit cluster is geen extramurale voorfase gedefinieerd.";
   document.getElementById("t-kvf").innerHTML = vf.length ? `<thead><tr><th>Middel</th><th class="n">Gebruikers ${e}</th><th class="n">Groei/jr</th><th class="n">Vergoeding ${e}</th></tr></thead><tbody>` +
     vf.map(({ a, m }) => `<tr><td class="name">${esc(m.n)}<small>${a} · ${esc(m.f)}</small></td><td class="n">${fmt.format(m.g[ge])}</td><td class="n">${chip(cagrG(m.g))}</td><td class="n">${eur(m.k[ge])}</td></tr>`).join("") + `</tbody>` : "";
+  // geneesmiddel-zorgproducten
+  const di = dIdx(e), da = dIdx(s.a);
+  const zp = c.zpd || [];
+  document.getElementById("k-zpd-note").textContent = zp.length
+    ? `Zorgproducten bij de diagnoses van dit cluster waarvan de omschrijving over toediening, begeleiding of verstrekking van geneesmiddelen gaat. Patiënten ${e}: ${fmt.format(c.bz[di])} via zorgproducten, ${fmt.format(c.ba[di])} via toedieningsactiviteiten; dit cluster gebruikt ${c.bron === "zorgproduct" ? "de zorgproducten" : "de toedieningsactiviteiten"} (kolom behandeld_bron in de koppeltabel). Een patiënt met meer van deze zorgproducten in een jaar telt per zorgproduct mee; het totaal is per diagnose begrensd op het aantal patiënten met die diagnose en is dus een bovengrens.`
+    : "Bij de diagnoses van dit cluster zijn geen zorgproducten die naar geneesmiddelen verwijzen; behandeling wordt hier alleen via toedieningsactiviteiten zichtbaar.";
+  document.getElementById("t-kzpd").innerHTML = zp.length ? `<thead><tr><th>Zorgproduct</th><th>Verloop</th><th class="n">Patiënten ${e}</th><th class="n">Groei/jr</th></tr></thead><tbody>` +
+    zp.map(z => `<tr><td class="name">${esc(z.o)}<small>${z.c} · ${esc(z.co)}</small></td><td>${spark(z.p, 64, 20)}</td><td class="n">${fmt.format(z.p[di])}</td><td class="n">${chip(z.p[da] > 0 && z.p[di] > 0 ? Math.pow(z.p[di] / z.p[da], 1 / (e - s.a)) - 1 : null)}</td></tr>`).join("") + `</tbody>` : "";
   // diagnoses
-  const di = dIdx(e);
   const dg = c.diag.map(([sp, cd]) => DATA.diagnoses.find(x => x.s === sp && x.c === cd)).filter(Boolean);
   document.getElementById("t-kdiag").innerHTML = `<thead><tr><th>Diagnose</th><th class="n">Patiënten ${e}</th><th class="n">Groei/jr</th><th class="n">Dure gm.</th><th class="n">% beh.</th></tr></thead><tbody>` +
     dg.map(d => `<tr tabindex="0" data-s="${d.s}" data-c="${d.c}"><td class="name">${esc(d.n)}<small>${esc(spcByCode[d.s].n)} · ${d.c}</small></td>

@@ -7,7 +7,13 @@ Bronnen:
 
 Per cluster komen er vier reeksen uit:
   diagnose   patiënten met een van de clusterdiagnoses (DIS)
-  behandeld  patiënten met een verstrekkingsactiviteit van het cluster (DIS)
+  behandeld  patiënten die dure geneesmiddelen kregen (DIS), volgens één van twee bronnen,
+             vast per cluster (kolom behandeld_bron in clusters.csv):
+               activiteit   een verstrekkingsactiviteit van het cluster (02_DBC_PROFIEL)
+               zorgproduct  een geneesmiddel-zorgproduct, zoals 028999017 "Toediening
+                            immunotherapie via infuus/injectie" (01_DBC + 05_REF_ZPD).
+                            Telt ook begeleiding van orale therapie; bij oncologie en
+                            hematologie sluit dat veel beter aan op de add-on gebruikers.
   voorfase   gebruikers van de extramurale eerstelijnsmiddelen (GIP farmacie)
   addon      gebruikers en kosten van de gekoppelde add-ons (GIP add-on)
 
@@ -17,6 +23,7 @@ cluster in DIS dat jaar. Die verdeling is een benadering: onderhuidse middelen
 worden in DIS nauwelijks als verstrekking geregistreerd.
 """
 from pathlib import Path
+import re
 import pandas as pd
 
 HIER = Path(__file__).parent
@@ -32,6 +39,30 @@ VERSTREKKING = [
     "039810", "039888", "191014", "120415",                              # intravitreaal, intravesicaal, CAR-T, PSMA
     "190051", "190052", "190053",                                        # verstrekking oncolytica (oud)
 ]
+
+
+# Geneesmiddel-zorgproducten: een onderdeel van de omschrijving (LATIJN_OMS, gescheiden
+# door " | ") gaat over toediening, begeleiding of verstrekking van (dure) geneesmiddelen.
+ZPD_GENEESMIDDEL = re.compile(
+    r"toediening (chemo|immuno|biolog)|toediening .*(chemo|immuno|hormoon)therapie|"
+    r"intraveneuze/ ?intrathecale toediening|begeleiden behandeling met|begeleiding immunotherapie|"
+    r"behandeling met (chemo|immuno)|dure medicijnen|chronische verstrekking geneesmiddelen|"
+    r"intravitreale injectie|immuun effectorcel|verstrekking chemo|^immunotherapie$", re.I)
+
+
+def geneesmiddel_zorgproducten():
+    """{zorgproductcode: (onderdeel dat het geneesmiddel noemt, consumentenomschrijving)}"""
+    pad = DATA / "05_REF_ZPD.csv"
+    if not pad.exists():
+        return {}
+    z = pd.read_csv(pad, dtype=str).fillna("")
+    uit = {}
+    for r in z.itertuples():
+        for deel in r.LATIJN_OMS.split(" | "):
+            if ZPD_GENEESMIDDEL.search(deel.strip()):
+                uit[r.ZORGPRODUCT_CD] = (deel.strip(), r.CONSUMENT_OMS)
+                break
+    return uit
 
 
 def lees_kop(naam):
@@ -76,8 +107,9 @@ def behandeld_per_diagnose(jaren):
     return v[v["JAAR"].isin(jaren)]
 
 
-def bereken(jaren, dbc_diag):
-    """dbc_diag: DataFrame met JAAR, BEHANDELEND_SPECIALISME_CD, TYPERENDE_DIAGNOSE_CD, AANTAL_PAT_PER_DIAG (uniek)."""
+def bereken(jaren, dbc_diag, dbc_zpd=None):
+    """dbc_diag: JAAR, BEHANDELEND_SPECIALISME_CD, TYPERENDE_DIAGNOSE_CD, AANTAL_PAT_PER_DIAG (uniek per diagnose).
+    dbc_zpd: dezelfde regels per zorgproduct, met ZORGPRODUCT_CD en AANTAL_PAT_PER_ZPD."""
     v = behandeld_per_diagnose(jaren)
     cl, cd, ca, cv = (lees_kop(n) for n in ("clusters.csv", "cluster_diagnoses.csv", "cluster_atc.csv", "cluster_voorfase.csv"))
     addon, addon_voorl = lees_gip("gip_addon_zvw_*.csv")
@@ -88,10 +120,26 @@ def bereken(jaren, dbc_diag):
     pat = dbc_diag.set_index(["BEHANDELEND_SPECIALISME_CD", "TYPERENDE_DIAGNOSE_CD", "JAAR"])["AANTAL_PAT_PER_DIAG"].astype(int)
 
     # behandeld per diagnose (alle verstrekkingscodes), begrensd op het aantal diagnosepatiënten
-    per_diag = v.groupby(["BEHANDELEND_SPECIALISME_CD", "TYPERENDE_DIAGNOSE_CD", "JAAR"])["p"].sum()
+    def reeksen(groep):
+        uit = {}
+        for (s, d, j), n in groep.items():
+            uit.setdefault((s, d), [0] * len(jaren))[jaren.index(j)] = int(min(n, pat.get((s, d, j), n)))
+        return uit
+
+    act_diag = reeksen(v.groupby(["BEHANDELEND_SPECIALISME_CD", "TYPERENDE_DIAGNOSE_CD", "JAAR"])["p"].sum())
+    zpd_naam = geneesmiddel_zorgproducten()
+    zp = pd.DataFrame(columns=["BEHANDELEND_SPECIALISME_CD", "TYPERENDE_DIAGNOSE_CD", "ZORGPRODUCT_CD", "JAAR", "p"])
+    if dbc_zpd is not None and zpd_naam:
+        zp = dbc_zpd[dbc_zpd["ZORGPRODUCT_CD"].isin(zpd_naam)].copy()
+        zp["p"] = pd.to_numeric(zp["AANTAL_PAT_PER_ZPD"], errors="coerce").fillna(0)
+        zp["JAAR"] = zp["JAAR"].astype(int)
+    zpd_diag = reeksen(zp.groupby(["BEHANDELEND_SPECIALISME_CD", "TYPERENDE_DIAGNOSE_CD", "JAAR"])["p"].sum())
+    # per diagnose één vaste bron: die met de meeste patiënten over de volledige jaren
+    vol = slice(0, len(jaren) - 2)
     behandeld_diag = {}
-    for (s, d, j), n in per_diag.items():
-        behandeld_diag.setdefault((s, d), [0] * len(jaren))[jaren.index(j)] = int(min(n, pat.get((s, d, j), n)))
+    for k in set(act_diag) | set(zpd_diag):
+        a, z = act_diag.get(k, [0] * len(jaren)), zpd_diag.get(k, [0] * len(jaren))
+        behandeld_diag[k] = (z, "z") if sum(z[vol]) > sum(a[vol]) else (a, "a")
 
     gip_jaren = sorted(set(addon["jaar"]))
     ca = ca[ca["status"] != "uitgesloten"]
@@ -108,8 +156,23 @@ def bereken(jaren, dbc_diag):
         codes = c.verstrekkingscodes.split()
         vs = v[v["ZORGACTIVITEIT_CD"].isin(codes) & pd.Series(
             list(zip(v["BEHANDELEND_SPECIALISME_CD"], v["TYPERENDE_DIAGNOSE_CD"])), index=v.index).isin(sleutels)]
-        beh = vs.groupby("JAAR")["p"].sum()
+        zs = zp[pd.Series(list(zip(zp["BEHANDELEND_SPECIALISME_CD"], zp["TYPERENDE_DIAGNOSE_CD"])), index=zp.index).isin(sleutels)]
+        # Per diagnose begrensd op het aantal diagnosepatiënten: een patiënt met meer
+        # geneesmiddel-zorgproducten of -activiteiten in een jaar telt anders meer keer.
+        beh_act = pd.Series({j: sum(act_diag.get(k, [0] * len(jaren))[jaren.index(j)] for k in sleutels) for j in jaren})
+        beh_zpd = pd.Series({j: sum(zpd_diag.get(k, [0] * len(jaren))[jaren.index(j)] for k in sleutels) for j in jaren})
+        bron = getattr(c, "behandeld_bron", "") or "activiteit"
+        beh = beh_zpd if bron == "zorgproduct" else beh_act
+        top = zs.groupby(["ZORGPRODUCT_CD", "JAAR"])["p"].sum().unstack(fill_value=0)
+        laatste_vol = jaren[-3]
+        if not top.empty:
+            top = top.sort_values(laatste_vol if laatste_vol in top.columns else top.columns[-1], ascending=False).head(15)
         clusters.append({
+            "bron": bron,
+            "ba": [int(beh_act.get(j, 0)) for j in jaren],
+            "bz": [int(beh_zpd.get(j, 0)) for j in jaren],
+            "zpd": [{"c": code, "o": zpd_naam[code][0], "co": zpd_naam[code][1],
+                     "p": [int(r.get(j, 0)) for j in jaren]} for code, r in top.iterrows()],
             "id": c.cluster_id, "n": c.cluster, "soort": c.soort,
             "diag": [[s, d] for s, d in sleutels],
             "p": [int(sum(pat.get((s, d, j), 0) for s, d in sleutels)) for j in jaren],

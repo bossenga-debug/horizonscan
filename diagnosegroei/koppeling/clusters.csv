@@ -1,20 +1,20 @@
-﻿cluster_id;cluster;soort;verstrekkingscodes
-ms;Multiple sclerose;immunologie;039135 039136 039137 039140 039146
-cu;Colitis ulcerosa;immunologie;039135 039136 039137 039140 039146
-crohn;Ziekte van Crohn;immunologie;039135 039136 039137 039140 039146
-psoriasis;Plaque psoriasis;immunologie;039135 039136 039137 039140 039146
-eczeem;Atopisch eczeem;immunologie;039135 039136 039137 039140 039146
-psa;Artritis psoriatica;immunologie;039135 039136 039137 039140 039146
-ra;Reumatoïde artritis;immunologie;039135 039136 039137 039140 039146
-axspa;Axiale spondyloartritis;immunologie;039135 039136 039137 039140 039146
-oog;Oogaandoeningen (nAMD, DMO, RVO);oog;039810
-prostaat;Prostaatcarcinoom;oncologie;039142 039145 039146 039148 120415
-nsclc;Niet-kleincellig longcarcinoom;oncologie;039142 039145 039146
-myeloom;Multipel myeloom;oncologie;039142 039145 039146
-mamma;Mammacarcinoom;oncologie;039142 039145 039146 039148
-melanoom;Melanoom;oncologie;039142 039145 039146 039149
-crc;Colorectaal carcinoom;oncologie;039142 039145 039146
-rcc;Niercelcarcinoom;oncologie;039142 039145 039146
-lymfoom;Lymfomen en CLL;oncologie;039142 039145 039146 191014
-astma;Ernstig astma;immunologie;039135 039136 039137 039140 039146
-hematologie;Leukemie, MDS en MPN;oncologie;039142 039143 039145 039146 191014
+﻿cluster_id;cluster;soort;verstrekkingscodes;behandeld_bron
+ms;Multiple sclerose;immunologie;039135 039136 039137 039140 039146;zorgproduct
+cu;Colitis ulcerosa;immunologie;039135 039136 039137 039140 039146;activiteit
+crohn;Ziekte van Crohn;immunologie;039135 039136 039137 039140 039146;activiteit
+psoriasis;Plaque psoriasis;immunologie;039135 039136 039137 039140 039146;activiteit
+eczeem;Atopisch eczeem;immunologie;039135 039136 039137 039140 039146;activiteit
+psa;Artritis psoriatica;immunologie;039135 039136 039137 039140 039146;activiteit
+ra;Reumatoïde artritis;immunologie;039135 039136 039137 039140 039146;activiteit
+axspa;Axiale spondyloartritis;immunologie;039135 039136 039137 039140 039146;activiteit
+oog;Oogaandoeningen (nAMD, DMO, RVO);oog;039810;activiteit
+prostaat;Prostaatcarcinoom;oncologie;039142 039145 039146 039148 120415;zorgproduct
+nsclc;Niet-kleincellig longcarcinoom;oncologie;039142 039145 039146;zorgproduct
+myeloom;Multipel myeloom;oncologie;039142 039145 039146;activiteit
+mamma;Mammacarcinoom;oncologie;039142 039145 039146 039148;zorgproduct
+melanoom;Melanoom;oncologie;039142 039145 039146 039149;zorgproduct
+crc;Colorectaal carcinoom;oncologie;039142 039145 039146;zorgproduct
+rcc;Niercelcarcinoom;oncologie;039142 039145 039146;zorgproduct
+lymfoom;Lymfomen en CLL;oncologie;039142 039145 039146 191014;zorgproduct
+astma;Ernstig astma;immunologie;039135 039136 039137 039140 039146;activiteit
+hematologie;Leukemie, MDS en MPN;oncologie;039142 039143 039145 039146 191014;zorgproduct

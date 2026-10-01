@@ -81,3 +81,24 @@ verdeling is daar onzeker.
 
 Deeplinks: `#koppeling-ms` (cluster) en `#atc=L01FF02` of `#L01FF02` (middel).
 De kale vorm werkt ook binnen een claude.ai-artifact.
+
+## Behandeld: toedieningsactiviteit of geneesmiddel-zorgproduct
+
+Kolom `behandeld_bron` in `clusters.csv` bepaalt per cluster waar "behandeld"
+vandaan komt:
+
+- `activiteit`: verstrekkingsactiviteiten uit 02_DBC_PROFIEL (bijvoorbeeld
+  039137 biologicals per infuus). Dit werkt het best bij auto-immuunziekten,
+  astma en oog.
+- `zorgproduct`: zorgproducten waarvan de omschrijving over toediening,
+  begeleiding of verstrekking van geneesmiddelen gaat (bijvoorbeeld 028999017
+  "Toediening immunotherapie via infuus/injectie"). Het patroon staat in
+  `ZPD_GENEESMIDDEL` in `koppel_data.py`. Deze zorgproducten tellen ook de
+  begeleiding van orale therapie, en sluiten bij oncologie en hematologie veel
+  beter aan op de add-on gebruikers.
+
+Beide bronnen tellen een patiënt met meer zorgproducten of activiteiten in een
+jaar meer keer. Per diagnose wordt daarom begrensd op het aantal patiënten met
+die diagnose. Kies `activiteit` als de zorgproductbron tegen die grens aanloopt;
+bij myeloom gebeurt dat (100% in alle jaren), en dan valt er geen trend meer te
+zien.
