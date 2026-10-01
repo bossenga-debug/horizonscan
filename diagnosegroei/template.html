@@ -130,6 +130,10 @@ ol.rank .nm small { display: block; font-size: 11px; color: var(--muted); white-
 ol.rank .trk { height: 10px; background: var(--sunk); border-radius: 0 3px 3px 0; position: relative; }
 ol.rank .bar { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 0 3px 3px 0; background: var(--series); }
 ol.rank .bar.cost { background: var(--accent); }
+ol.rank .bar.zpd { background: var(--s3); }
+ol.rank li.zdet-li { display: block; cursor: default; background: var(--sunk); padding: 10px 14px 14px; }
+ol.rank li.zdet-li:hover { background: var(--sunk); }
+ol.rank li[data-zpd][aria-expanded="true"] { background: var(--accent-soft); }
 ol.rank .bar.neg { background: var(--down); opacity: .75; }
 ol.rank .vl { font-family: var(--f-num); font-size: 12.5px; text-align: right; white-space: nowrap; }
 ol.rank .vl small { display: block; font-size: 10.5px; color: var(--muted); white-space: normal; }
@@ -255,6 +259,12 @@ footer a { color: var(--accent); }
     </div>
     <div class="tiles" id="s-tiles"></div>
     <div class="cards" id="s-cards"></div>
+    <section aria-labelledby="h-szpd" id="s-zpd-sectie">
+      <h2 id="h-szpd" style="font-size:17px;margin:8px 0 4px">Geneesmiddel-zorgproducten</h2>
+      <p class="subnote" style="padding:0;margin:0 0 10px">DBC-zorgproducten voor toediening, begeleiding of verstrekking van geneesmiddelen (zonder stamceltransplantaties, met CAR-T). Kosten = subtrajecten × landelijk gemiddelde verkoopprijs: de kosten van de ziekenhuiszorg rond het geneesmiddel, <em>niet</em> van het add-on middel zelf. Klik op een zorgproduct voor de prijs per jaar.</p>
+      <div class="tiles" id="s-zpd-tiles"></div>
+      <div class="cards" id="s-zpd-cards" style="margin-top:16px"></div>
+    </section>
   </div>
 
   <div class="view" id="view-koppeling" role="tabpanel" aria-labelledby="tab-koppeling" hidden>
@@ -584,6 +594,55 @@ function rankCard(title, expl, items, fmtVal, sub, cls = "") {
       <span class="trk"><span class="bar ${x.val < 0 ? "neg" : cls}" style="width:${(Math.abs(x.val) / max * 100).toFixed(1)}%"></span></span>
       <span class="vl">${fmtVal(x.val)}<small>${sub(x)}</small></span></li>`).join("") + `</ol></section>`;
 }
+// ---------- statistiek: geneesmiddel-zorgproducten ----------
+const zpdOpenStat = new Set();
+function zpdTotaal(code, spcF) {
+  const z = K.zorgproducten[code], n = J.length, p = Array(n).fill(0), t = Array(n).fill(0);
+  Object.entries(z.sp).forEach(([s, [pp, tt]]) => { if (!spcF || s === spcF) for (let i = 0; i < n; i++) { p[i] += pp[i]; t[i] += tt[i]; } });
+  const k = t.map((x, i) => z.pr[i] != null ? x * z.pr[i] : null);
+  return { c: code, o: z.o, co: z.co, pr: z.pr, p, t, k };
+}
+function zpdRankCard(title, expl, items, fmtVal, sub, kop) {
+  if (!items.length) return `<section class="panel"><div class="phead"><h2>${title}</h2></div><p class="empty">Geen zorgproducten bij deze filters.</p></section>`;
+  const max = Math.max(...items.map(x => Math.abs(x.val)), 1e-9);
+  return `<section class="panel"><div class="phead"><h2>${title}</h2></div><p class="expl">${expl}</p><ol class="rank">` +
+    items.map((x, i) => {
+      const open = zpdOpenStat.has(title + x.z.c);
+      return `<li tabindex="0" data-zpd="${x.z.c}" data-kaart="${esc(title)}" aria-expanded="${open}" title="${esc(x.z.co)}">
+      <span class="rk">${i + 1}</span>
+      <span class="nm">${esc(x.z.o)}<small>${x.z.c} · ${esc(x.z.co)}</small></span>
+      <span class="trk"><span class="bar ${x.val < 0 ? "neg" : "zpd"}" style="width:${(Math.abs(x.val) / max * 100).toFixed(1)}%"></span></span>
+      <span class="vl">${fmtVal(x.val)}<small>${sub(x)}</small></span></li>` +
+      (open ? `<li class="zdet-li">${zpdDetail(x.z, kop)}</li>` : "");
+    }).join("") + `</ol></section>`;
+}
+function renderStatZpd(spcF, top, minK, a, b, per) {
+  const sectie = document.getElementById("s-zpd-sectie");
+  if (!K || !K.zorgproducten) { sectie.hidden = true; return; }
+  const kop = spcF ? spcByCode[spcF].n : "Alle specialismen";
+  const alle = Object.keys(K.zorgproducten).map(c => zpdTotaal(c, spcF)).filter(z => z.t[b] > 0);
+  const som = i => alle.reduce((s, z) => s + (z.k[i] || 0), 0);
+  const kg = som(a) > 0 ? Math.pow(som(b) / som(a), 1 / (b - a)) - 1 : null;
+  const tg = (() => { const ta = alle.reduce((s, z) => s + z.t[a], 0), te = alle.reduce((s, z) => s + z.t[b], 0); return ta > 0 ? Math.pow(te / ta, 1 / (b - a)) - 1 : null; })();
+  const grootste = alle.slice().sort((x, y) => (y.k[b] || 0) - (x.k[b] || 0))[0];
+  document.getElementById("s-zpd-tiles").innerHTML = `
+    <div class="tile"><div class="lab">DBC-kosten geneesmiddel-zorgproducten ${J[b]}</div><div class="val">${eur(som(b))}</div><div class="foot">${esc(kop)} · ${fmt.format(alle.length)} zorgproducten</div></div>
+    <div class="tile"><div class="lab">Kostengroei per jaar ${per}</div><div class="val">${fmtPct(kg)}</div><div class="foot">${eur(som(b) - som(a))} erbij sinds ${J[a]}</div></div>
+    <div class="tile"><div class="lab">Waarvan volume (subtrajecten)</div><div class="val">${fmtPct(tg)}</div><div class="foot">de rest is prijs en verschuiving naar duurdere zorgproducten</div></div>
+    <div class="tile"><div class="lab">Grootste kostenpost ${J[b]}</div><div class="val" style="font-size:16px;font-family:var(--f-body);font-weight:600;padding-top:5px">${grootste ? esc(grootste.o) : "—"}</div><div class="foot">${grootste ? grootste.c + " · " + eur(grootste.k[b]) : ""}</div></div>`;
+  const pick = (arr, f, dir = -1) => arr.map(z => ({ z, val: f(z) })).filter(x => x.val != null && isFinite(x.val)).sort((x, y) => dir * (x.val - y.val)).slice(0, top);
+  const pctStr = v => fmtPct(v).replace("-", "−");
+  const cg = z => z.k[a] > 0 && z.k[b] > 0 ? Math.pow(z.k[b] / z.k[a], 1 / (b - a)) - 1 : null;
+  const cards = [
+    zpdRankCard("Hoogste totale kosten", `Subtrajecten × gemiddelde verkoopprijs, ${J[b]}.`,
+      pick(alle, z => z.k[b]), v => eur(v), x => `€ ${fmt.format(x.z.pr[b])} × ${fmt.format(x.z.t[b])}`, kop),
+    zpdRankCard("Snelst stijgende kosten", `Gemiddelde kostengroei per jaar, ${per}. Alleen zorgproducten met ${minK ? "minimaal " + eur(minK) : "kosten"} in ${J[a]}.`,
+      pick(alle.filter(z => (z.k[a] || 0) >= minK), cg), pctStr, x => `${eur(x.z.k[a])} → ${eur(x.z.k[b])}`, kop),
+    zpdRankCard("Duurste per stuk", `Gemiddelde verkoopprijs ${J[b]}, voor zorgproducten met minimaal 50 subtrajecten. Klinische zorgproducten bevatten ook de verpleegdagen.`,
+      pick(alle.filter(z => z.t[b] >= 50), z => z.pr[b]), v => "€ " + fmt.format(v), x => `${fmt.format(x.z.p[b])} patiënten`, kop),
+  ];
+  document.getElementById("s-zpd-cards").innerHTML = cards.join("");
+}
 function renderStat() {
   const spcF = document.getElementById("s-spc").value, top = +document.getElementById("s-top").value;
   const minK = +document.getElementById("s-minkost").value;
@@ -627,6 +686,7 @@ function renderStat() {
       pick(grown, "pg", 1).filter(x => x.val < 0), pctStr, x => `${fmt.format(x.d.p[a])} → ${fmt.format(x.d.p[b])}`),
   ];
   document.getElementById("s-cards").innerHTML = cards.join("");
+  renderStatZpd(spcF, top, minK, a, b, per);
 }
 function initStat() {
   const s = document.getElementById("s-spc");
@@ -640,6 +700,10 @@ function initStat() {
     document.getElementById("h-det").scrollIntoView({ behavior: "smooth", block: "start" });
   };
   cards.addEventListener("click", e => { const li = e.target.closest("li[data-c]"); if (li) open(li); });
+  const zc = document.getElementById("s-zpd-cards");
+  const toggle = li => { const key = li.dataset.kaart + li.dataset.zpd; zpdOpenStat.has(key) ? zpdOpenStat.delete(key) : zpdOpenStat.add(key); renderStat(); };
+  zc.addEventListener("click", e => { const li = e.target.closest("li[data-zpd]"); if (li) toggle(li); });
+  zc.addEventListener("keydown", e => { const li = e.target.closest("li[data-zpd]"); if (li && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); toggle(li); } });
   cards.addEventListener("keydown", e => { const li = e.target.closest("li[data-c]"); if (li && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); open(li); } });
 }
 let tab = "overzicht";
@@ -792,7 +856,7 @@ function renderKopDetail() {
 }
 // detail van een geneesmiddel-zorgproduct: gemiddelde verkoopprijs per jaar (landelijk, over alle
 // diagnoses) en het volume binnen dit cluster
-function zpdDetail(z) {
+function zpdDetail(z, kop = "In dit cluster") {
   const W = 320, H = 150, L = 8, R = 8, T = 22, B = 22;
   const n = J.length, bw = (W - L - R) / n, max = Math.max(...z.pr.filter(v => v != null), 1);
   const y = v => T + (1 - v / max) * (H - T - B);
@@ -819,7 +883,7 @@ function zpdDetail(z) {
     <div><h4>Gemiddelde verkoopprijs per jaar</h4>
       <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Gemiddelde verkoopprijs van zorgproduct ${z.c} per jaar">${g}</svg>
       <p class="zdet-note">Landelijk gemiddelde verkoopprijs van dit zorgproduct, over alle diagnoses. Groei ${J[state.start]}–${J[LAATST_VOL]}: <b>${fmtPct(prg)}</b> per jaar. "Geen": voor dat jaar is geen prijs vastgesteld (te weinig volume).</p></div>
-    <div><h4>In dit cluster</h4>
+    <div><h4>${esc(kop)}</h4>
       <div class="scroll"><table><thead><tr><th class="n">Jaar</th><th class="n">Prijs</th><th class="n">t.o.v. vorig</th><th class="n">Patiënten</th><th class="n">Subtrajecten</th><th class="n">Kosten</th></tr></thead>
       <tbody>${J.map(rij).join("")}</tbody></table></div>
       <p class="zdet-note">Kosten = subtrajecten × gemiddelde verkoopprijs: de DBC-kosten van de toediening of begeleiding, zonder het add-on geneesmiddel zelf. Jaren met * of ** zijn qua volume nog niet compleet.</p></div>

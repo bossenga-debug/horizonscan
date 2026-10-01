@@ -43,11 +43,15 @@ VERSTREKKING = [
 
 # Geneesmiddel-zorgproducten: een onderdeel van de omschrijving (LATIJN_OMS, gescheiden
 # door " | ") gaat over toediening, begeleiding of verstrekking van (dure) geneesmiddelen.
+# Stamceltransplantaties vallen er bewust buiten: de NZa-groep heet "Stamceltransplantatie
+# en immuun effectorcel therapie", maar alleen de zorgproducten met het eigen onderdeel
+# "Immuun effectorcel therapie" (CAR-T) zijn een geneesmiddelbehandeling; de rest zijn
+# transplantaties, nazorg, donorzoektochten en stamcelafname.
 ZPD_GENEESMIDDEL = re.compile(
     r"toediening (chemo|immuno|biolog)|toediening .*(chemo|immuno|hormoon)therapie|"
     r"intraveneuze/ ?intrathecale toediening|begeleiden behandeling met|begeleiding immunotherapie|"
     r"behandeling met (chemo|immuno)|dure medicijnen|chronische verstrekking geneesmiddelen|"
-    r"intravitreale injectie|immuun effectorcel|verstrekking chemo|^immunotherapie$", re.I)
+    r"intravitreale injectie|^immuun effectorcel therapie$|verstrekking chemo|^immunotherapie$", re.I)
 
 
 def geneesmiddel_zorgproducten():
@@ -243,7 +247,20 @@ def bereken(jaren, dbc_diag, dbc_zpd=None):
                                   "g": [int(fg.get((r.atc, j), 0)) for j in gip_jaren],
                                   "k": [int(fv.get((r.atc, j), 0)) for j in gip_jaren]}
 
+    # Alle geneesmiddel-zorgproducten, per specialisme: patiënten en subtrajecten per jaar,
+    # plus de landelijk gemiddelde verkoopprijs. Voor de ranglijsten in Statistiek.
+    zorgproducten = {}
+    if not zp.empty:
+        per = zp.groupby(["ZORGPRODUCT_CD", "BEHANDELEND_SPECIALISME_CD", "JAAR"])[["p", "t"]].sum()
+        for (code, spc), grp in per.groupby(level=[0, 1]):
+            g = grp.droplevel([0, 1])
+            item = zorgproducten.setdefault(code, {
+                "o": zpd_naam[code][0], "co": zpd_naam[code][1],
+                "pr": [(round(prijs[(code, j)]) if (code, j) in prijs else None) for j in jaren], "sp": {}})
+            item["sp"][spc] = [[int(g["p"].get(j, 0)) for j in jaren], [int(g["t"].get(j, 0)) for j in jaren]]
+
     return {
+        "zorgproducten": zorgproducten,
         "gip_jaren": gip_jaren, "addon_voorlopig": addon_voorl, "farm_voorlopig": farm_voorl,
         "clusters": clusters, "middelen": middelen, "vf_middelen": vf_middelen,
         "rv_jaar": (fkg_kol or "fkg_")[4:],
