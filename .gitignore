@@ -10,3 +10,6 @@ bron/
 __pycache__/
 *.pyc
 .DS_Store
+
+# diagnosegroei: NZa- en add-on-brondata wordt elke run opgehaald
+diagnosegroei/data/

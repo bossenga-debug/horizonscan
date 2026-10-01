@@ -1,0 +1,926 @@
+<meta charset="utf-8">
+<title>Diagnosegroei per specialisme</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: sticky filterbalk; links specialisme-ranglijst, rechts detail (grafiek + diagnosetabel). Smal: gestapeld. */
+:root {
+  --bg: #f4f7f6; --surface: #ffffff; --sunk: #eaf0ee;
+  --ink: #0f1e1d; --ink-2: #475857; --muted: #768684; --line: #dbe3e1;
+  --accent: #0e6b66; --accent-soft: #d8ecea;
+  --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #4a3aa7;
+  --series: #2a78d6; --up: #e34948; --up-soft: #fbe3e2; --down: #2a78d6; --down-soft: #dde9f8; --mid: #f0efec;
+  --f-body: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-num: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --r: 6px;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0e1615; --surface: #152120; --sunk: #1b2928;
+  --ink: #ecf3f2; --ink-2: #b3c3c0; --muted: #82938f; --line: #263533;
+  --accent: #4bb8ae; --accent-soft: #1d3a37;
+  --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #9085e9;
+  --series: #3987e5; --up: #e66767; --up-soft: #3d2324; --down: #3987e5; --down-soft: #1d2d44; --mid: #383835;
+  color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #0e1615; --surface: #152120; --sunk: #1b2928;
+  --ink: #ecf3f2; --ink-2: #b3c3c0; --muted: #82938f; --line: #263533;
+  --accent: #4bb8ae; --accent-soft: #1d3a37;
+  --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #9085e9;
+  --series: #3987e5; --up: #e66767; --up-soft: #3d2324; --down: #3987e5; --down-soft: #1d2d44; --mid: #383835;
+  color-scheme: dark; }
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 14px; line-height: 1.45; }
+.wrap { max-width: 1400px; margin: 0 auto; padding: 20px 16px 48px; display: grid; gap: 16px; }
+.num, td.n, .tabnum { font-family: var(--f-num); font-variant-numeric: tabular-nums; }
+
+header { display: flex; flex-wrap: wrap; gap: 8px 24px; align-items: end; justify-content: space-between; }
+h1 { margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.01em; text-wrap: balance; }
+.sub { color: var(--ink-2); max-width: 70ch; margin: 4px 0 0; }
+.meta { font-size: 12px; color: var(--muted); text-align: right; }
+.meta b { color: var(--ink-2); font-weight: 500; }
+
+.filters { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); padding-block: 8px;
+  display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; border-bottom: 1px solid var(--line); }
+@media (max-width: 700px) { .filters { position: static; } }
+.fgroup { display: flex; align-items: center; gap: 6px; }
+.flabel { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 600; }
+.seg { display: inline-flex; background: var(--sunk); border-radius: var(--r); padding: 2px; }
+.seg button { border: 0; background: transparent; color: var(--ink-2); font: inherit; font-size: 13px; padding: 4px 10px; border-radius: 4px; cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); font-weight: 600; box-shadow: 0 0 0 1px var(--line); }
+select, input[type="search"] { font: inherit; font-size: 13px; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 5px 8px; }
+input[type="search"] { width: 220px; max-width: 100%; }
+button:focus-visible, select:focus-visible, input:focus-visible, tr:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+.notice { font-size: 12.5px; color: var(--ink-2); background: var(--sunk); border-radius: var(--r); padding: 8px 12px; display: flex; gap: 8px 20px; flex-wrap: wrap; }
+.notice span::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: 1px; }
+.notice .k1::before { background: var(--series); }
+.notice .k2::before { border: 2px solid var(--series); background: var(--surface); }
+.notice .k3::before { border: 2px dashed var(--muted); background: transparent; }
+
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; }
+.tile { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 12px 14px; }
+.tile .lab { font-size: 12px; color: var(--muted); }
+.tile .val { font-family: var(--f-num); font-size: 24px; font-weight: 500; margin-top: 2px; }
+.tile .foot { font-size: 12px; color: var(--ink-2); }
+
+.main { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 16px; align-items: start; }
+@media (max-width: 980px) { .main { grid-template-columns: minmax(0, 1fr); } }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); min-width: 0; }
+.phead { padding: 12px 14px 8px; display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: baseline; justify-content: space-between; }
+.phead h2 { margin: 0; font-size: 16px; font-weight: 600; text-wrap: balance; }
+.phead .hint { font-size: 12px; color: var(--muted); }
+
+.scroll { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); font-weight: 600; text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; background: var(--surface); position: sticky; top: 0; }
+th.n, td.n { text-align: right; }
+th[data-sort] { cursor: pointer; user-select: none; }
+th[data-sort]:hover { color: var(--ink); }
+th .arr { color: var(--accent); }
+td { padding: 6px 8px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+td.n { white-space: nowrap; }
+td.name { min-width: 160px; }
+#t-spc td.name { min-width: 130px; }
+#t-spc td, #t-spc th { padding-inline: 6px; }
+td.name small { display: block; color: var(--muted); font-size: 11.5px; }
+tbody tr { cursor: pointer; }
+tbody tr:hover { background: var(--sunk); }
+tbody tr.sel { background: var(--accent-soft); }
+tbody tr.sel td:first-child { box-shadow: inset 3px 0 0 var(--accent); }
+td.prov { color: var(--muted); }
+.tbl-body { max-height: 640px; overflow: auto; }
+.more { display: block; margin: 10px auto 14px; font: inherit; font-size: 13px; color: var(--accent); background: none; border: 1px solid var(--line); border-radius: var(--r); padding: 5px 14px; cursor: pointer; }
+
+.chip { display: inline-block; font-family: var(--f-num); font-size: 12px; padding: 1px 6px; border-radius: 4px; min-width: 58px; text-align: right; color: var(--ink); background: var(--mid); }
+.chip.up { background: var(--up-soft); }
+.chip.up::before { content: "▲ "; color: var(--up); font-size: 9px; }
+.chip.down { background: var(--down-soft); }
+.chip.down::before { content: "▼ "; color: var(--down); font-size: 9px; }
+.chip.na { background: transparent; color: var(--muted); }
+
+.gbar { display: flex; align-items: center; gap: 6px; }
+.gbar svg { flex: none; }
+
+.chartwrap { position: relative; padding: 0 14px 10px; }
+.chartwrap svg { display: block; width: 100%; height: auto; overflow: visible; }
+.tip { position: absolute; pointer-events: none; background: var(--ink); color: var(--bg); font-size: 12px; padding: 6px 8px; border-radius: 4px; white-space: nowrap; transform: translate(-50%, -110%); }
+.tip b { font-family: var(--f-num); font-weight: 500; }
+.detailbar { display: flex; flex-wrap: wrap; gap: 8px 20px; padding: 0 14px 12px; font-size: 12.5px; color: var(--ink-2); }
+.detailbar b { font-family: var(--f-num); font-weight: 500; color: var(--ink); }
+.back { font: inherit; font-size: 12px; color: var(--accent); background: none; border: 0; padding: 0; cursor: pointer; text-decoration: underline; }
+.empty { padding: 24px 14px; color: var(--muted); text-align: center; }
+
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); }
+.tabs button { border: 0; background: none; font: inherit; font-size: 14px; font-weight: 600; color: var(--muted); padding: 8px 14px; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
+.tabs button:hover { color: var(--ink); }
+.view { display: grid; gap: 16px; }
+.statctl { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 440px), 1fr)); gap: 16px; align-items: start; }
+.cards .panel p.expl { margin: -2px 14px 8px; font-size: 12px; color: var(--muted); max-width: 70ch; }
+ol.rank { list-style: none; margin: 0; padding: 0 0 8px; }
+ol.rank li { display: grid; grid-template-columns: 22px minmax(0, 1fr) minmax(40px, 26%) 112px; gap: 10px; align-items: center; padding: 5px 14px; cursor: pointer; }
+ol.rank li:hover { background: var(--sunk); }
+ol.rank li:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+ol.rank .rk { font-family: var(--f-num); font-size: 11px; color: var(--muted); text-align: right; }
+ol.rank .nm { font-size: 13px; line-height: 1.25; min-width: 0; }
+ol.rank .nm small { display: block; font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+ol.rank .trk { height: 10px; background: var(--sunk); border-radius: 0 3px 3px 0; position: relative; }
+ol.rank .bar { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 0 3px 3px 0; background: var(--series); }
+ol.rank .bar.cost { background: var(--accent); }
+ol.rank .bar.neg { background: var(--down); opacity: .75; }
+ol.rank .vl { font-family: var(--f-num); font-size: 12.5px; text-align: right; white-space: nowrap; }
+ol.rank .vl small { display: block; font-size: 10.5px; color: var(--muted); white-space: normal; }
+@media (max-width: 520px) { ol.rank li { grid-template-columns: 18px minmax(0, 1fr) 104px; } ol.rank .trk { display: none; } }
+#t-kop td.name { min-width: 150px; }
+#t-kop td, #t-kop th { padding-inline: 6px; }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 14px; padding: 0 14px 6px; font-size: 12px; color: var(--ink-2); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend i { display: inline-block; width: 14px; height: 3px; border-radius: 2px; }
+.flag { display: inline-block; font-size: 11px; padding: 0 5px; border-radius: 3px; background: var(--sunk); color: var(--ink-2); white-space: nowrap; }
+.flag.warn { background: var(--up-soft); color: var(--ink); }
+.sub2 { font-size: 13px; font-weight: 600; margin: 0; padding: 12px 14px 4px; }
+.subnote { font-size: 12px; color: var(--muted); padding: 0 14px 6px; margin: 0; max-width: 75ch; }
+a.ext { color: var(--accent); text-decoration: none; white-space: nowrap; }
+a.ext:hover { text-decoration: underline; }
+.tip .row { display: flex; gap: 8px; align-items: center; }
+.tip .row i { width: 10px; height: 3px; display: inline-block; }
+.linkbtn { font: inherit; font-size: 12px; color: var(--accent); background: none; border: 1px solid var(--line); border-radius: 4px; padding: 1px 8px; cursor: pointer; }
+footer { font-size: 12px; color: var(--muted); max-width: 90ch; }
+footer p { margin: 4px 0; }
+footer a { color: var(--accent); }
+</style>
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Diagnosegroei per specialisme</h1>
+      <p class="sub">Aantal patiënten en DBC-subtrajecten per diagnose, per behandelend specialisme, uit Open DIS-data van de NZa. Bedoeld om te zien waar diagnoses groeien, als voorbode van geneesmiddelgebruik.</p>
+    </div>
+    <div class="meta" id="meta"></div>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="Weergave">
+    <button type="button" role="tab" id="tab-overzicht" aria-selected="true" aria-controls="view-overzicht">Overzicht</button>
+    <button type="button" role="tab" id="tab-statistiek" aria-selected="false" aria-controls="view-statistiek">Statistiek</button>
+    <button type="button" role="tab" id="tab-koppeling" aria-selected="false" aria-controls="view-koppeling">Add-on koppeling</button>
+  </nav>
+
+  <div class="filters" role="toolbar" aria-label="Filters">
+    <div class="fgroup"><span class="flabel">Maat</span>
+      <div class="seg" id="f-maat">
+        <button type="button" data-v="p" aria-pressed="true">Patiënten</button>
+        <button type="button" data-v="t" aria-pressed="false">Subtrajecten</button>
+        <button type="button" data-v="k" aria-pressed="false">Kosten</button>
+      </div>
+    </div>
+    <div class="fgroup"><label class="flabel" for="f-periode">Groeiperiode</label>
+      <select id="f-periode"></select>
+    </div>
+    <div class="fgroup"><label class="flabel" for="f-min" id="l-min">Min. patiënten</label>
+      <select id="f-min">
+        <option value="0">alles</option>
+        <option value="50">≥ 50</option>
+        <option value="100" selected>≥ 100</option>
+        <option value="500">≥ 500</option>
+        <option value="1000">≥ 1.000</option>
+        <option value="5000">≥ 5.000</option>
+      </select>
+    </div>
+    <div class="fgroup" id="g-zoek"><label class="flabel" for="f-zoek">Zoek diagnose</label>
+      <input type="search" id="f-zoek" placeholder="bv. psoriasis, 0324, carcinoom">
+    </div>
+  </div>
+
+  <div class="notice" id="notice"></div>
+
+  <div class="view" id="view-overzicht" role="tabpanel" aria-labelledby="tab-overzicht">
+  <div class="tiles" id="tiles"></div>
+
+  <div class="main">
+    <section class="panel" aria-labelledby="h-spc">
+      <div class="phead"><h2 id="h-spc">Specialismen</h2><span class="hint">Klik om de diagnoses te zien</span></div>
+      <div class="scroll"><table id="t-spc"></table></div>
+    </section>
+
+    <section class="panel" aria-labelledby="h-det">
+      <div class="phead">
+        <h2 id="h-det">—</h2>
+        <div class="seg" id="f-scope">
+          <button type="button" data-v="spc" aria-pressed="true">Dit specialisme</button>
+          <button type="button" data-v="all" aria-pressed="false">Alle specialismen</button>
+        </div>
+      </div>
+      <div class="detailbar" id="detailbar"></div>
+      <div class="chartwrap" id="chart"></div>
+      <div class="phead" style="padding-top:4px"><h2 id="h-dgn" style="font-size:14px">Diagnoses</h2><span class="hint" id="dgn-count"></span></div>
+      <div class="tbl-body scroll"><table id="t-dgn"></table></div>
+      <button type="button" class="more" id="more" hidden>Toon meer</button>
+    </section>
+  </div>
+  </div>
+
+  <div class="view" id="view-statistiek" role="tabpanel" aria-labelledby="tab-statistiek" hidden>
+    <div class="statctl">
+      <div class="fgroup"><label class="flabel" for="s-spc">Specialisme</label><select id="s-spc"><option value="">Alle specialismen</option></select></div>
+      <div class="fgroup"><label class="flabel" for="s-top">Toon</label><select id="s-top"><option value="10">top 10</option><option value="15" selected>top 15</option><option value="25">top 25</option><option value="50">top 50</option></select></div>
+      <div class="fgroup"><label class="flabel" for="s-minkost">Min. kosten startjaar</label><select id="s-minkost"><option value="0">geen</option><option value="100000">€ 0,1 mln</option><option value="1000000" selected>€ 1 mln</option><option value="5000000">€ 5 mln</option><option value="10000000">€ 10 mln</option></select></div>
+      <span class="hint" style="font-size:12px;color:var(--muted)">Klik op een diagnose om hem in het overzicht te openen</span>
+    </div>
+    <div class="tiles" id="s-tiles"></div>
+    <div class="cards" id="s-cards"></div>
+  </div>
+
+  <div class="view" id="view-koppeling" role="tabpanel" aria-labelledby="tab-koppeling" hidden>
+    <div class="statctl">
+      <div class="fgroup"><span class="flabel">Soort</span>
+        <div class="seg" id="k-soort">
+          <button type="button" data-v="" aria-pressed="true">Alle</button>
+          <button type="button" data-v="immunologie" aria-pressed="false">Immunologie</button>
+          <button type="button" data-v="oncologie" aria-pressed="false">Oncologie</button>
+          <button type="button" data-v="oog" aria-pressed="false">Oog</button>
+        </div>
+      </div>
+      <div class="fgroup"><span class="flabel">Gedeelde middelen</span>
+        <div class="seg" id="k-verdeel">
+          <button type="button" data-v="s" aria-pressed="true">Verdeeld (schatting)</button>
+          <button type="button" data-v="v" aria-pressed="false">Volledig meetellen</button>
+        </div>
+      </div>
+    </div>
+    <div class="notice" id="k-notice"></div>
+    <div class="main">
+      <section class="panel" aria-labelledby="h-kop">
+        <div class="phead"><h2 id="h-kop">Therapeutische clusters</h2><span class="hint">Klik voor het verloop en de middelen</span></div>
+        <div class="scroll"><table id="t-kop"></table></div>
+      </section>
+      <section class="panel" aria-labelledby="k-titel">
+        <div class="phead"><h2 id="k-titel">—</h2><span class="hint" id="k-soorttag"></span></div>
+        <div class="detailbar" id="k-bar"></div>
+        <h3 class="sub2">Groei, geïndexeerd (<span id="k-basis"></span> = 100)</h3>
+        <div class="legend" id="k-legend"></div>
+        <div class="chartwrap" id="k-chart"></div>
+        <h3 class="sub2" id="k-kosten-h">Add-on kosten per jaar</h3>
+        <div class="chartwrap" id="k-kosten"></div>
+        <h3 class="sub2">Add-on middelen</h3>
+        <p class="subnote" id="k-mid-note"></p>
+        <div class="scroll"><table id="t-kmid"></table></div>
+        <h3 class="sub2">Voorfase: extramurale eerstelijnsmiddelen</h3>
+        <p class="subnote" id="k-vf-note"></p>
+        <div class="scroll"><table id="t-kvf"></table></div>
+        <h3 class="sub2">Diagnoses in dit cluster</h3>
+        <div class="scroll"><table id="t-kdiag"></table></div>
+      </section>
+    </div>
+  </div>
+
+  <footer>
+    <p><b>Hoe te lezen.</b> Een DBC telt mee in het jaar waarin hij begint en komt pas in DIS als hij gesloten en gedeclareerd is. Recente jaren lopen daardoor achter: het laatste volledige jaar krijgt nog aanleveringen na, het lopende jaar is nog grotendeels leeg. Groei wordt daarom berekend als gemiddelde jaarlijkse groei (CAGR) over de gekozen periode met volledige jaren.</p>
+    <p><b>Signaal voorlopig jaar</b> vergelijkt de groei van een diagnose in het voorlopige jaar met die van het hele specialisme. De achterstand in aanlevering is binnen een specialisme ongeveer gelijk, dus een positief signaal betekent dat de diagnose harder groeit dan het specialisme. Het is een indicatie, geen definitief cijfer.</p>
+    <p><b>Kosten</b> zijn een schatting: aantal subtrajecten per zorgproduct × de landelijk gemiddelde verkoopprijs van dat zorgproduct in dat jaar, opgeteld per diagnose. Zorgproducten zonder vastgestelde prijs (minder dan 1% van de subtrajecten) tellen niet mee. De prijzen zijn nominaal, dus kostengroei bevat ook de jaarlijkse prijsindexatie. Add-on geneesmiddelen worden apart gedeclareerd en zitten <em>niet</em> in de DBC-prijs.</p>
+    <p><b>Add-on koppeling.</b> Een cluster koppelt DBC-diagnoses (Open DIS) aan add-on geneesmiddelen (GIP-databank, Zorginstituut) via een handmatig beheerde koppeltabel, gecontroleerd tegen de FKG- en DKG-indeling van de risicoverevening. <em>Behandeld</em> telt patiënten met een verstrekkingsactiviteit voor dure geneesmiddelen bij die diagnoses (bijvoorbeeld 039137 biologicals per infuus); onderhuidse middelen worden zo nauwelijks geregistreerd. <em>Voorfase</em> telt gebruikers van de extramurale eerstelijnsmiddelen (GIP farmacie, per middel opgeteld). Middelen die bij meer clusters horen worden in de stand <em>verdeeld</em> toegerekend naar rato van de behandelde patiënten per cluster; dat is een schatting. Add-on cijfers met * zijn voorlopig.</p>
+    <p>Patiënten tellen per diagnose en specialisme: één patiënt met twee diagnoses telt twee keer. Bron: <a href="https://opendisdata.nza.nl/#start" target="_blank" rel="noopener">Open DIS-data, Nederlandse Zorgautoriteit</a> (CC0).</p>
+  </footer>
+</div>
+
+<script>
+const DATA = /*__DATA__*/null;
+const J = DATA.jaren;                     // bv. [2021..2026]
+const LOPEND = J.length - 1;              // lopend jaar (onvolledig)
+const VOORL = J.length - 2;               // voorlopig jaar (nog in aanlevering)
+const LAATST_VOL = J.length - 3;          // laatste volledige jaar
+const fmt = new Intl.NumberFormat("nl-NL");
+const eur = v => "€\u00a0" + (Math.abs(v) >= 1e9 ? (v / 1e9).toLocaleString("nl-NL", { maximumFractionDigits: 2 }) + "\u00a0mld" : Math.abs(v) >= 1e6 ? (v / 1e6).toLocaleString("nl-NL", { maximumFractionDigits: 1 }) + "\u00a0mln" : Math.abs(v) >= 1e3 ? (v / 1e3).toLocaleString("nl-NL", { maximumFractionDigits: 0 }) + "k" : fmt.format(Math.round(v)));
+const fv = v => state.maat === "k" ? eur(v) : fmt.format(v);
+const fvSigned = v => (v >= 0 ? "+" : "−") + fv(Math.abs(v));
+const fmtPct = v => v == null || !isFinite(v) ? "—" : (v >= 0 ? "+" : "") + (v * 100).toFixed(1).replace(".", ",") + "%";
+
+const state = { maat: "p", start: 0, min: 100, zoek: "", spc: null, dgn: null, scope: "spc", sort: "cagr", dir: -1, spcSort: "cagr", spcDir: -1, limit: 150 };
+const spcByCode = Object.fromEntries(DATA.specialismen.map(s => [s.c, s]));
+
+// ---------- berekeningen ----------
+function cagr(arr) {
+  const a = arr[state.start], b = arr[LAATST_VOL], n = LAATST_VOL - state.start;
+  if (!a || !b || n <= 0) return null;
+  return Math.pow(b / a, 1 / n) - 1;
+}
+function signaal(arr, tot) {
+  const a = arr[LAATST_VOL], b = arr[VOORL], sa = tot[LAATST_VOL], sb = tot[VOORL];
+  if (!a || !b || !sa || !sb) return null;
+  return (b / a) / (sb / sa) - 1;
+}
+function rowStats(d) {
+  const v = d[state.maat], tot = spcByCode[d.s][state.maat];
+  const graad = d.b && d.p[LAATST_VOL] ? d.b[LAATST_VOL] / d.p[LAATST_VOL] : null;
+  return { d, v, cagr: cagr(v), abs: v[LAATST_VOL] - v[state.start], vol: v[LAATST_VOL], pat: d.p[LAATST_VOL], sig: signaal(v, tot), graad };
+}
+function spcStats(s) {
+  const v = s[state.maat];
+  const allTot = J.map((_, i) => DATA.specialismen.reduce((t, x) => t + x[state.maat][i], 0));
+  return { s, v, cagr: cagr(v), abs: v[LAATST_VOL] - v[state.start], vol: v[LAATST_VOL], sig: signaal(v, allTot) };
+}
+
+// ---------- kleine bouwstenen ----------
+function chip(v, strong = 0.03) {
+  if (v == null || !isFinite(v)) return `<span class="chip na">—</span>`;
+  const cls = v > 0.005 ? "up" : v < -0.005 ? "down" : "";
+  return `<span class="chip ${cls}">${fmtPct(v).replace(/^[+-]/, m => m === "-" ? "−" : "+")}</span>`;
+}
+function spark(v, w = 84, h = 22) {
+  const vals = v.slice(0, J.length);
+  // vorm van het verloop: geschaald op min–max van de volledige + voorlopige jaren
+  const shown = vals.slice(0, VOORL + 1);
+  const max = Math.max(...shown, 1), min = Math.min(...shown), span = Math.max(max - min, max * 0.02);
+  const x = i => 2 + i * (w - 4) / (vals.length - 1);
+  const y = val => h - 3 - ((val - min) / span) * (h - 6);
+  const full = vals.slice(0, LAATST_VOL + 1).map((val, i) => `${i ? "L" : "M"}${x(i).toFixed(1)},${y(val).toFixed(1)}`).join("");
+  const area = full + `L${x(LAATST_VOL).toFixed(1)},${h - 2}L${x(0).toFixed(1)},${h - 2}Z`;
+  return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" aria-hidden="true">
+    <path d="${area}" fill="var(--series)" opacity="0.12"/>
+    <path d="${full}" fill="none" stroke="var(--series)" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M${x(LAATST_VOL)},${y(vals[LAATST_VOL])}L${x(VOORL)},${y(vals[VOORL])}" fill="none" stroke="var(--series)" stroke-width="1.5" stroke-dasharray="2 2"/>
+    <circle cx="${x(LAATST_VOL)}" cy="${y(vals[LAATST_VOL])}" r="2.2" fill="var(--series)"/>
+    <circle cx="${x(VOORL)}" cy="${y(vals[VOORL])}" r="2" fill="var(--surface)" stroke="var(--series)" stroke-width="1.2"/>
+  </svg>`;
+}
+function gbar(v, scale) {
+  // horizontale groeibalk, nul in het midden; waarden boven de schaal lopen tot de rand
+  const w = 48, h = 10, mid = w / 2;
+  if (v == null || !isFinite(v)) return `<svg width="${w}" height="${h}"></svg>`;
+  const len = Math.min(Math.abs(v) / scale, 1) * (mid - 2);
+  const x = v >= 0 ? mid : mid - len;
+  return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" aria-hidden="true">
+    <line x1="${mid}" y1="0" x2="${mid}" y2="${h}" stroke="var(--line)" stroke-width="1"/>
+    <rect x="${x}" y="1" width="${Math.max(len, 1)}" height="${h - 2}" rx="2" fill="${v >= 0 ? "var(--up)" : "var(--down)"}"/>
+  </svg>`;
+}
+const norm = s => String(s).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+// ---------- header, periode, notice ----------
+function initStatic() {
+  const pd = new Date(DATA.peildatum);
+  document.getElementById("meta").innerHTML =
+    `Peildatum <b>${pd.toLocaleDateString("nl-NL", { day: "numeric", month: "long", year: "numeric" })}</b><br>Bestand ${DATA.bestandsdatum} · opgebouwd ${DATA.gebouwd}`;
+  const sel = document.getElementById("f-periode");
+  for (let i = 0; i < LAATST_VOL; i++) {
+    const o = document.createElement("option");
+    o.value = i; o.textContent = `${J[i]} → ${J[LAATST_VOL]} (${LAATST_VOL - i} jr)`;
+    sel.appendChild(o);
+  }
+  sel.value = 0;
+  document.getElementById("notice").innerHTML =
+    `<span class="k1">${J[0]}–${J[LAATST_VOL]}: volledig</span>` +
+    `<span class="k2">${J[VOORL]}: voorlopig, nog in aanlevering</span>` +
+    `<span class="k3">${J[LOPEND]}: lopend jaar, alleen al gesloten DBC's</span>` +
+    `<span style="margin-left:auto">Groei = gemiddelde jaarlijkse groei over volledige jaren</span>`;
+}
+
+// ---------- tegels ----------
+function renderTiles() {
+  const lbl = { p: "patiënten", t: "subtrajecten", k: "kosten" }[state.maat];
+  const tot = J.map((_, i) => DATA.specialismen.reduce((t, s) => t + s[state.maat][i], 0));
+  const g = cagr(tot);
+  const rows = DATA.diagnoses.map(rowStats).filter(r => r.pat >= state.min && r.cagr != null);
+  const hard = rows.filter(r => r.cagr >= 0.10).length;
+  const spcs = DATA.specialismen.map(spcStats).filter(r => r.cagr != null && r.v[state.start] >= 50000).sort((a, b) => b.cagr - a.cagr);
+  const top = spcs[0];
+  document.getElementById("tiles").innerHTML = `
+    <div class="tile"><div class="lab">Totaal ${lbl} ${J[LAATST_VOL]}</div><div class="val">${fv(tot[LAATST_VOL])}</div><div class="foot">alle specialismen opgeteld</div></div>
+    <div class="tile"><div class="lab">Groei per jaar ${J[state.start]}–${J[LAATST_VOL]}</div><div class="val">${fmtPct(g)}</div><div class="foot">totaal over alle specialismen</div></div>
+    <div class="tile"><div class="lab">Diagnoses met ≥ 10% groei per jaar</div><div class="val">${fmt.format(hard)}</div><div class="foot">van ${fmt.format(rows.length)} met ≥ ${fmt.format(state.min)} patiënten</div></div>
+    <div class="tile"><div class="lab">Snelst groeiend specialisme</div><div class="val" style="font-size:17px;font-family:var(--f-body);font-weight:600;padding-top:5px">${esc(top.s.n)}</div><div class="foot">${fmtPct(top.cagr)} per jaar · specialismen ≥ 50.000 in ${J[state.start]}</div></div>`;
+}
+
+// ---------- specialismentabel ----------
+function renderSpc() {
+  const rows = DATA.specialismen.map(spcStats);
+  const k = state.spcSort, dir = state.spcDir;
+  rows.sort((a, b) => k === "n" ? dir * a.s.n.localeCompare(b.s.n) : dir * ((a[k] ?? -Infinity) - (b[k] ?? -Infinity)));
+  const scale = 0.06;
+  const th = (key, label, cls = "") => `<th class="${cls}" data-sort="${key}">${label}${state.spcSort === key ? ` <span class="arr">${state.spcDir < 0 ? "↓" : "↑"}</span>` : ""}</th>`;
+  document.getElementById("t-spc").innerHTML = `<thead><tr>${th("n", "Specialisme")}<th>${J[0]}–${J[VOORL]}</th>${th("vol", J[LAATST_VOL], "n")}${th("cagr", "Groei/jr", "n")}${th("sig", `Signaal ${J[VOORL]}`, "n")}</tr></thead><tbody>` +
+    rows.map(r => `<tr tabindex="0" data-spc="${r.s.c}" class="${r.s.c === state.spc ? "sel" : ""}">
+      <td class="name">${esc(r.s.n)}<small>${r.s.c}</small></td>
+      <td>${spark(r.v, 64, 20)}</td>
+      <td class="n">${fv(r.vol)}</td>
+      <td class="n"><div class="gbar" style="justify-content:flex-end">${gbar(r.cagr, scale)}${chip(r.cagr)}</div></td>
+      <td class="n">${chip(r.sig)}</td></tr>`).join("") + `</tbody>`;
+}
+
+// ---------- detailgrafiek ----------
+function renderChart() {
+  const el = document.getElementById("chart");
+  let series, title;
+  if (state.dgn) {
+    const d = DATA.diagnoses.find(x => x.s === state.dgn.s && x.c === state.dgn.c);
+    series = d[state.maat]; title = d.n;
+  } else {
+    const s = spcByCode[state.spc]; series = s[state.maat]; title = s.n;
+  }
+  const W = 640, H = 230, L = 64, R = 16, T = 16, B = 28;
+  const max = Math.max(...series.slice(0, VOORL + 1)) * 1.12 || 1;
+  const step = niceStep(max / 4);
+  const top = Math.ceil(max / step) * step;
+  const x = i => L + i * (W - L - R) / (J.length - 1);
+  const y = v => T + (1 - v / top) * (H - T - B);
+  let g = "";
+  for (let v = 0; v <= top + 1e-9; v += step) {
+    g += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)" stroke-width="1"/>
+      <text x="${L - 8}" y="${y(v) + 4}" text-anchor="end" font-size="11" fill="var(--muted)" font-family="var(--f-num)">${state.maat === "k" ? eur(v) : compact(v)}</text>`;
+  }
+  J.forEach((yr, i) => g += `<text x="${x(i)}" y="${H - 8}" text-anchor="middle" font-size="11" fill="${i >= VOORL ? "var(--muted)" : "var(--ink-2)"}" font-family="var(--f-num)">${yr}${i === VOORL ? "*" : i === LOPEND ? "**" : ""}</text>`);
+  const pts = series.map((v, i) => [x(i), y(v)]);
+  const full = pts.slice(0, LAATST_VOL + 1).map((p, i) => `${i ? "L" : "M"}${p[0]},${p[1]}`).join("");
+  const area = full + `L${x(LAATST_VOL)},${y(0)}L${x(0)},${y(0)}Z`;
+  // groeibalk markering startjaar
+  g += `<rect x="${x(state.start)}" y="${T}" width="${x(LAATST_VOL) - x(state.start)}" height="${H - T - B}" fill="var(--accent-soft)" opacity="0.45"/>`;
+  g += `<path d="${area}" fill="var(--series)" opacity="0.10"/>`;
+  g += `<path d="${full}" fill="none" stroke="var(--series)" stroke-width="2" stroke-linejoin="round"/>`;
+  g += `<path d="M${pts[LAATST_VOL]}L${pts[VOORL]}" fill="none" stroke="var(--series)" stroke-width="2" stroke-dasharray="4 3"/>`;
+  g += `<path d="M${pts[VOORL]}L${pts[LOPEND]}" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="2 3"/>`;
+  pts.forEach((p, i) => {
+    if (i <= LAATST_VOL) g += `<circle cx="${p[0]}" cy="${p[1]}" r="4" fill="var(--series)" stroke="var(--surface)" stroke-width="2"/>`;
+    else if (i === VOORL) g += `<circle cx="${p[0]}" cy="${p[1]}" r="4" fill="var(--surface)" stroke="var(--series)" stroke-width="2"/>`;
+    else g += `<circle cx="${p[0]}" cy="${p[1]}" r="4" fill="var(--surface)" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="2 2"/>`;
+  });
+  g += `<text x="${pts[LAATST_VOL][0]}" y="${pts[LAATST_VOL][1] - 10}" text-anchor="middle" font-size="11.5" fill="var(--ink)" font-family="var(--f-num)">${fv(series[LAATST_VOL])}</text>`;
+  // hover-zones
+  const hz = pts.map((p, i) => `<rect data-i="${i}" x="${p[0] - (W - L - R) / (J.length - 1) / 2}" y="${T}" width="${(W - L - R) / (J.length - 1)}" height="${H - T - B}" fill="transparent"/>`).join("");
+  el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Verloop ${esc(title)}">${g}<line id="xh" x1="0" x2="0" y1="${T}" y2="${H - B}" stroke="var(--ink-2)" stroke-width="1" opacity="0"/>${hz}</svg><div class="tip" hidden></div>`;
+  const svg = el.querySelector("svg"), tip = el.querySelector(".tip"), xh = el.querySelector("#xh");
+  const labels = ["", "", "", "", "", ""].map((_, i) => i === VOORL ? " (voorlopig)" : i === LOPEND ? " (lopend)" : "");
+  svg.querySelectorAll("rect[data-i]").forEach(r => {
+    r.addEventListener("mouseenter", () => {
+      const i = +r.dataset.i, p = pts[i];
+      const prev = i > 0 && series[i - 1] ? (series[i] / series[i - 1] - 1) : null;
+      tip.innerHTML = `${J[i]}${labels[i]}<br><b>${fv(series[i])}</b>${prev != null && i <= VOORL ? ` · ${fmtPct(prev)} t.o.v. ${J[i - 1]}` : ""}`;
+      const bb = svg.getBoundingClientRect(), k = bb.width / W;
+      tip.style.left = (14 + p[0] * k) + "px"; tip.style.top = (p[1] * k) + "px"; tip.hidden = false;
+      xh.setAttribute("x1", p[0]); xh.setAttribute("x2", p[0]); xh.setAttribute("opacity", 0.35);
+    });
+    r.addEventListener("mouseleave", () => { tip.hidden = true; xh.setAttribute("opacity", 0); });
+  });
+}
+function niceStep(raw) {
+  const p = Math.pow(10, Math.floor(Math.log10(raw || 1))), f = raw / p;
+  return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 2.5 ? 2.5 : f <= 5 ? 5 : 10) * p;
+}
+function compact(v) {
+  if (v >= 1e6) return (v / 1e6).toLocaleString("nl-NL", { maximumFractionDigits: 1 }) + " mln";
+  if (v >= 1e3) return (v / 1e3).toLocaleString("nl-NL", { maximumFractionDigits: 1 }) + "k";
+  return fmt.format(v);
+}
+
+function renderDetailHead() {
+  const h = document.getElementById("h-det"), bar = document.getElementById("detailbar");
+  const s = spcByCode[state.spc];
+  if (state.dgn) {
+    const d = DATA.diagnoses.find(x => x.s === state.dgn.s && x.c === state.dgn.c);
+    const r = rowStats(d);
+    h.textContent = d.n;
+    bar.innerHTML = `<span>${esc(spcByCode[d.s].n)} · diagnose ${d.c}</span>
+      <span>Groei/jr <b>${fmtPct(r.cagr)}</b></span>
+      <span>${J[state.start]}→${J[LAATST_VOL]} <b>${fvSigned(r.abs)}</b></span>
+      <span>Signaal ${J[VOORL]} <b>${fmtPct(r.sig)}</b></span>
+      ${d.b ? `<span>Dure geneesmiddelen ${J[LAATST_VOL]} <b>${fmt.format(d.b[LAATST_VOL])}</b> patiënten (${pct0(r.graad)})</span>` : ""}
+      ${clustersVan(d).map(c => `<button type="button" class="linkbtn" data-kop="${c.id}">Add-on koppeling: ${esc(c.n)}</button>`).join("")}
+      <button type="button" class="back" id="back">Terug naar ${esc(spcByCode[state.spc].n)}</button>`;
+    document.getElementById("back").onclick = () => { state.dgn = null; renderDetail(); };
+    bar.querySelectorAll("[data-kop]").forEach(b => b.onclick = () => openCluster(b.dataset.kop));
+  } else {
+    const r = spcStats(s);
+    h.textContent = s.n;
+    bar.innerHTML = `<span>Specialisme ${s.c}</span>
+      <span>Groei/jr <b>${fmtPct(r.cagr)}</b></span>
+      <span>${J[state.start]}→${J[LAATST_VOL]} <b>${fvSigned(r.abs)}</b></span>
+      <span>Signaal ${J[VOORL]} <b>${fmtPct(r.sig)}</b> <span style="color:var(--muted)">t.o.v. alle specialismen</span></span>`;
+  }
+}
+
+// ---------- diagnosetabel ----------
+function renderDgn() {
+  // zoeken gaat altijd over alle specialismen; elk woord moet voorkomen in naam, code of specialisme
+  const woorden = norm(state.zoek).split(/\s+/).filter(Boolean);
+  const all = state.scope === "all" || woorden.length > 0;
+  let rows = DATA.diagnoses.filter(d => all || d.s === state.spc).map(rowStats)
+    .filter(r => r.pat >= state.min);
+  if (woorden.length) rows = rows.filter(r => {
+    const hay = norm(`${r.d.n} ${r.d.c} ${r.d.s} ${spcByCode[r.d.s].n}`);
+    return woorden.every(w => hay.includes(w));
+  });
+  const k = state.sort, dir = state.dir;
+  rows.sort((a, b) => k === "n" ? dir * a.d.n.localeCompare(b.d.n) : dir * ((a[k] ?? -Infinity) - (b[k] ?? -Infinity)));
+  document.getElementById("h-dgn").textContent = woorden.length ? `Zoekresultaten voor “${state.zoek.trim()}” in alle specialismen` : all ? "Diagnoses in alle specialismen" : "Diagnoses";
+  document.getElementById("dgn-count").textContent = `${fmt.format(rows.length)} diagnoses · patiënten ${J[LAATST_VOL]} ≥ ${fmt.format(state.min)}`;
+  const th = (key, label, cls = "") => key ? `<th class="${cls}" data-sort="${key}">${label}${state.sort === key ? ` <span class="arr">${state.dir < 0 ? "↓" : "↑"}</span>` : ""}</th>` : `<th class="${cls}">${label}</th>`;
+  const yearCols = J.map((yr, i) => `<th class="n">${yr}${i === VOORL ? "*" : i === LOPEND ? "**" : ""}</th>`).join("");
+  const shown = rows.slice(0, state.limit);
+  const scale = 0.20;
+  const tbl = document.getElementById("t-dgn");
+  if (!rows.length) { tbl.innerHTML = `<tbody><tr><td class="empty">Geen diagnoses bij deze filters. Verlaag het minimale volume of wis de zoekterm.</td></tr></tbody>`; document.getElementById("more").hidden = true; return; }
+  tbl.innerHTML = `<thead><tr>${th("n", "Diagnose")}<th>Verloop</th>${yearCols}${th("cagr", "Groei/jr", "n")}${th("abs", "Δ absoluut", "n")}${th("sig", `Signaal ${J[VOORL]}`, "n")}${th("graad", "% beh.", "n")}</tr></thead><tbody>` +
+    shown.map(r => {
+      const isSel = state.dgn && state.dgn.s === r.d.s && state.dgn.c === r.d.c;
+      return `<tr tabindex="0" data-s="${r.d.s}" data-c="${r.d.c}" class="${isSel ? "sel" : ""}">
+      <td class="name">${esc(r.d.n)}<small>${all ? esc(spcByCode[r.d.s].n) + " · " : ""}${r.d.c}</small></td>
+      <td>${spark(r.v, 70, 20)}</td>
+      ${r.v.map((v, i) => `<td class="n${i >= VOORL ? " prov" : ""}">${fv(v)}</td>`).join("")}
+      <td class="n"><div class="gbar" style="justify-content:flex-end">${gbar(r.cagr, scale)}${chip(r.cagr)}</div></td>
+      <td class="n">${fvSigned(r.abs)}</td>
+      <td class="n">${chip(r.sig)}</td>
+      <td class="n" title="Aandeel patiënten met een verstrekking van dure geneesmiddelen (DIS), ${J[LAATST_VOL]}">${r.graad == null ? "—" : pct0(r.graad)}</td></tr>`;
+    }).join("") + `</tbody>`;
+  const more = document.getElementById("more");
+  more.hidden = rows.length <= state.limit;
+  more.textContent = `Toon meer (${fmt.format(rows.length - state.limit)} verborgen)`;
+}
+
+function renderDetail() { renderDetailHead(); renderChart(); renderDgn(); renderSpc(); }
+function renderAll() { renderTiles(); renderDetail(); if (tab === "statistiek") renderStat(); if (tab === "koppeling") renderKop(); }
+
+// ---------- statistiek ----------
+function cagrOf(arr) {
+  const a = arr[state.start], b = arr[LAATST_VOL], n = LAATST_VOL - state.start;
+  return a > 0 && b > 0 && n > 0 ? Math.pow(b / a, 1 / n) - 1 : null;
+}
+function rankCard(title, expl, items, fmtVal, sub, cls = "") {
+  if (!items.length) return `<section class="panel"><div class="phead"><h2>${title}</h2></div><p class="empty">Geen diagnoses bij deze filters.</p></section>`;
+  const max = Math.max(...items.map(x => Math.abs(x.val)), 1e-9);
+  return `<section class="panel"><div class="phead"><h2>${title}</h2></div><p class="expl">${expl}</p><ol class="rank">` +
+    items.map((x, i) => `<li tabindex="0" data-s="${x.d.s}" data-c="${x.d.c}" title="${esc(x.d.n)}">
+      <span class="rk">${i + 1}</span>
+      <span class="nm">${esc(x.d.n)}<small>${esc(spcByCode[x.d.s].n)} · ${x.d.c}</small></span>
+      <span class="trk"><span class="bar ${x.val < 0 ? "neg" : cls}" style="width:${(Math.abs(x.val) / max * 100).toFixed(1)}%"></span></span>
+      <span class="vl">${fmtVal(x.val)}<small>${sub(x)}</small></span></li>`).join("") + `</ol></section>`;
+}
+function renderStat() {
+  const spcF = document.getElementById("s-spc").value, top = +document.getElementById("s-top").value;
+  const minK = +document.getElementById("s-minkost").value;
+  const a = state.start, b = LAATST_VOL, per = `${J[a]}–${J[b]}`;
+  const base = DATA.diagnoses.filter(d => (!spcF || d.s === spcF) && d.p[b] >= state.min).map(d => ({
+    d, pg: cagrOf(d.p), pa: d.p[b] - d.p[a], kg: cagrOf(d.k), ka: d.k[b] - d.k[a],
+    kpp: d.p[b] ? d.k[b] / d.p[b] : 0, kppa: d.p[a] ? d.k[a] / d.p[a] : 0 }));
+  const grown = base.filter(x => x.d.p[a] >= Math.max(state.min, 10));
+  const pick = (arr, key, dir = -1) => arr.filter(x => x[key] != null && isFinite(x[key])).sort((x, y) => dir * (x[key] - y[key])).slice(0, top).map(x => ({ ...x, val: x[key] }));
+  const pctStr = v => fmtPct(v).replace("-", "−");
+  const scope = spcF ? spcByCode[spcF].n : "alle specialismen";
+
+  // tegels: kosten totaal, volume- vs prijseffect
+  const src = spcF ? [spcByCode[spcF]] : DATA.specialismen;
+  const sum = key => J.map((_, i) => src.reduce((t, s) => t + s[key][i], 0));
+  const K = sum("k"), T = sum("t"), P = sum("p");
+  const kg = cagrOf(K), tg = cagrOf(T);
+  const prijs = kg != null && tg != null ? (1 + kg) / (1 + tg) - 1 : null;
+  document.getElementById("s-tiles").innerHTML = `
+    <div class="tile"><div class="lab">Geschatte DBC-kosten ${J[b]}</div><div class="val">${eur(K[b])}</div><div class="foot">${esc(scope)}</div></div>
+    <div class="tile"><div class="lab">Kostengroei per jaar ${per}</div><div class="val">${fmtPct(kg)}</div><div class="foot">${eur(K[b] - K[a])} erbij sinds ${J[a]}</div></div>
+    <div class="tile"><div class="lab">Waarvan volume (subtrajecten)</div><div class="val">${fmtPct(tg)}</div><div class="foot">patiënten ${fmtPct(cagrOf(P))} per jaar</div></div>
+    <div class="tile"><div class="lab">Waarvan prijs en zorgzwaarte</div><div class="val">${fmtPct(prijs)}</div><div class="foot">kosten per subtraject, per jaar</div></div>`;
+
+  const costBase = base.filter(x => x.d.k[a] >= minK);
+  const cards = [
+    rankCard("Snelst groeiende diagnoses", `Gemiddelde groei per jaar in patiënten, ${per}. Minimaal ${fmt.format(Math.max(state.min, 10))} patiënten in zowel ${J[a]} als ${J[b]}; verhoog "Min. patiënten" om kleine aantallen weg te filteren.`,
+      pick(grown, "pg"), pctStr, x => `${fmt.format(x.d.p[a])} → ${fmt.format(x.d.p[b])}`),
+    rankCard("Grootste toename in patiënten", `Absolute toename in aantal patiënten, ${per}.`,
+      pick(base, "pa"), v => (v >= 0 ? "+" : "−") + fmt.format(Math.abs(v)), x => x.pg == null ? `nieuw sinds ${J[a]}` : pctStr(x.pg) + " /jr"),
+    rankCard("Hoogste kostenstijging", `Absolute toename van de geschatte DBC-kosten, ${per}.`,
+      pick(base, "ka"), v => (v >= 0 ? "+" : "−") + eur(Math.abs(v)), x => `${eur(x.d.k[a])} → ${eur(x.d.k[b])}`, "cost"),
+    rankCard("Snelste kostengroei", `Gemiddelde kostengroei per jaar, ${per}. Alleen diagnoses met ${minK ? "minimaal " + eur(minK) : "kosten"} in ${J[a]}.`,
+      pick(costBase, "kg"), pctStr, x => `${eur(x.d.k[a])} → ${eur(x.d.k[b])}`, "cost"),
+    rankCard("Duurste diagnoses", `Geschatte DBC-kosten in ${J[b]}.`,
+      pick(base.map(x => ({ ...x, kb: x.d.k[b] })), "kb"), v => eur(v), x => `${eur(x.kpp)} per patiënt`, "cost"),
+    rankCard("Snelst stijgende behandelgraad", `Toename in procentpunten van het aandeel patiënten met een verstrekking van dure geneesmiddelen (DIS), ${per}. Minimaal 50 behandelde patiënten in ${J[b]}.`,
+      pick(base.filter(x => x.d.b && x.d.b[b] >= 50 && x.d.p[a] > 0).map(x => ({ ...x, gd: x.d.b[b] / x.d.p[b] - x.d.b[a] / x.d.p[a] })), "gd"),
+      v => (v >= 0 ? "+" : "−") + Math.abs(v * 100).toFixed(1).replace(".", ",") + " pp", x => `${pct0(x.d.b[a] / x.d.p[a])} → ${pct0(x.d.b[b] / x.d.p[b])}`),
+    rankCard("Sterkst dalende diagnoses", `Gemiddelde daling per jaar in patiënten, ${per}. Een daling kan ook op een verschuiving naar een andere diagnosecode wijzen.`,
+      pick(grown, "pg", 1).filter(x => x.val < 0), pctStr, x => `${fmt.format(x.d.p[a])} → ${fmt.format(x.d.p[b])}`),
+  ];
+  document.getElementById("s-cards").innerHTML = cards.join("");
+}
+function initStat() {
+  const s = document.getElementById("s-spc");
+  DATA.specialismen.slice().sort((x, y) => x.n.localeCompare(y.n)).forEach(x => { const o = document.createElement("option"); o.value = x.c; o.textContent = x.n; s.appendChild(o); });
+  ["s-spc", "s-top", "s-minkost"].forEach(id => document.getElementById(id).addEventListener("change", renderStat));
+  const cards = document.getElementById("s-cards");
+  const open = li => {
+    showTab("overzicht");
+    state.spc = li.dataset.s; state.dgn = { s: li.dataset.s, c: li.dataset.c };
+    renderDetail();
+    document.getElementById("h-det").scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+  cards.addEventListener("click", e => { const li = e.target.closest("li[data-c]"); if (li) open(li); });
+  cards.addEventListener("keydown", e => { const li = e.target.closest("li[data-c]"); if (li && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); open(li); } });
+}
+let tab = "overzicht";
+function showTab(name) {
+  tab = name;
+  ["overzicht", "statistiek", "koppeling"].forEach(n => {
+    document.getElementById("tab-" + n).setAttribute("aria-selected", n === name);
+    document.getElementById("view-" + n).hidden = n !== name;
+  });
+  document.getElementById("g-zoek").hidden = name !== "overzicht";
+  document.getElementById("f-maat").parentElement.hidden = name !== "overzicht";
+  document.getElementById("f-min").parentElement.hidden = name === "koppeling";
+  if (name === "statistiek") renderStat();
+  if (name === "koppeling") renderKop();
+}
+document.getElementById("tab-overzicht").addEventListener("click", () => { showTab("overzicht"); try { history.replaceState(null, "", "#overzicht"); } catch (e) {} });
+document.getElementById("tab-statistiek").addEventListener("click", () => { showTab("statistiek"); try { history.replaceState(null, "", "#statistiek"); } catch (e) {} });
+
+// ---------- add-on koppeling ----------
+const K = DATA.koppeling;
+const ADDON_URL = "https://medicatieadvies.nl/addon/#atc=";
+const pct0 = v => v == null || !isFinite(v) ? "—" : (v * 100).toLocaleString("nl-NL", { maximumFractionDigits: v < 0.1 ? 1 : 0 }) + "%";
+const kstate = { soort: "", verdeel: "s", id: null, atc: null };
+function clustersVan(d) {
+  if (!K) return [];
+  return K.clusters.filter(c => c.diag.some(([s, x]) => s === d.s && x === d.c));
+}
+// jaren: DIS loopt over J, GIP over GJ; de as loopt van het eerste tot het laatste GIP-jaar
+const GJ = K ? K.gip_jaren : [];
+const KJ = GJ.slice();
+const gIdx = y => GJ.indexOf(y), dIdx = y => J.indexOf(y);
+const addonVoorl = y => K && K.addon_voorlopig.includes(y);
+function serie(c) {
+  // [{key, label, color, vals per KJ (null = geen), voorl(y)}]
+  const v = kstate.verdeel === "s";
+  const s = [
+    { key: "p", label: "Patiënten met diagnose", color: "var(--s1)", vals: KJ.map(y => dIdx(y) >= 0 ? c.p[dIdx(y)] : null), voorl: y => dIdx(y) >= VOORL },
+    { key: "a", label: v ? "Add-on gebruikers (verdeeld)" : "Add-on gebruikers (volledig)", color: "var(--s2)", vals: KJ.map(y => (v ? c.gs : c.gv)[gIdx(y)]), voorl: addonVoorl },
+    { key: "b", label: "Behandeld volgens DIS", color: "var(--s3)", vals: KJ.map(y => dIdx(y) >= 0 ? c.b[dIdx(y)] : null), voorl: y => dIdx(y) >= VOORL },
+  ];
+  if (c.vfg) s.push({ key: "f", label: "Voorfase: extramurale gebruikers", color: "var(--s4)", vals: KJ.map(y => c.vfg[gIdx(y)]), voorl: y => K.farm_voorlopig.includes(y) });
+  return s;
+}
+function kStats(c) {
+  const a = J[state.start], e = J[LAATST_VOL], n = e - a;
+  const g = (arr, ia, ie) => arr && arr[ia] > 0 && arr[ie] > 0 && n > 0 ? Math.pow(arr[ie] / arr[ia], 1 / n) - 1 : null;
+  const v = kstate.verdeel === "s";
+  const kos = v ? c.ks : c.kv, geb = v ? c.gs : c.gv;
+  const ga = gIdx(a), ge = gIdx(e);
+  const graad = (i) => c.p[i] ? c.b[i] / c.p[i] : null;
+  // DIS registreert onderhuidse toediening nauwelijks: markeer als DIS < helft van de add-on gebruikers
+  const onvolledig = geb[ge] > 0 && c.b[dIdx(e)] < 0.5 * geb[ge];
+  return {
+    pat: c.p[dIdx(e)], patG: g(c.p, dIdx(a), dIdx(e)),
+    beh: c.b[dIdx(e)], behG: g(c.b, dIdx(a), dIdx(e)),
+    graadA: graad(dIdx(a)), graadE: graad(dIdx(e)),
+    vf: c.vfg ? c.vfg[ge] : null, vfG: c.vfg ? g(c.vfg, ga, ge) : null,
+    geb: geb[ge], gebG: g(geb, ga, ge),
+    kos: kos[ge], kosG: g(kos, ga, ge),
+    gedeeld: c.kv[ge] ? 1 - c.ke[ge] / c.kv[ge] : 0,
+    onvolledig, a, e,
+  };
+}
+function renderKop() {
+  if (!K) return;
+  const lijst = K.clusters.filter(c => !kstate.soort || c.soort === kstate.soort || (kstate.soort === "immunologie" && c.soort === "immunologie"));
+  if (!kstate.id || !lijst.some(c => c.id === kstate.id)) kstate.id = lijst.slice().sort((x, y) => y.ks[gIdx(J[LAATST_VOL])] - x.ks[gIdx(J[LAATST_VOL])])[0].id;
+  const e = J[LAATST_VOL], ster = addonVoorl(e) ? "*" : "";
+  const concept = Object.values(K.middelen).filter(m => m.st === "concept").length;
+  document.getElementById("k-notice").innerHTML =
+    `<span>Groei ${J[state.start]}–${e}, gemiddeld per jaar</span>` +
+    `<span>Add-on (GIP) ${K.addon_voorlopig.join(", ")}: voorlopig</span>` +
+    (concept ? `<span><span class="flag warn">concept</span> ${concept} van ${Object.keys(K.middelen).length} middelkoppelingen nog niet nagekeken</span>` : "") +
+    `<span style="margin-left:auto">FKG/DKG-indeling risicoverevening ${esc(K.rv_jaar)}</span>`;
+  const rows = lijst.map(c => ({ c, s: kStats(c) }));
+  document.getElementById("t-kop").innerHTML =
+    `<thead><tr><th>Cluster</th><th class="n">Diagnose ${e}</th><th class="n">Voorfase</th><th class="n">Behandeld</th><th class="n">Add-on gebr. ${e}${ster}</th><th class="n">Add-on € ${e}${ster}</th></tr></thead><tbody>` +
+    rows.map(({ c, s }) => `<tr tabindex="0" data-k="${c.id}" class="${c.id === kstate.id ? "sel" : ""}">
+      <td class="name">${esc(c.n)}<small>${c.soort}${s.gedeeld > 0.5 ? ` · ${pct0(s.gedeeld)} gedeeld` : ""}</small></td>
+      <td class="n">${fmt.format(s.pat)}<br>${chip(s.patG)}</td>
+      <td class="n">${s.vf == null ? "—" : compact(s.vf) + "<br>" + chip(s.vfG)}</td>
+      <td class="n">${fmt.format(s.beh)}<br>${s.onvolledig ? `<span class="flag" title="DIS telt minder dan de helft van de add-on gebruikers: orale en onderhuidse middelen worden in DIS nauwelijks als verstrekking geregistreerd">onvolledig</span>` : chip(s.behG)}</td>
+      <td class="n">${fmt.format(s.geb)}<br>${chip(s.gebG)}</td>
+      <td class="n">${eur(s.kos)}<br>${chip(s.kosG)}</td></tr>`).join("") + `</tbody>`;
+  renderKopDetail();
+}
+function renderKopDetail() {
+  const c = K.clusters.find(x => x.id === kstate.id); if (!c) return;
+  const s = kStats(c), v = kstate.verdeel === "s", e = s.e, ge = gIdx(e), ster = addonVoorl(e) ? "*" : "";
+  document.getElementById("k-titel").textContent = c.n;
+  document.getElementById("k-soorttag").textContent = c.soort;
+  document.getElementById("k-basis").textContent = J[state.start];
+  document.getElementById("k-bar").innerHTML = `
+    <span>Diagnose ${e} <b>${fmt.format(s.pat)}</b> (${fmtPct(s.patG)}/jr)</span>
+    <span>Behandelgraad DIS <b>${pct0(s.graadA)} → ${pct0(s.graadE)}</b>${s.onvolledig ? ` <span class="flag">onvolledig</span>` : ""}</span>
+    <span>Add-on ${e}${ster} <b>${eur(s.kos)}</b> (${fmtPct(s.kosG)}/jr)</span>
+    <span>Per gebruiker <b>${s.geb ? eur(s.kos / s.geb) : "—"}</b></span>
+    ${s.gedeeld > 0.05 ? `<span>${pct0(s.gedeeld)} van de kosten in gedeelde middelen</span>` : ""}`;
+  // index-grafiek
+  const ser = serie(c);
+  document.getElementById("k-legend").innerHTML = ser.map(x => `<span><i style="background:${x.color}"></i>${x.label}</span>`).join("");
+  kIndexChart(document.getElementById("k-chart"), ser, J[state.start]);
+  document.getElementById("k-kosten-h").textContent = `Add-on kosten per jaar, ${v ? "gedeelde middelen verdeeld" : "gedeelde middelen volledig"}`;
+  kKostenChart(document.getElementById("k-kosten"), v ? c.ks : c.kv);
+  // middelen
+  const mid = c.atc.map(a => ({ a, m: K.middelen[a] })).filter(x => x.m).sort((x, y) => y.m.k[ge] - x.m.k[ge]);
+  const naamC = id => (K.clusters.find(x => x.id === id) || {}).n || id;
+  document.getElementById("k-mid-note").innerHTML = s.onvolledig
+    ? "Bij dit cluster gaat een groot deel van de middelen oraal of onderhuids. DIS registreert die toediening nauwelijks, dus de verdeling van gedeelde middelen leunt op de infuusbehandelingen en is onzeker."
+    : "Kosten en gebruikers per middel gelden voor alle indicaties samen; bij gedeelde middelen staat het geschatte aandeel van dit cluster erbij.";
+  document.getElementById("t-kmid").innerHTML = `<thead><tr><th>Middel</th><th>FKG</th><th class="n">Kosten ${e}${ster}</th><th class="n">Groei/jr</th><th class="n">Gebruikers</th><th class="n">Aandeel</th><th>Ook bij</th><th></th></tr></thead><tbody>` +
+    mid.map(({ a, m }) => {
+      const andere = m.c.filter(x => x !== c.id);
+      const sh = andere.length ? aandeelVan(a, c, ge) : 1;
+      return `<tr class="${kstate.atc === a ? "sel" : ""}" data-atc="${a}">
+        <td class="name">${esc(m.n)}<small>${a}${m.st === "concept" ? ` · <span class="flag">concept</span>` : ""}</small></td>
+        <td><span class="flag" title="${esc(m.f)}">${esc((m.f || "—").split(" ")[0])}</span></td>
+        <td class="n">${eur(m.k[ge])}</td>
+        <td class="n">${chip(cagrG(m.k))}</td>
+        <td class="n">${fmt.format(m.g[ge])}</td>
+        <td class="n">${andere.length ? pct0(sh) : "100%"}</td>
+        <td>${andere.map(x => `<button type="button" class="linkbtn" data-k="${x}">${esc(naamC(x))}</button>`).join(" ")}</td>
+        <td><a class="ext" href="${ADDON_URL}${a}" target="_blank" rel="noopener">Add-on dashboard ↗</a></td></tr>`;
+    }).join("") + `</tbody>`;
+  // voorfase
+  const vf = (c.vf || []).map(a => ({ a, m: K.vf_middelen[a] })).filter(x => x.m).sort((x, y) => y.m.g[ge] - x.m.g[ge]);
+  document.getElementById("k-vf-note").textContent = vf.length
+    ? `Middelen uit de FKG-klasse(n) ${[...new Set(vf.map(x => x.m.f))].join(", ")}. Gebruikers zijn per middel opgeteld; één patiënt met twee middelen telt twee keer. De klasse kan ook bij andere clusters horen.`
+    : "Voor dit cluster is geen extramurale voorfase gedefinieerd.";
+  document.getElementById("t-kvf").innerHTML = vf.length ? `<thead><tr><th>Middel</th><th class="n">Gebruikers ${e}</th><th class="n">Groei/jr</th><th class="n">Vergoeding ${e}</th></tr></thead><tbody>` +
+    vf.map(({ a, m }) => `<tr><td class="name">${esc(m.n)}<small>${a} · ${esc(m.f)}</small></td><td class="n">${fmt.format(m.g[ge])}</td><td class="n">${chip(cagrG(m.g))}</td><td class="n">${eur(m.k[ge])}</td></tr>`).join("") + `</tbody>` : "";
+  // diagnoses
+  const di = dIdx(e);
+  const dg = c.diag.map(([sp, cd]) => DATA.diagnoses.find(x => x.s === sp && x.c === cd)).filter(Boolean);
+  document.getElementById("t-kdiag").innerHTML = `<thead><tr><th>Diagnose</th><th class="n">Patiënten ${e}</th><th class="n">Groei/jr</th><th class="n">Dure gm.</th><th class="n">% beh.</th></tr></thead><tbody>` +
+    dg.map(d => `<tr tabindex="0" data-s="${d.s}" data-c="${d.c}"><td class="name">${esc(d.n)}<small>${esc(spcByCode[d.s].n)} · ${d.c}</small></td>
+      <td class="n">${fmt.format(d.p[di])}</td><td class="n">${chip(cagrOf(d.p))}</td>
+      <td class="n">${d.b ? fmt.format(d.b[di]) : "—"}</td><td class="n">${d.b && d.p[di] ? pct0(d.b[di] / d.p[di]) : "—"}</td></tr>`).join("") + `</tbody>`;
+}
+function cagrG(arr) {
+  const a = gIdx(J[state.start]), b = gIdx(J[LAATST_VOL]), n = b - a;
+  return arr[a] > 0 && arr[b] > 0 && n > 0 ? Math.pow(arr[b] / arr[a], 1 / n) - 1 : null;
+}
+function aandeelVan(atc, c, ge) {
+  // zelfde sleutel als in koppel_data.py: behandelde patiënten per cluster in dat jaar
+  const m = K.middelen[atc], y = GJ[ge];
+  const cs = m.c.map(id => K.clusters.find(x => x.id === id)).filter(Boolean);
+  const tot = cs.reduce((t, x) => t + (x.b[dIdx(y)] || 0), 0);
+  return tot ? (c.b[dIdx(y)] || 0) / tot : 1 / cs.length;
+}
+function kIndexChart(el, ser, basisJaar) {
+  const W = 640, H = 240, L = 46, R = 150, T = 14, B = 28;
+  const bi = KJ.indexOf(basisJaar);
+  const idx = ser.map(x => x.vals.map(v => v != null && x.vals[bi] > 0 ? v / x.vals[bi] * 100 : null));
+  const all = idx.flat().filter(v => v != null);
+  let lo = Math.min(100, ...all), hi = Math.max(100, ...all);
+  const st = niceStep((hi - lo) / 4 || 10);
+  lo = Math.floor(lo / st) * st; hi = Math.ceil(hi / st) * st;
+  const x = i => L + i * (W - L - R) / (KJ.length - 1), y = v => T + (1 - (v - lo) / (hi - lo)) * (H - T - B);
+  let g = "";
+  for (let v = lo; v <= hi + 1e-9; v += st) g += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)" stroke-width="${v === 100 ? 1.5 : 1}"/><text x="${L - 8}" y="${y(v) + 4}" text-anchor="end" font-size="11" fill="var(--muted)" font-family="var(--f-num)">${Math.round(v)}</text>`;
+  KJ.forEach((yr, i) => g += `<text x="${x(i)}" y="${H - 8}" text-anchor="middle" font-size="11" fill="var(--ink-2)" font-family="var(--f-num)">${yr}</text>`);
+  const eind = [];
+  ser.forEach((s, k) => {
+    const pts = idx[k].map((v, i) => v == null ? null : [x(i), y(v)]);
+    for (let i = 1; i < pts.length; i++) if (pts[i - 1] && pts[i]) {
+      const dash = s.voorl(KJ[i]) ? ` stroke-dasharray="4 3"` : "";
+      g += `<line x1="${pts[i - 1][0]}" y1="${pts[i - 1][1]}" x2="${pts[i][0]}" y2="${pts[i][1]}" stroke="${s.color}" stroke-width="2"${dash}/>`;
+    }
+    pts.forEach((p, i) => { if (p) g += `<circle cx="${p[0]}" cy="${p[1]}" r="3.5" fill="${s.voorl(KJ[i]) ? "var(--surface)" : s.color}" stroke="${s.voorl(KJ[i]) ? s.color : "var(--surface)"}" stroke-width="${s.voorl(KJ[i]) ? 1.5 : 1.5}"/>`; });
+    const li = pts.map((p, i) => p ? i : -1).filter(i => i >= 0).pop();
+    if (li != null && li >= 0) eind.push({ y: pts[li][1], x: pts[li][0], t: `${s.label.split(" (")[0].replace("Patiënten met diagnose", "Diagnose").replace("Behandeld volgens DIS", "Behandeld").replace("Voorfase: extramurale gebruikers", "Voorfase").replace("Add-on gebruikers", "Add-on")} ${Math.round(idx[k][li])}`, c: s.color });
+  });
+  // eindlabels zonder overlap
+  eind.sort((a, b) => a.y - b.y);
+  for (let i = 1; i < eind.length; i++) if (eind[i].y - eind[i - 1].y < 14) eind[i].y = eind[i - 1].y + 14;
+  eind.forEach(l => g += `<text x="${W - R + 8}" y="${l.y + 4}" font-size="11.5" fill="var(--ink)" font-family="var(--f-body)"><tspan fill="${l.c}">●</tspan> ${esc(l.t)}</text>`);
+  const hz = KJ.map((_, i) => `<rect data-i="${i}" x="${x(i) - (W - L - R) / (KJ.length - 1) / 2}" y="${T}" width="${(W - L - R) / (KJ.length - 1)}" height="${H - T - B}" fill="transparent"/>`).join("");
+  el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Geïndexeerd verloop">${g}<line class="xh" x1="0" x2="0" y1="${T}" y2="${H - B}" stroke="var(--ink-2)" opacity="0"/>${hz}</svg><div class="tip" hidden></div>`;
+  const svg = el.querySelector("svg"), tip = el.querySelector(".tip"), xh = el.querySelector(".xh");
+  svg.querySelectorAll("rect[data-i]").forEach(r => {
+    r.addEventListener("mouseenter", () => {
+      const i = +r.dataset.i, bb = svg.getBoundingClientRect(), k = bb.width / W;
+      tip.innerHTML = `<b>${KJ[i]}</b>` + ser.map(s => s.vals[i] == null ? "" : `<div class="row"><i style="background:${s.color}"></i>${s.label.split(" (")[0]}: <b>${fmt.format(Math.round(s.vals[i]))}</b>${s.voorl(KJ[i]) ? " *" : ""}</div>`).join("");
+      tip.style.left = (14 + x(i) * k) + "px"; tip.style.top = (T * k + 10) + "px"; tip.style.transform = "translate(-50%, 0)"; tip.hidden = false;
+      xh.setAttribute("x1", x(i)); xh.setAttribute("x2", x(i)); xh.setAttribute("opacity", 0.35);
+    });
+    r.addEventListener("mouseleave", () => { tip.hidden = true; xh.setAttribute("opacity", 0); });
+  });
+}
+function kKostenChart(el, vals) {
+  const W = 640, H = 170, L = 64, R = 16, T = 20, B = 26;
+  const max = Math.max(...vals, 1) * 1.1, st = niceStep(max / 3), top = Math.ceil(max / st) * st;
+  const bw = (W - L - R) / KJ.length, y = v => T + (1 - v / top) * (H - T - B);
+  let g = "";
+  for (let v = 0; v <= top + 1e-9; v += st) g += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/><text x="${L - 8}" y="${y(v) + 4}" text-anchor="end" font-size="11" fill="var(--muted)" font-family="var(--f-num)">${eur(v)}</text>`;
+  KJ.forEach((yr, i) => {
+    const v = vals[i] || 0, x0 = L + i * bw + bw * 0.22, w = bw * 0.56, vl = addonVoorl(yr);
+    g += `<path d="M${x0},${y(0)}V${y(v) + 4}q0,-4 4,-4h${w - 8}q4,0 4,4V${y(0)}Z" fill="var(--s2)" opacity="${vl ? 0.45 : 0.9}"/>`;
+    g += `<text x="${x0 + w / 2}" y="${y(v) - 5}" text-anchor="middle" font-size="11" fill="var(--ink)" font-family="var(--f-num)">${eur(v)}</text>`;
+    g += `<text x="${x0 + w / 2}" y="${H - 8}" text-anchor="middle" font-size="11" fill="var(--ink-2)" font-family="var(--f-num)">${yr}${vl ? "*" : ""}</text>`;
+  });
+  el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Add-on kosten per jaar">${g}</svg>`;
+}
+function openCluster(id, atc) {
+  kstate.id = id; kstate.atc = atc || null;
+  if (kstate.soort && K.clusters.find(c => c.id === id).soort !== kstate.soort) {
+    kstate.soort = ""; document.querySelectorAll("#k-soort button").forEach(b => b.setAttribute("aria-pressed", b.dataset.v === ""));
+  }
+  showTab("koppeling");
+  try { history.replaceState(null, "", "#koppeling-" + id); } catch (e) {}
+  document.getElementById("k-titel").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+function leesHash() {
+  const h = decodeURIComponent((location.hash || "").slice(1));
+  if (h === "statistiek") return showTab("statistiek");
+  if (!K) return;
+  if (h === "koppeling") return showTab("koppeling");
+  const kc = h.match(/^koppeling-([a-z]+)$/);
+  if (kc && K.clusters.some(c => c.id === kc[1])) { kstate.id = kc[1]; return showTab("koppeling"); }
+  // deeplink op ATC vanuit het add-on dashboard: #atc=L04AG08 of kaal #L04AG08
+  const m = h.match(/^(?:atc=)?([A-Z]\d{2}[A-Z]{2}\d{2})$/i);
+  if (m) {
+    const atc = m[1].toUpperCase(), mid = K.middelen[atc];
+    kstate.atc = atc;
+    if (mid && mid.c.length) {
+      kstate.id = mid.c.slice().sort((a, b) => aandeelVan(atc, K.clusters.find(c => c.id === b), gIdx(J[LAATST_VOL])) - aandeelVan(atc, K.clusters.find(c => c.id === a), gIdx(J[LAATST_VOL])))[0];
+      showTab("koppeling");
+      if (mid.c.length > 1) document.getElementById("k-notice").insertAdjacentHTML("afterbegin",
+        `<span><b>${esc(mid.n)}</b> hoort bij ${mid.c.length} clusters: ${mid.c.map(id => `<button type="button" class="linkbtn" data-k="${id}">${esc(K.clusters.find(c => c.id === id).n)}</button>`).join(" ")}</span>`);
+    } else {
+      showTab("koppeling");
+      document.getElementById("k-notice").insertAdjacentHTML("afterbegin", `<span><span class="flag warn">${esc(atc)}</span> is (nog) niet aan een cluster gekoppeld. De koppeling dekt de grootste add-on-groepen; zie de lijst met clusters hieronder.</span>`);
+    }
+  }
+}
+if (K) {
+  document.getElementById("tab-koppeling").addEventListener("click", () => { showTab("koppeling"); try { history.replaceState(null, "", "#koppeling"); } catch (e) {} });
+  ["k-soort", "k-verdeel"].forEach(id => document.getElementById(id).addEventListener("click", e => {
+    const b = e.target.closest("button"); if (!b) return;
+    e.currentTarget.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b));
+    kstate[id === "k-soort" ? "soort" : "verdeel"] = b.dataset.v; renderKop();
+  }));
+  const view = document.getElementById("view-koppeling");
+  view.addEventListener("click", e => {
+    const k = e.target.closest("[data-k]"); if (k) { kstate.id = k.dataset.k; kstate.atc = null; renderKop(); return; }
+    const d = e.target.closest("#t-kdiag tr[data-c]");
+    if (d) { showTab("overzicht"); state.spc = d.dataset.s; state.dgn = { s: d.dataset.s, c: d.dataset.c }; renderDetail(); document.getElementById("h-det").scrollIntoView({ behavior: "smooth" }); }
+  });
+  view.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { const r = e.target.closest("tr[data-k], tr[data-c]"); if (r) { e.preventDefault(); r.click(); } } });
+} else {
+  document.getElementById("tab-koppeling").hidden = true;
+}
+
+// ---------- interactie ----------
+function seg(id, key, after) {
+  const el = document.getElementById(id);
+  el.addEventListener("click", e => {
+    const b = e.target.closest("button"); if (!b) return;
+    el.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b));
+    state[key] = b.dataset.v; after();
+  });
+}
+seg("f-maat", "maat", renderAll);
+seg("f-scope", "scope", () => { state.limit = 150; renderDgn(); });
+document.getElementById("f-periode").addEventListener("change", e => { state.start = +e.target.value; renderAll(); });
+document.getElementById("f-min").addEventListener("change", e => { state.min = +e.target.value; state.limit = 150; renderAll(); });
+let zt; document.getElementById("f-zoek").addEventListener("input", e => { clearTimeout(zt); zt = setTimeout(() => { state.zoek = e.target.value; state.limit = 150; renderDgn(); }, 150); });
+document.getElementById("more").addEventListener("click", () => { state.limit += 300; renderDgn(); });
+
+function activate(tr) {
+  if (tr.dataset.spc) { state.spc = tr.dataset.spc; state.dgn = null; state.limit = 150; renderDetail(); }
+  else if (tr.dataset.c) {
+    if (tr.dataset.s !== state.spc) state.spc = tr.dataset.s;
+    state.dgn = { s: tr.dataset.s, c: tr.dataset.c };
+    renderDetailHead(); renderChart(); renderSpc();
+    document.querySelectorAll("#t-dgn tr.sel").forEach(x => x.classList.remove("sel")); tr.classList.add("sel");
+  }
+}
+function sortable(tblId, keyK, dirK, rerender) {
+  const t = document.getElementById(tblId);
+  t.addEventListener("click", e => {
+    const th = e.target.closest("th[data-sort]");
+    if (th) {
+      const k = th.dataset.sort;
+      if (state[keyK] === k) state[dirK] *= -1; else { state[keyK] = k; state[dirK] = k === "n" ? 1 : -1; }
+      rerender(); return;
+    }
+    const tr = e.target.closest("tbody tr"); if (tr) activate(tr);
+  });
+  t.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { const tr = e.target.closest("tbody tr"); if (tr) { e.preventDefault(); activate(tr); } } });
+}
+sortable("t-spc", "spcSort", "spcDir", renderSpc);
+sortable("t-dgn", "sort", "dir", renderDgn);
+
+// start: grootste specialisme
+initStatic();
+state.spc = DATA.specialismen.slice().sort((a, b) => b.p[LAATST_VOL] - a.p[LAATST_VOL])[0].c;
+initStat();
+renderAll();
+leesHash();
+</script>
+<!--goatcounter-->
+<script>
+  window.goatcounter = {
+    path: 'diagnosegroei',
+    title: 'Diagnosegroei per specialisme'
+  };
+</script>
+<script data-goatcounter="https://bossenga.goatcounter.com/count"
+        async src="https://gc.zgo.at/count.js"></script>
+<!--/goatcounter-->

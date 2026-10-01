@@ -1,0 +1,100 @@
+name: Diagnosegroei bijwerken
+
+# Het diagnosegroei-dashboard staat als submap in deze repo omdat het hetzelfde
+# FTP-account gebruikt als de horizonscan en de patentchecker (public_html als
+# hoofdmap). GitHub-secrets gelden per repository; zo hoeven ze niet opnieuw te
+# worden ingevoerd. Deze workflow staat verder los van de andere twee.
+#
+# Bronnen: Open DIS (NZa, maandelijks; het bestand van de maand verschijnt rond
+# de 17e) en GIP (Zorginstituut, ongeveer jaarlijks). bijwerken.py kijkt eerst
+# naar de peildatum en de GIP-bestandsnamen en bouwt alleen als er iets nieuw is,
+# dus vaker draaien kost bijna niets.
+#
+# Upload naar medicatieadvies.nl gebeurt pas als de repository-variabele
+# DIAGNOSEGROEI_LIVE op 'true' staat (Settings → Secrets and variables →
+# Actions → Variables). Tot die tijd wordt er wel gebouwd, gecontroleerd en
+# vastgelegd, zodat een run eerst bekeken kan worden.
+
+on:
+  schedule:
+    # 20e en 27e van de maand 05:00 UTC: na de NZa-publicatie, en bewust niet
+    # op de 5e (horizonscan), 8e (add-on dashboard) of 10e (patentchecker).
+    - cron: '0 5 20,27 * *'
+  workflow_dispatch:        # met de knop "Run workflow" ook handmatig te starten
+    inputs:
+      forceer:
+        description: 'Altijd opnieuw bouwen, ook zonder nieuwe data'
+        type: boolean
+        default: false
+  push:
+    branches: [main]
+    # Een wijziging aan het dashboard of de koppeltabel bouwt opnieuw. Pushes van
+    # de workflow zelf (GITHUB_TOKEN) starten geen nieuwe run.
+    paths:
+      - 'diagnosegroei/template.html'
+      - 'diagnosegroei/*.py'
+      - 'diagnosegroei/koppeling/*.csv'
+      - '.github/workflows/diagnosegroei.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: diagnosegroei
+  cancel-in-progress: false
+
+defaults:
+  run:
+    working-directory: diagnosegroei
+
+jobs:
+  bijwerken:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: diagnosegroei/requirements.txt
+
+      - name: Afhankelijkheden installeren
+        run: pip install -r requirements.txt
+
+      # data/ staat niet in de repo en wordt vers opgehaald (02_DBC_PROFIEL als
+      # stroom gefilterd, ± 750 MB). --ci stopt hard bij een onbereikbare bron,
+      # een gewijzigde pagina-indeling of een mislukte controle: er komt nooit een
+      # halve pagina online. Bij een push of --forceer wordt altijd gebouwd.
+      - name: Bronnen ophalen en dashboard bouwen
+        id: bouw
+        run: >
+          python3 bijwerken.py --ci
+          ${{ (github.event_name == 'push' || inputs.forceer) && '--forceer' || '' }}
+
+      - name: Wijzigingen vastleggen in de repo
+        if: steps.bouw.outputs.gebouwd == 'ja'
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add dashboard.html stand.json
+          git diff --cached --quiet && echo "geen wijzigingen" || \
+            git commit -m "Diagnosegroei bijgewerkt $(date +%F)"
+          git pull --rebase
+          git push
+
+      - name: Uploaden naar medicatieadvies.nl
+        if: steps.bouw.outputs.gebouwd == 'ja' && vars.DIAGNOSEGROEI_LIVE == 'true'
+        env:
+          FTP_HOST: ${{ secrets.FTP_HOST_HORIZONSCAN || secrets.FTP_HOST }}
+          FTP_USER: ${{ secrets.FTP_USER_HORIZONSCAN || secrets.FTP_USER }}
+          FTP_PASS: ${{ secrets.FTP_PASS_HORIZONSCAN || secrets.FTP_PASS }}
+          FTP_DIR:  diagnosegroei
+          FTP_CERT_HOST: ${{ secrets.FTP_CERT_HOST }}
+          FTP_INSECURE_TLS: ${{ secrets.FTP_INSECURE_TLS }}
+        run: python3 deploy_ftp.py
+
+      - name: Upload overgeslagen
+        if: steps.bouw.outputs.gebouwd == 'ja' && vars.DIAGNOSEGROEI_LIVE != 'true'
+        run: echo "::notice::Gebouwd en vastgelegd, niet geüpload — zet de variabele DIAGNOSEGROEI_LIVE op 'true' om te publiceren."

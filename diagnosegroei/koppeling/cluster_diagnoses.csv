@@ -1,0 +1,56 @@
+﻿cluster_id;specialisme_cd;diagnose_cd;rol;opmerking;dkg_2026
+ms;0330;0531;kern;;211072 Overige aandoeningen van het centrale zenuwstelsel
+cu;0318;602;kern;;71041 Enteritis regionalis, idiopathische proctocolitis
+cu;0313;923;aanvullend;interne geneeskunde;21041 Enteritis regionalis, idiopathische proctocolitis
+cu;0303;325;aanvullend;chirurgie;91041 Enteritis regionalis, idiopathische proctocolitis
+cu;0316;3314;aanvullend;kinder-IBD: CU en Crohn samen, staat ook bij crohn;500012 Inflam. Darmziekten (M Crohn, CU)
+crohn;0318;601;kern;;71041 Enteritis regionalis, idiopathische proctocolitis
+crohn;0313;922;aanvullend;interne geneeskunde;21041 Enteritis regionalis, idiopathische proctocolitis
+crohn;0303;326;aanvullend;chirurgie;91041 Enteritis regionalis, idiopathische proctocolitis
+crohn;0316;3314;aanvullend;kinder-IBD: CU en Crohn samen, staat ook bij cu;500012 Inflam. Darmziekten (M Crohn, CU)
+psoriasis;0310;20;kern;Psoriatiforme dermatosen, breder dan plaque psoriasis;500009 Psoriatiforme dermatosen
+psoriasis;0324;720;aanvullend;reumatologie;
+eczeem;0310;05;kern;constitutioneel eczeem;
+eczeem;0326;D1;aanvullend;allergologie, met voedselallergie;
+eczeem;0326;D2;aanvullend;allergologie, zonder voedselallergie;
+eczeem;0316;7401;aanvullend;kindergeneeskunde, alle eczeem;
+psa;0324;102;kern;vnl. perifeer;
+psa;0324;202;kern;vnl. axiaal;
+psa;0313;512;aanvullend;interne geneeskunde;
+ra;0324;101;kern;;51048 Rheumatoïde artritis en aandoeningen van bindweefsel
+ra;0313;521;aanvullend;interne geneeskunde;21048 Rheumatoïde artritis en aandoeningen van bindweefsel
+axspa;0324;201;kern;spondylitis ankylopoetica;51048 Rheumatoïde artritis en aandoeningen van bindweefsel
+axspa;0324;203;kern;spondylartropathie niet gedifferentieerd;
+axspa;0305;1394;aanvullend;orthopedie, Morbus Bechterew;111048 (Infectieuze) artritiden en osteomyelitis
+oog;0301;704;kern;subretinale neovascularisatie (nAMD);247023 Subretinale neovascularisatie
+oog;0301;707;kern;maculadegeneratie;247024 Maculapathieen
+oog;0301;705;kern;maculopathie;247024 Maculapathieen
+oog;0301;657;kern;vaatafsluiting (RVO);247022 Vaatafsluiting
+oog;0301;709;aanvullend;overige pathologie macula;247024 Maculapathieen
+oog;0301;754;aanvullend;NPDRP, bevat DMO;
+oog;0301;755;aanvullend;preproliferatieve DRP;247025 Preprolif. DRP
+oog;0301;757;aanvullend;PDRP;247025 Preprolif. DRP
+oog;0301;759;aanvullend;overige pathologie DRP;247025 Preprolif. DRP
+prostaat;0306;040;kern;;101018 Maligne neoplasma prostaat / testis / mannelijke geslachtsorganen (incl. metastasen)
+prostaat;0306;045;aanvullend;lymfnodi;
+prostaat;0306;048;aanvullend;orchidectomie;101018 Maligne neoplasma prostaat / testis / mannelijke geslachtsorganen (incl. metastasen)
+prostaat;0313;832;kern;interne geneeskunde (medische oncologie);21018 Maligne neoplasma prostaat
+nsclc;0322;1303;kern;;41013 Maligne neoplasma tractus respiratorius en overige neoplasma
+myeloom;0313;754;kern;inclusief primaire amyloïdose;27015 Proliferatieve maligniteiten vh beenmerg
+mamma;0313;811;kern;interne geneeskunde (medische oncologie);21014 Borstkanker (incl. metastasen)
+mamma;0303;318;aanvullend;chirurgie;91014 Borstkanker
+melanoom;0313;842;kern;huid/melanoom, bevat ook andere huidmaligniteiten;27007 Maligniteit huid/melanoom
+melanoom;0303;350;aanvullend;chirurgie;91021 Maligne neoplasma schildklier, huid en bewegingsapparaat
+crc;0313;927;kern;;21011 Maligne neoplasma colon / rectum (incl. metastasen)
+crc;0318;610;aanvullend;MDL;71011 Maligne neoplasma van het colon / rectum (incl. metastasen)
+crc;0303;333;aanvullend;chirurgie, colon;91011 Maligne neoplasma van het colon
+crc;0303;335;aanvullend;chirurgie, rectum;97011 Maligne neoplasma rectum
+rcc;0313;834;kern;maligniteit nier, bevat ook andere niertumoren;21019 Maligne neoplasma blaas / nier / overige urine-organen
+rcc;0306;010;aanvullend;urologie, (bij)niertumor;102019 Maligne neoplasma (bij)nier / overige urine-organen (incl. metastasen)
+lymfoom;0313;757;kern;CLL, Waldenström, hairy cell;21015 Maligne neoplasma lymfatisch weefsel
+lymfoom;0313;752;kern;NHL laaggradig;21015 Maligne neoplasma lymfatisch weefsel
+lymfoom;0313;753;kern;NHL intermediair/hooggradig;21015 Maligne neoplasma lymfatisch weefsel
+lymfoom;0313;751;kern;Hodgkin;21015 Maligne neoplasma lymfatisch weefsel
+astma;0322;1201;kern;;41110 Astma
+astma;0313;601;aanvullend;interne geneeskunde;21105 Chronische obstructieve longziekten (COPD) / astma
+astma;0316;3202;aanvullend;kindergeneeskunde, astma/BHR;
