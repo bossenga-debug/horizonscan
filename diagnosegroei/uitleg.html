@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Uitleg diagnosegroei-dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: één leeskolom (± 70 tekens) met een inhoudsopgave erboven; zelfde tokens als het dashboard. */
+:root {
+  --bg: #f4f7f6; --surface: #ffffff; --sunk: #eaf0ee;
+  --ink: #0f1e1d; --ink-2: #475857; --muted: #768684; --line: #dbe3e1;
+  --accent: #0e6b66; --accent-soft: #d8ecea;
+  --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #4a3aa7;
+  --f-body: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-num: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --r: 6px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0e1615; --surface: #152120; --sunk: #1b2928;
+  --ink: #ecf3f2; --ink-2: #b3c3c0; --muted: #82938f; --line: #263533;
+  --accent: #4bb8ae; --accent-soft: #1d3a37;
+  --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #9085e9;
+  color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #0e1615; --surface: #152120; --sunk: #1b2928;
+  --ink: #ecf3f2; --ink-2: #b3c3c0; --muted: #82938f; --line: #263533;
+  --accent: #4bb8ae; --accent-soft: #1d3a37;
+  --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #9085e9;
+  color-scheme: dark; }
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.6; }
+.terugbalk { background: var(--surface); border-bottom: 1px solid var(--line); padding: 9px 16px; display: flex; flex-wrap: wrap; gap: 6px 20px; }
+.terugbalk a { color: var(--accent); font-size: 13px; text-decoration: none; }
+.terugbalk a:hover { text-decoration: underline; }
+main { max-width: 760px; margin: 0 auto; padding: 28px 16px 64px; }
+h1 { font-size: 28px; line-height: 1.2; margin: 0 0 8px; letter-spacing: -0.01em; text-wrap: balance; }
+.lead { font-size: 17px; color: var(--ink-2); margin: 0 0 24px; max-width: 65ch; }
+h2 { font-size: 19px; margin: 40px 0 8px; padding-top: 8px; border-top: 1px solid var(--line); text-wrap: balance; scroll-margin-top: 16px; }
+h3 { font-size: 15px; margin: 22px 0 4px; }
+p, li { max-width: 68ch; }
+p { margin: 8px 0; }
+ul { padding-left: 20px; margin: 8px 0; }
+li { margin: 4px 0; }
+a { color: var(--accent); }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+code { font-family: var(--f-num); font-size: 13px; background: var(--sunk); padding: 1px 5px; border-radius: 4px; }
+.toc { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 12px 18px; }
+.toc b { font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.toc ul { list-style: none; padding: 0; margin: 6px 0 0; columns: 2 220px; column-gap: 24px; }
+.toc li { margin: 2px 0; break-inside: avoid; }
+.knop { display: inline-block; background: var(--accent); color: var(--surface); text-decoration: none; font-weight: 600; font-size: 14px; padding: 8px 14px; border-radius: var(--r); }
+.knop:hover { filter: brightness(1.08); }
+.let { background: var(--accent-soft); border-radius: var(--r); padding: 10px 14px; margin: 12px 0; }
+.let p { margin: 4px 0; }
+.scroll { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; margin: 10px 0; }
+th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); padding: 6px 8px; border-bottom: 1px solid var(--line); }
+td { padding: 7px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+td:first-child { font-weight: 600; white-space: nowrap; }
+.jaren { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
+.jaren span { font-size: 13px; padding: 4px 10px; border-radius: 4px; background: var(--surface); border: 1px solid var(--line); display: inline-flex; align-items: center; gap: 8px; }
+.jaren i { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+.reeks { display: grid; grid-template-columns: 14px minmax(0, 1fr); gap: 4px 10px; align-items: baseline; margin: 10px 0; }
+.reeks i { width: 14px; height: 3px; border-radius: 2px; display: inline-block; transform: translateY(-4px); }
+dl { margin: 10px 0; }
+dt { font-weight: 600; margin-top: 12px; }
+dd { margin: 2px 0 0; color: var(--ink-2); max-width: 66ch; }
+footer { margin-top: 48px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 13px; color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="terugbalk">
+  <a href="./">&larr; Terug naar het dashboard</a>
+  <a href="https://medicatieadvies.nl">Medicatieadvies.nl</a>
+</div>
+<main>
+  <h1>Uitleg bij het diagnosegroei-dashboard</h1>
+  <p class="lead">Het dashboard laat zien hoe het aantal ziekenhuisdiagnoses per specialisme groeit, en legt voor een aantal ziektebeelden de verbinding met het gebruik en de kosten van add-on geneesmiddelen. Het is bedoeld als vroeg signaal: waar het aantal patiënten of de behandelgraad toeneemt, groeit het geneesmiddelgebruik meestal mee.</p>
+  <p><a class="knop" href="./">Naar het dashboard</a></p>
+
+  <nav class="toc" aria-label="Inhoud">
+    <b>Op deze pagina</b>
+    <ul>
+      <li><a href="#bronnen">Bronnen</a></li>
+      <li><a href="#jaren">Welke jaren volledig zijn</a></li>
+      <li><a href="#overzicht">Tabblad Overzicht</a></li>
+      <li><a href="#statistiek">Tabblad Statistiek</a></li>
+      <li><a href="#koppeling">Tabblad Add-on koppeling</a></li>
+      <li><a href="#kanttekeningen">Kanttekeningen</a></li>
+      <li><a href="#links">Links en bijwerken</a></li>
+      <li><a href="#begrippen">Begrippen</a></li>
+    </ul>
+  </nav>
+
+  <h2 id="bronnen">Bronnen</h2>
+  <p>Alle cijfers komen uit openbare bronnen. Het dashboard voegt ze samen; het verandert niets aan de cijfers zelf.</p>
+  <div class="scroll"><table>
+    <thead><tr><th>Bron</th><th>Wat het levert</th><th>Ververst</th></tr></thead>
+    <tbody>
+      <tr><td><a href="https://opendisdata.nza.nl/#start" target="_blank" rel="noopener">Open DIS-data</a> (NZa)</td><td>DBC-trajecten per jaar, specialisme, diagnose en zorgproduct: patiënten, subtrajecten, gemiddelde verkoopprijs, en de geregistreerde zorgactiviteiten.</td><td>maandelijks</td></tr>
+      <tr><td><a href="https://www.zorgcijfersdatabank.nl/algemeen/open-data-gip" target="_blank" rel="noopener">GIP-databank</a> (Zorginstituut)</td><td>Vergoeding en aantal gebruikers per add-on geneesmiddel, en per extramuraal geneesmiddel (voorfase).</td><td>ongeveer jaarlijks</td></tr>
+      <tr><td><a href="https://www.farmatec.nl/prijsvorming/add-on-geneesmiddelen-sluismiddelen/actuele-publicaties" target="_blank" rel="noopener">Add-on GS-lijst</a> (Farmatec)</td><td>Vergoedingsindicaties per middel, gebruikt om middelen aan clusters te koppelen.</td><td>maandelijks</td></tr>
+      <tr><td><a href="https://www.zorginstituutnederland.nl/financiering/informatie-voor-zorginstanties-verzekeraars-en-zorgkantoren/risicoverevening-zvw" target="_blank" rel="noopener">FKG- en DKG-indeling</a> (risicoverevening)</td><td>Officiële groepering van geneesmiddelen (ATC) en diagnoses, gebruikt als controle op de koppeling.</td><td>jaarlijks</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 id="jaren">Welke jaren volledig zijn</h2>
+  <p>Een DBC telt mee in het jaar waarin hij <em>begint</em>, maar komt pas in de NZa-data als hij is afgesloten en gedeclareerd. Daardoor lopen de laatste jaren altijd achter:</p>
+  <div class="jaren" aria-label="Status van de jaren">
+    <span><i style="background:var(--s1)"></i>volledig: alle jaren tot twee jaar voor de peildatum</span>
+    <span><i style="background:var(--surface);border:2px solid var(--s1)"></i>voorlopig: het jaar vóór de peildatum, nog in aanlevering</span>
+    <span><i style="border:2px dashed var(--muted)"></i>lopend: het huidige jaar, grotendeels leeg</span>
+  </div>
+  <p>In grafieken staat een voorlopig jaar als open punt met een gestippelde lijn; in tabellen met een <code>*</code> (voorlopig) of <code>**</code> (lopend). Groei wordt daarom altijd berekend over <strong>volledige jaren</strong>. Een daling in het voorlopige jaar is bijna altijd achterstand in aanlevering, geen echte daling.</p>
+  <p>Ook in de GIP-cijfers zijn de laatste twee jaren voorlopig; die staan bij add-on cijfers met een <code>*</code>.</p>
+
+  <h2 id="overzicht">Tabblad Overzicht</h2>
+  <p>Links staan alle specialismen, rechts de diagnoses van het gekozen specialisme. Klik op een specialisme om de diagnoses te zien, en op een diagnose voor de grafiek van die diagnose.</p>
+  <h3>Filters bovenaan</h3>
+  <ul>
+    <li><strong>Maat</strong>: patiënten, subtrajecten of geschatte kosten.</li>
+    <li><strong>Groeiperiode</strong>: het startjaar waarvandaan de groei per jaar wordt berekend, altijd tot het laatste volledige jaar.</li>
+    <li><strong>Min. patiënten</strong>: verbergt diagnoses met weinig patiënten. Kleine aantallen geven grote, weinig zeggende percentages.</li>
+    <li><strong>Zoek diagnose</strong>: zoekt in alle specialismen, op naam of code. Elk woord moet voorkomen; hoofdletters en accenten maken niet uit. Tip: de NZa-namen zijn soms anders dan verwacht, zoek bijvoorbeeld op <code>psori</code> in plaats van <code>psoriasis</code>.</li>
+  </ul>
+  <h3>Kolommen</h3>
+  <ul>
+    <li><strong>Verloop</strong>: de vorm van de reeks (schaal van laagste tot hoogste waarde, dus kleine veranderingen lijken groot).</li>
+    <li><strong>Groei/jr</strong>: gemiddelde jaarlijkse groei over de groeiperiode.</li>
+    <li><strong>Δ absoluut</strong>: verschil tussen startjaar en laatste volledige jaar.</li>
+    <li><strong>Signaal</strong>: hoe de diagnose het in het voorlopige jaar doet <em>vergeleken met het hele specialisme</em>. Omdat de achterstand binnen een specialisme ongeveer gelijk is, betekent een positief signaal dat de diagnose harder groeit dan het specialisme.</li>
+    <li><strong>% beh.</strong>: aandeel patiënten dat dure geneesmiddelen kreeg volgens de DIS-registratie (zie <a href="#koppeling">behandeld</a>).</li>
+  </ul>
+
+  <h2 id="statistiek">Tabblad Statistiek</h2>
+  <p>Ranglijsten over alle specialismen heen, of binnen één specialisme: snelst groeiende diagnoses, grootste toename in patiënten, hoogste en snelste kostenstijging, duurste diagnoses, snelst stijgende behandelgraad en sterkst dalende diagnoses. Klik op een diagnose om hem in het overzicht te openen.</p>
+  <p>De tegels bovenaan splitsen de kostengroei in een <strong>volumedeel</strong> (meer subtrajecten) en een deel <strong>prijs en zorgzwaarte</strong> (hogere kosten per subtraject, inclusief jaarlijkse indexatie).</p>
+  <div class="let"><p>Dalers verdienen een tweede blik: een sterke daling is vaak een verschuiving naar een andere diagnosecode, geen echte afname.</p></div>
+
+  <h2 id="koppeling">Tabblad Add-on koppeling</h2>
+  <p>Er bestaat geen officiële sleutel tussen een diagnose en een add-on geneesmiddel. Het dashboard legt die verbinding via <strong>therapeutische clusters</strong>: een groep DBC-diagnoses (bijvoorbeeld multiple sclerose) met de add-on middelen die daarbij horen. De koppeling is handmatig opgesteld uit de vergoedingsindicaties en gecontroleerd tegen de FKG/DKG-indeling van de risicoverevening.</p>
+  <h3>De vier reeksen in de grafiek</h3>
+  <p>De grafiek toont elke reeks als index (startjaar = 100), zodat je de groei kunt vergelijken ook al verschillen de aantallen sterk.</p>
+  <div class="reeks">
+    <i style="background:var(--s1)"></i><span><strong>Diagnose</strong>: patiënten met een van de diagnoses van het cluster (NZa).</span>
+    <i style="background:var(--s4)"></i><span><strong>Voorfase</strong>: gebruikers van de extramurale eerstelijnsmiddelen, zoals methotrexaat bij reuma of mesalazine bij IBD (GIP). Dit is de groep waaruit later add-on gebruikers kunnen komen.</span>
+    <i style="background:var(--s3)"></i><span><strong>Behandeld</strong>: patiënten die volgens de NZa-registratie dure geneesmiddelen kregen.</span>
+    <i style="background:var(--s2)"></i><span><strong>Add-on gebruikers</strong>: gebruikers van de gekoppelde add-on middelen (GIP).</span>
+  </div>
+  <h3>Behandeld: twee bronnen</h3>
+  <p>Per cluster telt "behandeld" via één vaste bron, zodat de trend niet verspringt:</p>
+  <ul>
+    <li><strong>Toedieningsactiviteit</strong>: een geregistreerde verstrekking, bijvoorbeeld 039137 "biologicals per infuus". Werkt het best bij auto-immuunziekten, astma en oogaandoeningen.</li>
+    <li><strong>Geneesmiddel-zorgproduct</strong>: een zorgproduct waarvan de omschrijving over toediening of begeleiding van geneesmiddelen gaat, bijvoorbeeld 028999017 "Toediening immunotherapie via infuus/injectie". Telt ook begeleiding van orale therapie en werkt daardoor het best bij oncologie en hematologie. Elk cluster toont zijn geneesmiddel-zorgproducten in een eigen tabel.</li>
+  </ul>
+  <p>Als de NZa-registratie minder dan de helft van de add-on gebruikers telt, staat bij het cluster <strong>onvolledig</strong>. Dat komt doordat orale en onderhuidse middelen nauwelijks als toediening worden geregistreerd.</p>
+  <h3>Gedeelde middelen</h3>
+  <p>Sommige middelen horen bij meer clusters; pembrolizumab bijvoorbeeld bij zes tumorsoorten. De GIP-cijfers splitsen niet per indicatie. Met de knop <strong>Gedeelde middelen</strong> kies je:</p>
+  <ul>
+    <li><strong>Verdeeld (schatting)</strong>: kosten en gebruikers verdeeld naar rato van de behandelde patiënten per cluster.</li>
+    <li><strong>Volledig meetellen</strong>: het hele bedrag bij elk cluster. Clusters mag je dan niet optellen.</li>
+  </ul>
+  <h3>Middelen, voorfase en diagnoses</h3>
+  <p>Onder de grafieken staan de gekoppelde add-on middelen (met FKG-klasse, kosten, groei, het aandeel van dit cluster en een link naar het <a href="https://medicatieadvies.nl/addon/" target="_blank" rel="noopener">add-on dashboard</a>), de voorfasemiddelen, de geneesmiddel-zorgproducten en de diagnoses van het cluster. Een middel met het label <strong>concept</strong> is voorgesteld maar nog niet inhoudelijk nagekeken.</p>
+
+  <h2 id="kanttekeningen">Kanttekeningen</h2>
+  <ul>
+    <li><strong>Patiënten tellen per diagnose en specialisme.</strong> Eén patiënt met twee diagnoses telt twee keer; optellen over diagnoses levert geen unieke patiënten op.</li>
+    <li><strong>Kosten zijn een schatting</strong>: subtrajecten × de landelijk gemiddelde verkoopprijs van het zorgproduct in dat jaar. Nominaal, dus inclusief prijsindexatie. Add-on geneesmiddelen worden apart gedeclareerd en zitten <em>niet</em> in deze DBC-kosten.</li>
+    <li><strong>Gebruikers van geneesmiddelen tellen per middel.</strong> Wie twee middelen gebruikt, telt twee keer.</li>
+    <li><strong>Behandeld is een benadering.</strong> Een patiënt met meer geneesmiddel-zorgproducten of -activiteiten in een jaar telt meer keer mee; per diagnose is dat begrensd op het aantal patiënten met die diagnose.</li>
+    <li><strong>Registratie verandert.</strong> Nieuwe of vervallen diagnosecodes geven schijnbare groei of daling.</li>
+    <li><strong>De koppeling is een keuze.</strong> Welke diagnoses en middelen bij een cluster horen, is vastgelegd in een openbare koppeltabel; zie hieronder.</li>
+  </ul>
+
+  <h2 id="links">Links en bijwerken</h2>
+  <p>Het dashboard wordt automatisch bijgewerkt zodra de NZa of het Zorginstituut nieuwe data publiceert; de datum staat rechtsboven op het dashboard. Je kunt direct naar een onderdeel linken:</p>
+  <ul>
+    <li><code>…/diagnosegroei/#statistiek</code>: het tabblad Statistiek;</li>
+    <li><code>…/diagnosegroei/#koppeling-ms</code>: een cluster, hier multiple sclerose;</li>
+    <li><code>…/diagnosegroei/#atc=L04AG08</code>: het cluster waar een add-on middel bij hoort. Deze link staat ook bij de middelen in het add-on dashboard.</li>
+  </ul>
+  <p>De koppeltabel en de rekenregels staan openbaar in de map <a href="https://github.com/bossenga-debug/horizonscan/tree/main/diagnosegroei" target="_blank" rel="noopener">diagnosegroei</a> op GitHub.</p>
+
+  <h2 id="begrippen">Begrippen</h2>
+  <dl>
+    <dt>DBC / subtraject</dt>
+    <dd>Diagnose-behandelcombinatie: de eenheid waarin ziekenhuiszorg wordt geregistreerd en gedeclareerd. Een patiënt kan in een jaar meer subtrajecten hebben.</dd>
+    <dt>Zorgproduct</dt>
+    <dd>De declarabele uitkomst van een subtraject, met een eigen code en omschrijving.</dd>
+    <dt>Add-on geneesmiddel</dt>
+    <dd>Duur geneesmiddel dat het ziekenhuis apart van de DBC declareert.</dd>
+    <dt>Groei per jaar (CAGR)</dt>
+    <dd>Gemiddelde jaarlijkse groei: de groei die elk jaar gelijk zou moeten zijn om van het startjaar op het eindjaar uit te komen.</dd>
+    <dt>Behandelgraad</dt>
+    <dd>Behandelde patiënten gedeeld door patiënten met de diagnose, in hetzelfde jaar.</dd>
+    <dt>Cluster</dt>
+    <dd>Groep diagnoses met de add-on middelen die daarbij horen, zoals multiple sclerose of niet-kleincellig longcarcinoom.</dd>
+    <dt>FKG / DKG</dt>
+    <dd>Farmaceutische en diagnosekostengroepen uit de risicoverevening van zorgverzekeraars: een officiële indeling van geneesmiddelen en diagnoses naar ziektebeeld.</dd>
+  </dl>
+
+  <footer>
+    <p>Vragen of opmerkingen? Mail naar info@medicatieadvies.nl.</p>
+    <p><a href="./">&larr; Terug naar het dashboard</a></p>
+  </footer>
+</main>
+<!--goatcounter-->
+<script>
+  window.goatcounter = {
+    path: 'diagnosegroei/uitleg',
+    title: 'Uitleg diagnosegroei-dashboard'
+  };
+</script>
+<script data-goatcounter="https://bossenga.goatcounter.com/count"
+        async src="https://gc.zgo.at/count.js"></script>
+<!--/goatcounter-->
+</body>
+</html>

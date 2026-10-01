@@ -32,6 +32,7 @@ on:
     # de workflow zelf (GITHUB_TOKEN) starten geen nieuwe run.
     paths:
       - 'diagnosegroei/template.html'
+      - 'diagnosegroei/uitleg.html'
       - 'diagnosegroei/*.py'
       - 'diagnosegroei/koppeling/*.csv'
       - '.github/workflows/diagnosegroei.yml'

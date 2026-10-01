@@ -148,18 +148,30 @@ a.ext:hover { text-decoration: underline; }
 .tip .row { display: flex; gap: 8px; align-items: center; }
 .tip .row i { width: 10px; height: 3px; display: inline-block; }
 .linkbtn { font: inherit; font-size: 12px; color: var(--accent); background: none; border: 1px solid var(--line); border-radius: 4px; padding: 1px 8px; cursor: pointer; }
+.terugbalk { background: var(--surface); border-bottom: 1px solid var(--line); padding: 9px 16px; }
+.terugbalk a { color: var(--accent); font-size: 13px; text-decoration: none; }
+.terugbalk a:hover { text-decoration: underline; }
+.kopacties { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+.uitlegknop { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--accent); background: var(--surface); border: 1px solid var(--accent); border-radius: var(--r); padding: 5px 12px; text-decoration: none; }
+.uitlegknop:hover { background: var(--accent-soft); }
+.uitlegknop:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+@media (max-width: 600px) { .kopacties { align-items: flex-start; } .meta { text-align: left; } }
 footer { font-size: 12px; color: var(--muted); max-width: 90ch; }
 footer p { margin: 4px 0; }
 footer a { color: var(--accent); }
 </style>
 
+<div class="terugbalk"><a href="https://medicatieadvies.nl">&larr; Terug naar Medicatieadvies.nl</a></div>
 <div class="wrap">
   <header>
     <div>
       <h1>Diagnosegroei per specialisme</h1>
       <p class="sub">Aantal patiënten en DBC-subtrajecten per diagnose, per behandelend specialisme, uit Open DIS-data van de NZa. Bedoeld om te zien waar diagnoses groeien, als voorbode van geneesmiddelgebruik.</p>
     </div>
-    <div class="meta" id="meta"></div>
+    <div class="kopacties">
+      <a class="uitlegknop" href="uitleg.html">Uitleg bij dit dashboard <span aria-hidden="true">→</span></a>
+      <div class="meta" id="meta"></div>
+    </div>
   </header>
 
   <nav class="tabs" role="tablist" aria-label="Weergave">
@@ -284,6 +296,7 @@ footer a { color: var(--accent); }
     <p><b>Signaal voorlopig jaar</b> vergelijkt de groei van een diagnose in het voorlopige jaar met die van het hele specialisme. De achterstand in aanlevering is binnen een specialisme ongeveer gelijk, dus een positief signaal betekent dat de diagnose harder groeit dan het specialisme. Het is een indicatie, geen definitief cijfer.</p>
     <p><b>Kosten</b> zijn een schatting: aantal subtrajecten per zorgproduct × de landelijk gemiddelde verkoopprijs van dat zorgproduct in dat jaar, opgeteld per diagnose. Zorgproducten zonder vastgestelde prijs (minder dan 1% van de subtrajecten) tellen niet mee. De prijzen zijn nominaal, dus kostengroei bevat ook de jaarlijkse prijsindexatie. Add-on geneesmiddelen worden apart gedeclareerd en zitten <em>niet</em> in de DBC-prijs.</p>
     <p><b>Add-on koppeling.</b> Een cluster koppelt DBC-diagnoses (Open DIS) aan add-on geneesmiddelen (GIP-databank, Zorginstituut) via een handmatig beheerde koppeltabel, gecontroleerd tegen de FKG- en DKG-indeling van de risicoverevening. <em>Behandeld</em> telt patiënten die dure geneesmiddelen kregen bij die diagnoses, via één van twee DIS-bronnen, vast per cluster: een toedieningsactiviteit (bijvoorbeeld 039137 biologicals per infuus) of een geneesmiddel-zorgproduct (bijvoorbeeld 028999017 toediening immunotherapie via infuus/injectie, of begeleiding van orale therapie). Zorgproducten werken het best bij oncologie en hematologie, activiteiten bij auto-immuunziekten; onderhuidse middelen worden in beide nauwelijks geregistreerd. <em>Voorfase</em> telt gebruikers van de extramurale eerstelijnsmiddelen (GIP farmacie, per middel opgeteld). Middelen die bij meer clusters horen worden in de stand <em>verdeeld</em> toegerekend naar rato van de behandelde patiënten per cluster; dat is een schatting. Add-on cijfers met * zijn voorlopig.</p>
+    <p><a href="uitleg.html">Volledige uitleg bij dit dashboard</a>, met bronnen, begrippen en kanttekeningen.</p>
     <p>Patiënten tellen per diagnose en specialisme: één patiënt met twee diagnoses telt twee keer. Bron: <a href="https://opendisdata.nza.nl/#start" target="_blank" rel="noopener">Open DIS-data, Nederlandse Zorgautoriteit</a> (CC0).</p>
   </footer>
 </div>

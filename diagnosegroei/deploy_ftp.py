@@ -32,6 +32,7 @@ BASE = os.path.dirname(os.path.abspath(__file__))
 # horizonscan, patentchecker en addon). Alle data zit in dat ene bestand.
 BESTANDEN = [
     (os.path.join(BASE, 'dashboard.html'), 'index.html'),
+    (os.path.join(BASE, 'uitleg.html'), 'uitleg.html'),
 ]
 
 # Wordt alleen geplaatst als er nog geen .htaccess staat, zodat een eigen versie
