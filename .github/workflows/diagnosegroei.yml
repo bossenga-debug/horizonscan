@@ -84,8 +84,11 @@ jobs:
           git pull --rebase
           git push
 
+      # Uploaden na een nieuwe bouw, en bij een handmatige run altijd: dan staat
+      # de pagina die in de repo zit online, ook als er geen nieuwe data was (bijv.
+      # bij de eerste keer live zetten of na een mislukte upload).
       - name: Uploaden naar medicatieadvies.nl
-        if: steps.bouw.outputs.gebouwd == 'ja' && vars.DIAGNOSEGROEI_LIVE == 'true'
+        if: (steps.bouw.outputs.gebouwd == 'ja' || github.event_name == 'workflow_dispatch') && vars.DIAGNOSEGROEI_LIVE == 'true'
         env:
           FTP_HOST: ${{ secrets.FTP_HOST_HORIZONSCAN || secrets.FTP_HOST }}
           FTP_USER: ${{ secrets.FTP_USER_HORIZONSCAN || secrets.FTP_USER }}
@@ -96,5 +99,5 @@ jobs:
         run: python3 deploy_ftp.py
 
       - name: Upload overgeslagen
-        if: steps.bouw.outputs.gebouwd == 'ja' && vars.DIAGNOSEGROEI_LIVE != 'true'
+        if: (steps.bouw.outputs.gebouwd == 'ja' || github.event_name == 'workflow_dispatch') && vars.DIAGNOSEGROEI_LIVE != 'true'
         run: echo "::notice::Gebouwd en vastgelegd, niet geüpload — zet de variabele DIAGNOSEGROEI_LIVE op 'true' om te publiceren."
