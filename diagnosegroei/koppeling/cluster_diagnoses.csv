@@ -64,3 +64,26 @@ hematologie;0313;779;aanvullend;overige myeloproliferatieve aandoeningen;
 hematologie;0316;6111;aanvullend;kindergeneeskunde, leukemie;400002 Kinderoncologie
 hematologie;0313;714;aanvullend;mastocytose;
 hematologie;0326;H1;aanvullend;allergologie, mastocytose;
+botox;0330;0511;kern;dystonie, blefarospasme;500032 Dystonieen (w.o. blefarospasme)
+botox;0310;27;kern;"dermatologie niet nader omschreven: hier vooral hyperhidrose; de diagnose zelf is veel breder";
+botox;0306;035;kern;overactieve blaas;500007 Urge-incontinentie
+botox;0330;0701;kern;"migraine; ook eigen cluster";
+botox;0306;037;kern;neurogene blaas;101072 Aandoeningen van het centrale zenuwstelsel
+botox;0330;0823;kern;nervus VII: hemifaciaal spasme;
+botox;0303;116;aanvullend;fissura ani;
+botox;0330;0551;aanvullend;autonoom zenuwstelsel: hyperhidrose;211070 Degeneratieve ziekten van het centrale zenuwstelsel
+botox;0327;0313;aanvullend;revalidatie CVA: spasticiteit;400001 CVA
+botox;0327;0311;aanvullend;revalidatie cerebrale functiestoornissen: spasticiteit;500025 Cerebrale functiestoornissen, incl cogn
+botox;0327;0411;aanvullend;revalidatie neurologie cerebrospinaal;507025 Neurologische aand. bij revalidatie
+botox;0302;18;aanvullend;nervus facialis;
+botox;0302;53;aanvullend;dysfonie;
+botox;0302;55;aanvullend;slikklachten;
+botox;0301;259;aanvullend;oogleden;
+botox;0330;0503;aanvullend;tremoren;
+botox;0330;0799;aanvullend;"overige hoofdpijn; ook bij migraine";
+botox;0330;0501;aanvullend;Parkinson: speekselvloed, dystonie;211070 Degeneratieve ziekten van het centrale zenuwstelsel
+botox;0330;0502;aanvullend;extrapiramidaal niet Parkinson;500031 Extrapyramidaal niet M. Parkinson
+botox;0306;034;aanvullend;stress-incontinentie/prolaps;
+botox;0306;038;aanvullend;dysfunctional voiding;
+migraine;0330;0701;kern;migraine en migraine-varianten;
+migraine;0316;3513;aanvullend;kindergeneeskunde;

@@ -145,11 +145,12 @@ footer { margin-top: 48px; padding-top: 12px; border-top: 1px solid var(--line);
 
   <h2 id="koppeling">Tabblad Add-on koppeling</h2>
   <p>Er bestaat geen officiële sleutel tussen een diagnose en een add-on geneesmiddel. Het dashboard legt die verbinding via <strong>therapeutische clusters</strong>: een groep DBC-diagnoses (bijvoorbeeld multiple sclerose) met de add-on middelen die daarbij horen. De koppeling is handmatig opgesteld uit de vergoedingsindicaties en gecontroleerd tegen de FKG/DKG-indeling van de risicoverevening.</p>
-  <h3>De vier reeksen in de grafiek</h3>
+  <h3>De reeksen in de grafiek</h3>
   <p>De grafiek toont elke reeks als index (startjaar = 100), zodat je de groei kunt vergelijken ook al verschillen de aantallen sterk.</p>
   <div class="reeks">
     <i style="background:var(--s1)"></i><span><strong>Diagnose</strong>: patiënten met een van de diagnoses van het cluster (NZa).</span>
     <i style="background:var(--s4)"></i><span><strong>Voorfase</strong>: gebruikers van de extramurale eerstelijnsmiddelen, zoals methotrexaat bij reuma of mesalazine bij IBD (GIP). Dit is de groep waaruit later add-on gebruikers kunnen komen.</span>
+    <i style="background:#d55181"></i><span><strong>Vervolg</strong>: gebruikers van extramurale middelen die volgens de vergoedingsvoorwaarden pas ná de add-on behandeling komen. Voorbeeld: de CGRP-remmers bij migraine, na botulinetoxine. Alleen bij clusters waar dat speelt.</span>
     <i style="background:var(--s3)"></i><span><strong>Behandeld</strong>: patiënten die volgens de NZa-registratie dure geneesmiddelen kregen.</span>
     <i style="background:var(--s2)"></i><span><strong>Add-on gebruikers</strong>: gebruikers van de gekoppelde add-on middelen (GIP).</span>
   </div>
@@ -166,6 +167,7 @@ footer { margin-top: 48px; padding-top: 12px; border-top: 1px solid var(--line);
     <li><strong>Verdeeld (schatting)</strong>: kosten en gebruikers verdeeld naar rato van de behandelde patiënten per cluster.</li>
     <li><strong>Volledig meetellen</strong>: het hele bedrag bij elk cluster. Clusters mag je dan niet optellen.</li>
   </ul>
+  <p>Voor een middel kan in de koppeltabel ook een vast aandeel staan. Zo is het cluster <strong>Botulinetoxine (alle toepassingen)</strong> een cluster rond één middel, dat alle diagnoses bundelt waar botulinetoxine wordt toegediend (dystonie, hyperhidrose, overactieve blaas, migraine, spasticiteit). Het cluster <strong>Migraine</strong> is daar een deel van: het krijgt het aandeel van de migrainepatiënten in alle botulinetoxine-toedieningen.</p>
   <h3>Middelen, voorfase en diagnoses</h3>
   <p>Onder de grafieken staan de gekoppelde add-on middelen (met FKG-klasse, kosten, groei, het aandeel van dit cluster en een link naar het <a href="https://medicatieadvies.nl/addon/" target="_blank" rel="noopener">add-on dashboard</a>), de voorfasemiddelen, de geneesmiddel-zorgproducten en de diagnoses van het cluster. Een middel met het label <strong>concept</strong> is voorgesteld maar nog niet inhoudelijk nagekeken.</p>
 

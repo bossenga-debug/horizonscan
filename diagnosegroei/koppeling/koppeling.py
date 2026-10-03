@@ -197,6 +197,8 @@ def voorstel(clusters):
     uitgaven = g[g["jaar"] == laatste_vol].groupby("atc")["vergoeding"].sum()
     rijen = []
     for cid in clusters["cluster_id"]:
+        if cid not in ZOEK:        # clusters zonder zoekpatroon (bijv. rond één middel) worden met de hand gevuld
+            continue
         zoek, uit = ZOEK[cid]
         m = fm[fm["VerkorteIndicatie"].str.contains(zoek, case=False, regex=True)]
         if uit:

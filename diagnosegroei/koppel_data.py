@@ -38,6 +38,7 @@ VERSTREKKING = [
     "039147", "039148", "039149", "039150", "039151", "039173",          # hormoon, TIL, desensibilisatie, gentherapie, DC
     "039810", "039888", "191014", "120415",                              # intravitreaal, intravesicaal, CAR-T, PSMA
     "190051", "190052", "190053",                                        # verstrekking oncolytica (oud)
+    "039446", "036264",                                                  # injectie botulinetoxine; endoscopisch inspuiten in de blaas
 ]
 
 
@@ -51,7 +52,8 @@ ZPD_GENEESMIDDEL = re.compile(
     r"toediening (chemo|immuno|biolog)|toediening .*(chemo|immuno|hormoon)therapie|"
     r"intraveneuze/ ?intrathecale toediening|begeleiden behandeling met|begeleiding immunotherapie|"
     r"behandeling met (chemo|immuno)|dure medicijnen|chronische verstrekking geneesmiddelen|"
-    r"intravitreale injectie|^immuun effectorcel therapie$|verstrekking chemo|^immunotherapie$", re.I)
+    r"intravitreale injectie|^immuun effectorcel therapie$|verstrekking chemo|^immunotherapie$|"
+    r"^injectie botulinetoxine$", re.I)      # niet "Poli met diagnostiek/ Injectie botulinetoxine": dat is diagnostiek óf injectie
 
 
 def geneesmiddel_zorgproducten():
@@ -155,6 +157,10 @@ def bereken(jaren, dbc_diag, dbc_zpd=None):
     gip_jaren = sorted(set(addon["jaar"]))
     ca = ca[ca["status"] != "uitgesloten"]
     cv = cv[cv["status"] != "uitgesloten"] if not cv.empty else cv
+    if not cv.empty and "rol" not in cv.columns:
+        cv = cv.assign(rol="voorfase")
+    if "aandeel" not in ca.columns:
+        ca = ca.assign(aandeel="")
     a_k = addon.groupby(["atc", "jaar"])["vergoeding"].sum()
     a_g = addon.groupby(["atc", "jaar"])["gebruikers"].sum()
     naam = addon.drop_duplicates("atc").set_index("atc")["atclaatst_naam_tekst"].to_dict()
@@ -170,7 +176,8 @@ def bereken(jaren, dbc_diag, dbc_zpd=None):
         zs = zp[pd.Series(list(zip(zp["BEHANDELEND_SPECIALISME_CD"], zp["TYPERENDE_DIAGNOSE_CD"])), index=zp.index).isin(sleutels)]
         # Per diagnose begrensd op het aantal diagnosepatiënten: een patiënt met meer
         # geneesmiddel-zorgproducten of -activiteiten in een jaar telt anders meer keer.
-        beh_act = pd.Series({j: sum(act_diag.get(k, [0] * len(jaren))[jaren.index(j)] for k in sleutels) for j in jaren})
+        act_cluster = reeksen(vs.groupby(["BEHANDELEND_SPECIALISME_CD", "TYPERENDE_DIAGNOSE_CD", "JAAR"])["p"].sum())
+        beh_act = pd.Series({j: sum(act_cluster.get(k, [0] * len(jaren))[jaren.index(j)] for k in sleutels) for j in jaren})
         beh_zpd = pd.Series({j: sum(zpd_diag.get(k, [0] * len(jaren))[jaren.index(j)] for k in sleutels) for j in jaren})
         bron = getattr(c, "behandeld_bron", "") or "activiteit"
         beh = beh_zpd if bron == "zorgproduct" else beh_act
@@ -193,19 +200,33 @@ def bereken(jaren, dbc_diag, dbc_zpd=None):
             "p": [int(sum(pat.get((s, d, j), 0) for s, d in sleutels)) for j in jaren],
             "b": [int(beh.get(j, 0)) for j in jaren],
             "atc": sorted(set(ca.loc[ca["cluster_id"] == c.cluster_id, "atc"])),
-            "vf": sorted(set(cv.loc[cv["cluster_id"] == c.cluster_id, "atc"])) if not cv.empty else [],
+            "vf": sorted(set(cv.loc[(cv["cluster_id"] == c.cluster_id) & (cv["rol"] != "vervolg"), "atc"])) if not cv.empty else [],
+            "vv": sorted(set(cv.loc[(cv["cluster_id"] == c.cluster_id) & (cv["rol"] == "vervolg"), "atc"])) if not cv.empty else [],
         })
 
-    # verdeelsleutel per gedeeld middel en jaar: behandelde patiënten (DIS) per cluster
+    # Aandeel van een middel per cluster en jaar. Standaard: gedeelde middelen naar rato van de
+    # behandelde patiënten (DIS) per cluster. De kolom `aandeel` in cluster_atc.csv gaat voor:
+    #   getal            vast percentage (bijv. 100 voor een cluster rond één middel)
+    #   deel_van:<id>    dit cluster is een deel van cluster <id>: aandeel = behandeld hier /
+    #                    behandeld daar; het andere cluster wordt er niet door verlaagd
     beh_jaar = {c["id"]: dict(zip(jaren, c["b"])) for c in clusters}
     bij = ca.groupby("atc")["cluster_id"].apply(lambda s: sorted(set(s))).to_dict()
+    expliciet = {(r.cluster_id, r.atc): r.aandeel.strip() for r in ca.itertuples() if r.aandeel.strip()}
 
     def aandeel(atc, cid, j):
-        cs = bij.get(atc, [cid])
-        if len(cs) == 1:
+        jj = min(j, max(jaren))     # GIP-jaren na het laatste DIS-jaar krijgen de sleutel van dat jaar
+        regel = expliciet.get((cid, atc))
+        if regel:
+            if regel.startswith("deel_van:"):
+                ander = beh_jaar.get(regel.split(":", 1)[1], {}).get(jj, 0)
+                return min(1.0, beh_jaar[cid].get(jj, 0) / ander) if ander else 0.0
+            try:
+                return float(regel.replace(",", ".").rstrip("%")) / 100
+            except ValueError:
+                pass
+        cs = [x for x in bij.get(atc, [cid]) if (x, atc) not in expliciet]
+        if len(cs) <= 1:
             return 1.0
-        # GIP-jaren na het laatste DIS-jaar krijgen de sleutel van het laatste DIS-jaar
-        jj = min(j, max(jaren))
         tot = sum(beh_jaar[x].get(jj, 0) for x in cs)
         return beh_jaar[cid].get(jj, 0) / tot if tot else 1 / len(cs)
 
@@ -217,14 +238,16 @@ def bereken(jaren, dbc_diag, dbc_zpd=None):
                 k, g = a_k.get((a, j), 0), a_g.get((a, j), 0)
                 f = aandeel(a, c["id"], j)
                 kv += k; gv += g; ks += k * f; gs += g * f
-                if len(bij.get(a, [])) == 1:
+                if f >= 0.9999:          # niet gedeeld, of expliciet volledig toegerekend
                     ke += k
             k_vol.append(round(kv)); k_sch.append(round(ks)); g_vol.append(round(gv)); g_sch.append(round(gs)); k_eig.append(round(ke))
-        c.update(kv=k_vol, ks=k_sch, gv=g_vol, gs=g_sch, ke=k_eig)
-        if farm is not None and c["vf"]:
-            f = farm[farm["atc"].isin(c["vf"])].groupby("jaar")
-            c["vfg"] = [int(f["gebruikers"].sum().get(j, 0)) for j in gip_jaren]
-            c["vfk"] = [int(f["vergoeding"].sum().get(j, 0)) for j in gip_jaren]
+        c.update(kv=k_vol, ks=k_sch, gv=g_vol, gs=g_sch, ke=k_eig,
+                 sh={a: [round(aandeel(a, c["id"], j), 4) for j in gip_jaren] for a in c["atc"]})
+        for lijst, g_key, k_key in (("vf", "vfg", "vfk"), ("vv", "vvg", "vvk")):
+            if farm is not None and c[lijst]:
+                f = farm[farm["atc"].isin(c[lijst])].groupby("jaar")
+                c[g_key] = [int(f["gebruikers"].sum().get(j, 0)) for j in gip_jaren]
+                c[k_key] = [int(f["vergoeding"].sum().get(j, 0)) for j in gip_jaren]
 
     # middelentabel voor de weergave
     middelen = {}
@@ -243,7 +266,7 @@ def bereken(jaren, dbc_diag, dbc_zpd=None):
         fk = farm.groupby(["atc", "jaar"])
         fg, fv = fk["gebruikers"].sum(), fk["vergoeding"].sum()
         for r in cv.drop_duplicates("atc").itertuples():
-            vf_middelen[r.atc] = {"n": fn.get(r.atc, r.stof).capitalize(), "f": r.fkg,
+            vf_middelen[r.atc] = {"n": fn.get(r.atc, r.stof).capitalize(), "f": r.fkg, "r": r.rol,
                                   "g": [int(fg.get((r.atc, j), 0)) for j in gip_jaren],
                                   "k": [int(fv.get((r.atc, j), 0)) for j in gip_jaren]}
 

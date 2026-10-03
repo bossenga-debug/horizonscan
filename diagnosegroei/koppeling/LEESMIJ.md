@@ -102,3 +102,18 @@ jaar meer keer. Per diagnose wordt daarom begrensd op het aantal patiënten met
 die diagnose. Kies `activiteit` als de zorgproductbron tegen die grens aanloopt;
 bij myeloom gebeurt dat (100% in alle jaren), en dan valt er geen trend meer te
 zien.
+
+## Aandeel en vervolgfase
+
+- Kolom `aandeel` in `cluster_atc.csv` gaat voor de automatische verdeelsleutel:
+  leeg (automatisch), een getal (vast percentage, bijvoorbeeld `100`), of
+  `deel_van:<cluster_id>`. Dat laatste is voor een cluster dat een deel is van
+  een ander cluster: het aandeel wordt behandeld-hier gedeeld door
+  behandeld-daar, en het andere cluster wordt er niet door verlaagd.
+  Voorbeeld: `botox` (cluster rond één middel, 100%) en `migraine`
+  (`deel_van:botox`).
+- Kolom `rol` in `cluster_voorfase.csv`: `voorfase` (eerstelijns, vóór de
+  add-on) of `vervolg` (extramuraal, ná de add-on, zoals de CGRP-remmers bij
+  migraine). Vervolg krijgt een eigen lijn in de grafiek.
+- Clusters zonder zoekpatroon in `ZOEK` (zoals `botox`) worden met de hand
+  gevuld; `--voorstel` slaat ze over.

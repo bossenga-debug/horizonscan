@@ -8,7 +8,7 @@
   --bg: #f4f7f6; --surface: #ffffff; --sunk: #eaf0ee;
   --ink: #0f1e1d; --ink-2: #475857; --muted: #768684; --line: #dbe3e1;
   --accent: #0e6b66; --accent-soft: #d8ecea;
-  --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #4a3aa7;
+  --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #4a3aa7; --s5: #e87ba4;
   --series: #2a78d6; --up: #e34948; --up-soft: #fbe3e2; --down: #2a78d6; --down-soft: #dde9f8; --mid: #f0efec;
   --f-body: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --f-num: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
@@ -18,14 +18,14 @@
   --bg: #0e1615; --surface: #152120; --sunk: #1b2928;
   --ink: #ecf3f2; --ink-2: #b3c3c0; --muted: #82938f; --line: #263533;
   --accent: #4bb8ae; --accent-soft: #1d3a37;
-  --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #9085e9;
+  --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #9085e9; --s5: #d55181;
   --series: #3987e5; --up: #e66767; --up-soft: #3d2324; --down: #3987e5; --down-soft: #1d2d44; --mid: #383835;
   color-scheme: dark; } }
 :root[data-theme="dark"] {
   --bg: #0e1615; --surface: #152120; --sunk: #1b2928;
   --ink: #ecf3f2; --ink-2: #b3c3c0; --muted: #82938f; --line: #263533;
   --accent: #4bb8ae; --accent-soft: #1d3a37;
-  --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #9085e9;
+  --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #9085e9; --s5: #d55181;
   --series: #3987e5; --up: #e66767; --up-soft: #3d2324; --down: #3987e5; --down-soft: #1d2d44; --mid: #383835;
   color-scheme: dark; }
 
@@ -275,6 +275,7 @@ footer a { color: var(--accent); }
           <button type="button" data-v="immunologie" aria-pressed="false">Immunologie</button>
           <button type="button" data-v="oncologie" aria-pressed="false">Oncologie</button>
           <button type="button" data-v="oog" aria-pressed="false">Oog</button>
+          <button type="button" data-v="overig" aria-pressed="false">Overig</button>
         </div>
       </div>
       <div class="fgroup"><span class="flabel">Gedeelde middelen</span>
@@ -301,7 +302,7 @@ footer a { color: var(--accent); }
         <h3 class="sub2">Add-on middelen</h3>
         <p class="subnote" id="k-mid-note"></p>
         <div class="scroll"><table id="t-kmid"></table></div>
-        <h3 class="sub2">Voorfase: extramurale eerstelijnsmiddelen</h3>
+        <h3 class="sub2">Extramurale middelen: voorfase en vervolg</h3>
         <p class="subnote" id="k-vf-note"></p>
         <div class="scroll"><table id="t-kvf"></table></div>
         <h3 class="sub2">Geneesmiddel-zorgproducten</h3>
@@ -745,6 +746,7 @@ function serie(c) {
     { key: "b", label: c.bron === "zorgproduct" ? "Behandeld volgens DIS (zorgproduct)" : "Behandeld volgens DIS (toedieningsactiviteit)", color: "var(--s3)", vals: KJ.map(y => dIdx(y) >= 0 ? c.b[dIdx(y)] : null), voorl: y => dIdx(y) >= VOORL },
   ];
   if (c.vfg) s.push({ key: "f", label: "Voorfase: extramurale gebruikers", color: "var(--s4)", vals: KJ.map(y => c.vfg[gIdx(y)]), voorl: y => K.farm_voorlopig.includes(y) });
+  if (c.vvg) s.push({ key: "v", label: "Vervolg: extramurale gebruikers", color: "var(--s5)", vals: KJ.map(y => c.vvg[gIdx(y)]), voorl: y => K.farm_voorlopig.includes(y) });
   return s;
 }
 function kStats(c) {
@@ -817,24 +819,24 @@ function renderKopDetail() {
   document.getElementById("t-kmid").innerHTML = `<thead><tr><th>Middel</th><th>FKG</th><th class="n">Kosten ${e}${ster}</th><th class="n">Groei/jr</th><th class="n">Gebruikers</th><th class="n">Aandeel</th><th>Ook bij</th><th></th></tr></thead><tbody>` +
     mid.map(({ a, m }) => {
       const andere = m.c.filter(x => x !== c.id);
-      const sh = andere.length ? aandeelVan(a, c, ge) : 1;
+      const sh = aandeelVan(a, c, ge);
       return `<tr class="${kstate.atc === a ? "sel" : ""}" data-atc="${a}">
         <td class="name">${esc(m.n)}<small>${a}${m.st === "concept" ? ` · <span class="flag">concept</span>` : ""}</small></td>
         <td><span class="flag" title="${esc(m.f)}">${esc((m.f || "—").split(" ")[0])}</span></td>
         <td class="n">${eur(m.k[ge])}</td>
         <td class="n">${chip(cagrG(m.k))}</td>
         <td class="n">${fmt.format(m.g[ge])}</td>
-        <td class="n">${andere.length ? pct0(sh) : "100%"}</td>
+        <td class="n">${pct0(sh)}</td>
         <td>${andere.map(x => `<button type="button" class="linkbtn" data-k="${x}">${esc(naamC(x))}</button>`).join(" ")}</td>
         <td><a class="ext" href="${ADDON_URL}${a}" target="_blank" rel="noopener">Add-on dashboard ↗</a></td></tr>`;
     }).join("") + `</tbody>`;
   // voorfase
-  const vf = (c.vf || []).map(a => ({ a, m: K.vf_middelen[a] })).filter(x => x.m).sort((x, y) => y.m.g[ge] - x.m.g[ge]);
+  const vf = [...(c.vf || []), ...(c.vv || [])].map(a => ({ a, m: K.vf_middelen[a] })).filter(x => x.m).sort((x, y) => (x.m.r === y.m.r ? y.m.g[ge] - x.m.g[ge] : x.m.r === "vervolg" ? 1 : -1));
   document.getElementById("k-vf-note").textContent = vf.length
-    ? `Middelen uit de FKG-klasse(n) ${[...new Set(vf.map(x => x.m.f))].join(", ")}. Gebruikers zijn per middel opgeteld; één patiënt met twee middelen telt twee keer. De klasse kan ook bij andere clusters horen.`
+    ? `Middelen uit de FKG-klasse(n) ${[...new Set(vf.map(x => x.m.f))].join(", ")}. Gebruikers zijn per middel opgeteld; één patiënt met twee middelen telt twee keer. De klasse kan ook bij andere clusters horen.` + ((c.vv || []).length ? " Vervolg: extramurale middelen die volgens de vergoedingsvoorwaarden ná de add-on behandeling komen." : "")
     : "Voor dit cluster is geen extramurale voorfase gedefinieerd.";
   document.getElementById("t-kvf").innerHTML = vf.length ? `<thead><tr><th>Middel</th><th class="n">Gebruikers ${e}</th><th class="n">Groei/jr</th><th class="n">Vergoeding ${e}</th></tr></thead><tbody>` +
-    vf.map(({ a, m }) => `<tr><td class="name">${esc(m.n)}<small>${a} · ${esc(m.f)}</small></td><td class="n">${fmt.format(m.g[ge])}</td><td class="n">${chip(cagrG(m.g))}</td><td class="n">${eur(m.k[ge])}</td></tr>`).join("") + `</tbody>` : "";
+    vf.map(({ a, m }) => `<tr><td class="name">${esc(m.n)}<small>${a} · ${esc(m.f)}${m.r === "vervolg" ? ` · <span class="flag">vervolg</span>` : ""}</small></td><td class="n">${fmt.format(m.g[ge])}</td><td class="n">${chip(cagrG(m.g))}</td><td class="n">${eur(m.k[ge])}</td></tr>`).join("") + `</tbody>` : "";
   // geneesmiddel-zorgproducten
   const di = dIdx(e), da = dIdx(s.a);
   const zp = c.zpd || [];
@@ -894,11 +896,8 @@ function cagrG(arr) {
   return arr[a] > 0 && arr[b] > 0 && n > 0 ? Math.pow(arr[b] / arr[a], 1 / n) - 1 : null;
 }
 function aandeelVan(atc, c, ge) {
-  // zelfde sleutel als in koppel_data.py: behandelde patiënten per cluster in dat jaar
-  const m = K.middelen[atc], y = GJ[ge];
-  const cs = m.c.map(id => K.clusters.find(x => x.id === id)).filter(Boolean);
-  const tot = cs.reduce((t, x) => t + (x.b[dIdx(y)] || 0), 0);
-  return tot ? (c.b[dIdx(y)] || 0) / tot : 1 / cs.length;
+  // uitgerekend in koppel_data.py (verdeelsleutel of de kolom aandeel in de koppeltabel)
+  return c.sh && c.sh[atc] ? c.sh[atc][ge] : 1;
 }
 function kIndexChart(el, ser, basisJaar) {
   const W = 640, H = 240, L = 46, R = 150, T = 14, B = 28;
@@ -921,7 +920,7 @@ function kIndexChart(el, ser, basisJaar) {
     }
     pts.forEach((p, i) => { if (p) g += `<circle cx="${p[0]}" cy="${p[1]}" r="3.5" fill="${s.voorl(KJ[i]) ? "var(--surface)" : s.color}" stroke="${s.voorl(KJ[i]) ? s.color : "var(--surface)"}" stroke-width="${s.voorl(KJ[i]) ? 1.5 : 1.5}"/>`; });
     const li = pts.map((p, i) => p ? i : -1).filter(i => i >= 0).pop();
-    if (li != null && li >= 0) eind.push({ y: pts[li][1], x: pts[li][0], t: `${s.label.split(" (")[0].replace("Patiënten met diagnose", "Diagnose").replace("Behandeld volgens DIS", "Behandeld").replace("Voorfase: extramurale gebruikers", "Voorfase").replace("Add-on gebruikers", "Add-on")} ${Math.round(idx[k][li])}`, c: s.color });
+    if (li != null && li >= 0) eind.push({ y: pts[li][1], x: pts[li][0], t: `${s.label.split(" (")[0].replace("Patiënten met diagnose", "Diagnose").replace("Behandeld volgens DIS", "Behandeld").replace("Voorfase: extramurale gebruikers", "Voorfase").replace("Vervolg: extramurale gebruikers", "Vervolg").replace("Add-on gebruikers", "Add-on")} ${Math.round(idx[k][li])}`, c: s.color });
   });
   // eindlabels zonder overlap
   eind.sort((a, b) => a.y - b.y);
@@ -965,6 +964,7 @@ function openCluster(id, atc) {
 }
 function leesHash() {
   const h = decodeURIComponent((location.hash || "").slice(1));
+  if (h === "overzicht") return showTab("overzicht");
   if (h === "statistiek") return showTab("statistiek");
   if (!K) return;
   if (h === "koppeling") return showTab("koppeling");
@@ -1062,6 +1062,8 @@ state.spc = DATA.specialismen.slice().sort((a, b) => b.p[LAATST_VOL] - a.p[LAATS
 initStat();
 renderAll();
 leesHash();
+// ook bij een hashchange: dan werkt een tweede deeplink (bijv. vanuit het add-on dashboard) op een al open pagina
+window.addEventListener("hashchange", leesHash);
 </script>
 <!--goatcounter-->
 <script>
