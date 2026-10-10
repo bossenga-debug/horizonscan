@@ -2,6 +2,48 @@
  "begin": "2026-09-21",
  "regels": [
   {
+   "datum": "2026-10-10",
+   "atc": "L01FG01",
+   "naam": "Bevacizumab",
+   "soort": "aanvraag",
+   "tekst": "Aanvragen bij EMA in beoordeling: 2 → 3"
+  },
+  {
+   "datum": "2026-10-10",
+   "atc": "L04AA24",
+   "naam": "Abatacept",
+   "soort": "aanvraag",
+   "tekst": "Aanvragen bij EMA in beoordeling: 1 → 2"
+  },
+  {
+   "datum": "2026-10-10",
+   "atc": "L01EF01",
+   "naam": "Palbociclib",
+   "soort": "aanvraag",
+   "tekst": "Aanvragen bij EMA in beoordeling: 1 → 2"
+  },
+  {
+   "datum": "2026-10-10",
+   "atc": "L01FD02",
+   "naam": "Pertuzumab",
+   "soort": "studie",
+   "tekst": "Nieuwe biosimilarstudie NCT07861139"
+  },
+  {
+   "datum": "2026-10-10",
+   "atc": "L01FD02",
+   "naam": "Pertuzumab",
+   "soort": "aanvraag",
+   "tekst": "Aanvragen bij EMA in beoordeling: 2 → 1"
+  },
+  {
+   "datum": "2026-10-10",
+   "atc": "L01EJ01",
+   "naam": "Ruxolitinib",
+   "soort": "aanvraag",
+   "tekst": "Aanvragen bij EMA in beoordeling: 2 → 1"
+  },
+  {
    "datum": "2026-09-28",
    "atc": "L01EJ01",
    "naam": "Ruxolitinib",

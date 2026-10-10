@@ -250,7 +250,7 @@
   "verlenging": "Extension Granted"
  },
  "L01EF01": {
-  "eval": 1,
+  "eval": 2,
   "kopie": [
    "Palbociclib Viatris (Authorised)"
   ],
@@ -282,7 +282,7 @@
   "verlenging": "Extension Granted"
  },
  "L01EJ01": {
-  "eval": 2,
+  "eval": 1,
   "kopie": [
    "Ruxolitinib Viatris (Authorised)",
    "Ruxolitinib Zentiva (Opinion)"
@@ -427,7 +427,7 @@
   "verlenging": ""
  },
  "L01FD02": {
-  "eval": 2,
+  "eval": 1,
   "kopie": [
    "Pebrilzo (Opinion)",
    "Poherdy (Authorised)"
@@ -447,7 +447,8 @@
    "NCT05346224",
    "NCT06038539",
    "NCT07108127",
-   "NCT07542496"
+   "NCT07542496",
+   "NCT07861139"
   ],
   "verlenging": ""
  },
@@ -548,7 +549,7 @@
   "verlenging": ""
  },
  "L01FG01": {
-  "eval": 2,
+  "eval": 3,
   "kopie": [
    "Abevmy (Authorised)",
    "Alymsys (Authorised)",
@@ -737,7 +738,7 @@
   "verlenging": ""
  },
  "L04AA24": {
-  "eval": 1,
+  "eval": 2,
   "kopie": [],
   "naam": "Abatacept",
   "nl": [

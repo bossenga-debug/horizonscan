@@ -1,4 +1,12 @@
 {
  "begin": "2026-09-29",
- "regels": []
+ "regels": [
+  {
+   "datum": "2026-10-10",
+   "atc": "N07XX08",
+   "naam": "Tafamidis",
+   "soort": "ema",
+   "tekst": "EMA: Tafamidis Accord (Authorised)"
+  }
+ ]
 }
