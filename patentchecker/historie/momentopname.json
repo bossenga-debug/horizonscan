@@ -250,7 +250,7 @@
   "verlenging": "Extension Granted"
  },
  "L01EF01": {
-  "eval": 2,
+  "eval": 1,
   "kopie": [
    "Palbociclib Viatris (Authorised)"
   ],
@@ -549,7 +549,7 @@
   "verlenging": ""
  },
  "L01FG01": {
-  "eval": 3,
+  "eval": 2,
   "kopie": [
    "Abevmy (Authorised)",
    "Alymsys (Authorised)",
@@ -657,7 +657,7 @@
   "spc_einde": "2029-03-11",
   "spc_klasse": "actief",
   "studies": [],
-  "verlenging": ""
+  "verlenging": "Application Pending"
  },
  "L01XL03": {
   "eval": 0,
@@ -738,7 +738,7 @@
   "verlenging": ""
  },
  "L04AA24": {
-  "eval": 2,
+  "eval": 1,
   "kopie": [],
   "naam": "Abatacept",
   "nl": [
@@ -952,7 +952,7 @@
   "eval": 0,
   "kopie": [
    "Avtozma (Authorised)",
-   "Tocilizumab STADA (previously Tofidence) (Authorised)",
+   "Tosmova (previously Tocilizumab STADA and Tofidence) (Authorised)",
    "Tuyory (Authorised)",
    "Tyenne (Authorised)"
   ],
@@ -1121,7 +1121,7 @@
    "NCT06847724",
    "NCT07606521"
   ],
-  "verlenging": ""
+  "verlenging": "Application Pending"
  },
  "L04AJ01": {
   "eval": 0,
@@ -1289,7 +1289,7 @@
   "verlenging": ""
  },
  "R03DX05": {
-  "eval": 2,
+  "eval": 1,
   "kopie": [
    "Adcomfo (Opinion)",
    "Omlyclo (Authorised)"
@@ -1342,10 +1342,11 @@
   "verlenging": ""
  },
  "S01LA04": {
-  "eval": 1,
+  "eval": 0,
   "kopie": [
    "Byooviz (Authorised)",
    "Epruvy (previously Ranibizumab Midas) (Authorised)",
+   "Fovlussea (Opinion)",
    "Ranivisio (Authorised)",
    "Ranluspec (Authorised)",
    "Rexatilux (Authorised)",

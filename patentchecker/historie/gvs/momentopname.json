@@ -123,22 +123,6 @@
   "studies": [],
   "verlenging": "Extension Granted"
  },
- "B01AF02": {
-  "eval": 1,
-  "kopie": [
-   "Apixaban Accord (Authorised)"
-  ],
-  "naam": "Apixaban",
-  "nl": [],
-  "pijplijn": [
-   "Apixaban Accord (Accord Healthcare)"
-  ],
-  "spc_bron": "RVO",
-  "spc_einde": "2026-11-19",
-  "spc_klasse": "actief",
-  "studies": [],
-  "verlenging": "Extension Granted"
- },
  "B01AF03": {
   "eval": 0,
   "kopie": [],
@@ -692,22 +676,6 @@
   "pijplijn": [],
   "spc_bron": "RVO",
   "spc_einde": "2028-01-31",
-  "spc_klasse": "actief",
-  "studies": [],
-  "verlenging": ""
- },
- "N07XX08": {
-  "eval": 0,
-  "kopie": [
-   "Tafamidis Accord (Authorised)"
-  ],
-  "naam": "Tafamidis",
-  "nl": [],
-  "pijplijn": [
-   "Tafamidis ()"
-  ],
-  "spc_bron": "RVO",
-  "spc_einde": "2026-11-17",
   "spc_klasse": "actief",
   "studies": [],
   "verlenging": ""

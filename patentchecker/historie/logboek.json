@@ -2,6 +2,69 @@
  "begin": "2026-09-21",
  "regels": [
   {
+   "datum": "2026-11-10",
+   "atc": "L01FG01",
+   "naam": "Bevacizumab",
+   "soort": "aanvraag",
+   "tekst": "Aanvragen bij EMA in beoordeling: 3 → 2"
+  },
+  {
+   "datum": "2026-11-10",
+   "atc": "S01LA04",
+   "naam": "Ranibizumab",
+   "soort": "aanvraag",
+   "tekst": "Aanvragen bij EMA in beoordeling: 1 → 0"
+  },
+  {
+   "datum": "2026-11-10",
+   "atc": "S01LA04",
+   "naam": "Ranibizumab",
+   "soort": "ema",
+   "tekst": "EMA: Fovlussea (Opinion)"
+  },
+  {
+   "datum": "2026-11-10",
+   "atc": "L01XK01",
+   "naam": "Olaparib",
+   "soort": "spc",
+   "tekst": "Pediatrische verlenging: — → Application Pending"
+  },
+  {
+   "datum": "2026-11-10",
+   "atc": "L04AA24",
+   "naam": "Abatacept",
+   "soort": "aanvraag",
+   "tekst": "Aanvragen bij EMA in beoordeling: 2 → 1"
+  },
+  {
+   "datum": "2026-11-10",
+   "atc": "L01EF01",
+   "naam": "Palbociclib",
+   "soort": "aanvraag",
+   "tekst": "Aanvragen bij EMA in beoordeling: 2 → 1"
+  },
+  {
+   "datum": "2026-11-10",
+   "atc": "L04AC07",
+   "naam": "Tocilizumab",
+   "soort": "ema",
+   "tekst": "EMA: Tosmova (previously Tocilizumab STADA and Tofidence) (Authorised)"
+  },
+  {
+   "datum": "2026-11-10",
+   "atc": "R03DX05",
+   "naam": "Omalizumab",
+   "soort": "aanvraag",
+   "tekst": "Aanvragen bij EMA in beoordeling: 2 → 1"
+  },
+  {
+   "datum": "2026-11-10",
+   "atc": "L04AG08",
+   "naam": "Ocrelizumab",
+   "soort": "spc",
+   "tekst": "Pediatrische verlenging: — → Application Pending"
+  },
+  {
    "datum": "2026-10-10",
    "atc": "L01FG01",
    "naam": "Bevacizumab",

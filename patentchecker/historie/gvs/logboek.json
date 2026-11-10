@@ -2,6 +2,20 @@
  "begin": "2026-09-29",
  "regels": [
   {
+   "datum": "2026-11-10",
+   "atc": "N07XX08",
+   "naam": "Tafamidis",
+   "soort": "weg",
+   "tekst": "Uit het overzicht (kosten onder de drempel)"
+  },
+  {
+   "datum": "2026-11-10",
+   "atc": "B01AF02",
+   "naam": "Apixaban",
+   "soort": "weg",
+   "tekst": "Uit het overzicht (kosten onder de drempel)"
+  },
+  {
    "datum": "2026-10-10",
    "atc": "N07XX08",
    "naam": "Tafamidis",
